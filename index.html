@@ -93,41 +93,16 @@
       border: 1px solid var(--border);
       border-radius: 8px;
       color: var(--text);
-      padding: 9px 12px;
+      padding: 9px 14px;
       font-family: 'Nunito', sans-serif;
       font-size: 14px;
       width: 100%;
       outline: none;
       transition: border-color 0.2s;
     }
+    input[type=number] { -moz-appearance: textfield; }
+    input[type=number]::-webkit-inner-spin-button { opacity: 0.4; }
     input:focus, select:focus { border-color: var(--orange); }
-
-    /* Money inputs: y hệt input thường, chỉ thêm font-weight */
-    input.money-input {
-      font-weight: 600;
-      text-align: left;
-    }
-    input.money-input::placeholder { font-weight: 400; opacity: 0.5; }
-
-    /* Ô "Số tiền cần thu" nổi bật */
-    .order-amount-wrap {
-      border-radius: 8px;
-      background: #FF6B2B12;
-      border: 1.5px solid #FF6B2B55;
-      transition: border-color 0.2s;
-    }
-    .order-amount-wrap:focus-within {
-      border-color: var(--orange);
-      background: #FF6B2B1A;
-    }
-    .order-amount-wrap input {
-      border: none !important;
-      background: transparent !important;
-      font-weight: 700 !important;
-      color: var(--orange) !important;
-      text-align: left !important;
-    }
-    .order-amount-wrap input::placeholder { color: #FF6B2B77 !important; font-weight: 400 !important; opacity: 1 !important; }
     select option { background: var(--surface2); }
     label { font-size: 12px; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px; display: block; }
 
@@ -276,19 +251,6 @@ const fmt = (n) => {
 };
 const fmtFull = (n) => new Intl.NumberFormat('vi-VN').format(n) + 'đ';
 const today = () => new Date().toISOString().split('T')[0];
-
-// Format số có dấu chấm hàng nghìn (dùng cho input hiển thị)
-const formatMoneyInput = (val) => {
-  if (val === '' || val === null || val === undefined) return '';
-  const n = parseInt(String(val).replace(/\./g, ''), 10);
-  if (isNaN(n)) return '';
-  return new Intl.NumberFormat('vi-VN').format(n);
-};
-// Parse chuỗi có dấu chấm về số
-const parseMoneyInput = (str) => {
-  const n = parseInt(String(str).replace(/\./g, ''), 10);
-  return isNaN(n) ? 0 : n;
-};
 const genId = () => Date.now().toString(36) + Math.random().toString(36).slice(2,5);
 
 const INITIAL = {
@@ -374,19 +336,21 @@ const WalletCard = ({ label, value, color, icon, warnNegative }) => {
   );
 };
 
-// ── MoneyInput: input tiền có format dấu chấm hàng nghìn ────────────────────
+// ── MoneyInput – tự format dấu chấm hàng nghìn ──────────────────────────────
 const MoneyInput = ({ value, onChange, placeholder, style, className }) => {
-  const [display, setDisplay] = React.useState(value ? formatMoneyInput(value) : '');
+  const [display, setDisplay] = React.useState(value ? Number(value).toLocaleString('vi-VN') : '');
 
-  // Sync khi value thay đổi từ bên ngoài (reset form)
   React.useEffect(() => {
-    setDisplay(value ? formatMoneyInput(value) : '');
+    // Sync display when value changes from outside (e.g. type switch)
+    if (!value && value !== 0) { setDisplay(''); return; }
+    const num = Number(value);
+    if (!isNaN(num)) setDisplay(num === 0 ? '' : num.toLocaleString('vi-VN'));
   }, [value]);
 
   const handleChange = (e) => {
     const raw = e.target.value.replace(/\./g, '').replace(/[^0-9]/g, '');
-    const num = raw ? parseInt(raw, 10) : 0;
-    setDisplay(raw ? formatMoneyInput(raw) : '');
+    const num = raw === '' ? 0 : parseInt(raw, 10);
+    setDisplay(raw === '' ? '' : num.toLocaleString('vi-VN'));
     onChange(num);
   };
 
@@ -394,11 +358,11 @@ const MoneyInput = ({ value, onChange, placeholder, style, className }) => {
     <input
       type="text"
       inputMode="numeric"
-      className={`money-input ${className||''}`}
-      placeholder={placeholder || '0'}
       value={display}
       onChange={handleChange}
+      placeholder={placeholder || '0'}
       style={style}
+      className={className}
     />
   );
 };
@@ -439,8 +403,8 @@ const SubOrderForm = ({ index, data, onChange, onRemove, canRemove }) => {
         <div className="grid gap-3 mb-3" style={{gridTemplateColumns:'1fr 1fr'}}>
           <div>
             <label>Trả quán (đ)</label>
-            <MoneyInput value={data.payShop||0} placeholder="Số tiền trả cho quán"
-              onChange={v=>onChange({...data,payShop:v})} />
+            <input type="number" placeholder="0" value={data.payShop||''}
+              onChange={e=>onChange({...data,payShop:+e.target.value})} />
           </div>
           <div>
             <label>Hình thức trả quán</label>
@@ -457,13 +421,16 @@ const SubOrderForm = ({ index, data, onChange, onRemove, canRemove }) => {
       {(type==='2'||type==='3') && (
         <div className="grid gap-3 mb-3" style={{gridTemplateColumns:'1fr 1fr'}}>
           {/* Số tiền cần thu - full width */}
-          <div style={{gridColumn:'1/-1'}}>
-            <label style={{color:'var(--orange)'}}>Số tiền cần thu (đ) <span>*</span></label>
-            <div className="order-amount-wrap">
-              <MoneyInput value={data.orderAmount||0}
-                placeholder="Nhập đúng số tiền app yêu cầu thu"
-                onChange={v=>onChange({...data,orderAmount:v})} />
+          <div style={{gridColumn:'1/-1', padding:'12px 14px', borderRadius:10,
+            background:'#FF6B2B0A', border:'2px solid var(--orange)',
+            boxShadow:'0 0 0 4px #FF6B2B08'}}>
+            <div style={{fontSize:11,color:'#FF6B2B99',fontWeight:700,textTransform:'uppercase',letterSpacing:'0.05em',marginBottom:6}}>
+              Số tiền cần thu (đ) <span style={{color:'var(--orange)'}}>*</span>
             </div>
+            <input type="number" placeholder="Nhập đúng số tiền app yêu cầu thu"
+              value={data.orderAmount||''}
+              onChange={e=>onChange({...data,orderAmount:+e.target.value})}
+              style={{border:'none',background:'transparent',padding:0,fontSize:16,fontWeight:700,color:'var(--orange)'}} />
             <div style={{fontSize:11,color:'var(--muted)',marginTop:4}}>
               {type==='2' ? 'Bằng giá trị đơn hàng (app hiển thị)' : 'Bằng chênh lệch thu khách - trả quán (app hiển thị)'}
             </div>
@@ -472,8 +439,9 @@ const SubOrderForm = ({ index, data, onChange, onRemove, canRemove }) => {
           {/* Khách trả thực tế */}
           <div style={{gridColumn:'1/-1'}}>
             <label>Khách trả thực tế (đ)</label>
-            <MoneyInput value={data.collectCustomer||0} placeholder="Số tiền khách thực tế đưa cho bạn"
-              onChange={v=>onChange({...data,collectCustomer:v})} />
+            <MoneyInput placeholder="Số tiền khách thực tế đưa cho bạn"
+              value={data.collectCustomer||''}
+              onChange={e=>onChange({...data,collectCustomer:+e.target.value})} />
           </div>
 
           <div>
@@ -485,8 +453,9 @@ const SubOrderForm = ({ index, data, onChange, onRemove, canRemove }) => {
           </div>
           <div>
             <label>Thối lại (đ)</label>
-            <MoneyInput value={data.refund||0} placeholder="0"
-              onChange={v=>onChange({...data,refund:v})} />
+            <input type="number" placeholder="0"
+              value={data.refund||''}
+              onChange={e=>onChange({...data,refund:+e.target.value})} />
           </div>
           {(data.refund||0) > 0 && (
             <div style={{gridColumn:'1/-1'}}>
@@ -547,8 +516,7 @@ const OrderModal = ({ onClose, onSave, initialData }) => {
   const ship = +shipTotal || 0;
   const totalChenhLech = subOrders.reduce((acc,s) => {
     if(s.type==='2') return acc + (s.collectCustomer||0);
-    // Loại 3: App trừ = số tiền cần thu - trả quán (không phải khách trả - trả quán)
-    if(s.type==='3') return acc + (s.orderAmount||0) - (s.payShop||0);
+    if(s.type==='3') return acc + (s.collectCustomer||0) - (s.payShop||0);
     if(s.type==='4') return acc - (s.payShop||0); // app hoàn lại tiền quán → trừ âm = cộng
     return acc;
   }, 0);
@@ -590,13 +558,11 @@ const OrderModal = ({ onClose, onSave, initialData }) => {
         <div className="grid gap-3 mb-4" style={{gridTemplateColumns:'1fr 1fr'}}>
           <div>
             <label>Tiền ship {isBundle?'(cả chùm)':''}(đ) *</label>
-            <MoneyInput value={shipTotal} placeholder="VD: 25.000"
-              onChange={v=>setShipTotal(v||'')} />
+            <MoneyInput value={+shipTotal||0} onChange={v=>setShipTotal(v)} placeholder="VD: 25000" />
           </div>
           <div>
             <label>Tip app (nếu có)</label>
-            <MoneyInput value={tipAppAmount} placeholder="0"
-              onChange={v=>setTipAppAmount(v||'')} />
+            <MoneyInput value={+tipAppAmount||0} onChange={v=>setTipAppAmount(v)} placeholder="0" />
           </div>
         </div>
 
@@ -699,8 +665,7 @@ const TransferModal = ({ onClose, onSave }) => {
           </div>
           <div>
             <label>Số tiền (đ)</label>
-            <MoneyInput value={amount} placeholder="VD: 200.000"
-              onChange={v=>setAmount(v||'')} />
+            <MoneyInput value={+amount||0} onChange={v=>setAmount(v)} placeholder="VD: 200.000" />
           </div>
           <div>
             <label>Ghi chú</label>
@@ -746,7 +711,7 @@ const TipAppModal = ({ onClose, onSave }) => {
         </div>
         <div className="grid gap-3 mb-4">
           <div><label>Ngày</label><input type="date" value={date} onChange={e=>setDate(e.target.value)} /></div>
-          <div><label>Số tiền tip app (đ)</label><MoneyInput value={amount} placeholder="VD: 15.000" onChange={v=>setAmount(v||'')} /></div>
+          <div><label>Số tiền tip app (đ)</label><input type="number" placeholder="VD: 15000" value={amount} onChange={e=>setAmount(e.target.value)} /></div>
         </div>
         <div className="flex gap-3">
           <button className="btn btn-ghost" style={{flex:1}} onClick={onClose}>Huỷ</button>
@@ -918,7 +883,7 @@ const Dashboard = ({ data }) => {
             {[...orders].reverse().slice(0,15).map(o => {
               const tipPhy = o.subOrders.reduce((a,s)=>a+Math.max(0,(s.collectCustomer||0)-(s.orderAmount||0)-(s.refund||0)),0);
               const chenhLech = o.subOrders.reduce((a,s)=>{
-                if(s.type==='2') return a+(s.collectCustomer||0);
+                if(s.type==='2') return a+(s.orderAmount||0);
                 if(s.type==='3') return a+(s.orderAmount||0)-(s.payShop||0);
                 return a;
               },0);
@@ -1054,7 +1019,7 @@ const HistoryPage = ({ data, onDeleteOrder, onDeleteTransfer, onEditOrder }) => 
               {[...orders].reverse().map(o=>{
                 const tipPhy = o.subOrders.reduce((a,s)=>a+Math.max(0,(s.collectCustomer||0)-(s.orderAmount||0)-(s.refund||0)),0);
                 const chenhLech = o.subOrders.reduce((a,s)=>{
-                  if(s.type==='2') return a+(s.collectCustomer||0);
+                  if(s.type==='2') return a+(s.orderAmount||0);
                   if(s.type==='3') return a+(s.orderAmount||0)-(s.payShop||0);
                   return a;
                 },0);
@@ -1147,7 +1112,7 @@ const WalletSetupModal = ({ wallets, onSave, onClose }) => {
         {[['app','Ví App Shopee'],['cash','Tiền mặt'],['mb','MB Bank'],['momo','Momo']].map(([k,l])=>(
           <div key={k} className="mb-3">
             <label>{l} (đ)</label>
-            <MoneyInput value={vals[k]} onChange={v=>setVals(p=>({...p,[k]:v}))} />
+            <MoneyInput value={vals[k]||0} onChange={v=>setVals(p=>({...p,[k]:v}))} />
           </div>
         ))}
         <div className="flex gap-3 mt-4">
@@ -1278,8 +1243,8 @@ const BackupModal = ({ data, onClose, onRestore }) => {
         const w = {...data.wallets};
         newOrders.forEach(order => {
           const cl = order.subOrders.reduce((a,s)=>{
-            if(s.type==='2') return a+(s.orderAmount||s.collectCustomer||0);
-            if(s.type==='3') return a+(s.orderAmount||s.collectCustomer||0)-(s.payShop||0);
+            if(s.type==='2') return a+(s.orderAmount||0);
+            if(s.type==='3') return a+(s.orderAmount||0)-(s.payShop||0);
             return a;
           },0);
           w.app += order.shipTotal - cl + (order.tipApp||0);
@@ -1443,7 +1408,7 @@ const BackupModal = ({ data, onClose, onRestore }) => {
 
 // ── Pure wallet-delta helpers (module level, no hooks) ───────────────────────
 const calcChenhLech = (subOrders) => subOrders.reduce((a,s)=>{
-  if(s.type==='2') return a+(s.collectCustomer||0);
+  if(s.type==='2') return a+(s.orderAmount||0);
   if(s.type==='3') return a+(s.orderAmount||0)-(s.payShop||0);
   if(s.type==='4') return a-(s.payShop||0);
   return a;
