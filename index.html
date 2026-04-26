@@ -337,7 +337,11 @@ const WalletCard = ({ label, value, color, icon, warnNegative }) => {
 // ── Sub Order Form ────────────────────────────────────────────────────────────
 const SubOrderForm = ({ index, data, onChange, onRemove, canRemove }) => {
   const type = data.type;
-  const tipCalc = (data.collectCustomer||0) - (data.payShop||0) - (data.refund||0);
+
+  // Tip = Khách trả - Số tiền cần thu - Thối lại
+  // orderAmount = số tiền app yêu cầu thu (bằng tiền đơn với loại 2, bằng chênh lệch với loại 3)
+  const needCollect = data.orderAmount || 0;
+  const tipCalc = (data.collectCustomer||0) - needCollect - (data.refund||0);
 
   return (
     <div className="order-sub-card fade-in">
@@ -345,7 +349,8 @@ const SubOrderForm = ({ index, data, onChange, onRemove, canRemove }) => {
         <span style={{fontFamily:'Nunito',fontWeight:700,fontSize:13}}>Đơn #{index+1}</span>
         <div className="flex gap-2 items-center flex-wrap">
           {['1','2','3','4'].map(t => (
-            <button key={t} className={`chip ${data.type===t?'active':''}`} onClick={()=>onChange({...data,type:t,payShop:0,collectCustomer:0,refund:0})}>
+            <button key={t} className={`chip ${data.type===t?'active':''}`}
+              onClick={()=>onChange({...data,type:t,payShop:0,orderAmount:0,collectCustomer:0,refund:0})}>
               Loại {t}
             </button>
           ))}
@@ -356,8 +361,8 @@ const SubOrderForm = ({ index, data, onChange, onRemove, canRemove }) => {
       <div className="text-xs mb-3 p-2 rounded-lg" style={{color:'var(--muted)',background:'var(--bg)'}}>
         {type==='1' && '🟢 Không trả quán, không thu khách — App cộng ship'}
         {type==='2' && '🟡 Không trả quán, thu tiền khách — App cộng ship rồi trừ thu khách'}
-        {type==='3' && '🔴 Bỏ tiền trả quán + thu khách — App trừ chênh lệch (thu - trả)'}
-        {type==='4' && '🔵 Bỏ tiền trả quán, không thu khách — App hoàn lại tiền quán + ship'}
+        {type==='3' && '🔴 Trả quán + thu khách — App trừ chênh lệch (thu khách - trả quán)'}
+        {type==='4' && '🔵 Trả quán, không thu khách — App hoàn lại tiền quán + ship'}
       </div>
 
       {/* Loại 3 & 4: trả quán TRƯỚC */}
@@ -365,7 +370,8 @@ const SubOrderForm = ({ index, data, onChange, onRemove, canRemove }) => {
         <div className="grid gap-3 mb-3" style={{gridTemplateColumns:'1fr 1fr'}}>
           <div>
             <label>Trả quán (đ)</label>
-            <input type="number" placeholder="0" value={data.payShop||''} onChange={e=>onChange({...data,payShop:+e.target.value})} />
+            <input type="number" placeholder="0" value={data.payShop||''}
+              onChange={e=>onChange({...data,payShop:+e.target.value})} />
           </div>
           <div>
             <label>Hình thức trả quán</label>
@@ -378,13 +384,31 @@ const SubOrderForm = ({ index, data, onChange, onRemove, canRemove }) => {
         </div>
       )}
 
-      {/* Loại 2 & 3: thu khách SAU */}
+      {/* Loại 2 & 3: thu khách */}
       {(type==='2'||type==='3') && (
         <div className="grid gap-3 mb-3" style={{gridTemplateColumns:'1fr 1fr'}}>
-          <div style={{gridColumn:'1/-1'}}>
-            <label>Thu khách (đ)</label>
-            <input type="number" placeholder="0" value={data.collectCustomer||''} onChange={e=>onChange({...data,collectCustomer:+e.target.value})} />
+          {/* Số tiền cần thu - full width */}
+          <div style={{gridColumn:'1/-1', padding:'10px 12px', borderRadius:10, background:'var(--bg)', border:'1px solid var(--border)'}}>
+            <div style={{fontSize:11,color:'var(--muted)',fontWeight:700,textTransform:'uppercase',letterSpacing:'0.05em',marginBottom:6}}>
+              Số tiền cần thu (đ) <span style={{color:'var(--orange)'}}>*</span>
+            </div>
+            <input type="number" placeholder="Nhập đúng số tiền app yêu cầu thu"
+              value={data.orderAmount||''}
+              onChange={e=>onChange({...data,orderAmount:+e.target.value})}
+              style={{border:'none',background:'transparent',padding:0,fontSize:16,fontWeight:700,color:'var(--orange)'}} />
+            <div style={{fontSize:11,color:'var(--muted)',marginTop:4}}>
+              {type==='2' ? 'Bằng giá trị đơn hàng (app hiển thị)' : 'Bằng chênh lệch thu khách - trả quán (app hiển thị)'}
+            </div>
           </div>
+
+          {/* Khách trả thực tế */}
+          <div style={{gridColumn:'1/-1'}}>
+            <label>Khách trả thực tế (đ)</label>
+            <input type="number" placeholder="Số tiền khách thực tế đưa cho bạn"
+              value={data.collectCustomer||''}
+              onChange={e=>onChange({...data,collectCustomer:+e.target.value})} />
+          </div>
+
           <div>
             <label>Hình thức thu</label>
             <select value={data.collectMethod||'cash'} onChange={e=>onChange({...data,collectMethod:e.target.value})}>
@@ -394,7 +418,9 @@ const SubOrderForm = ({ index, data, onChange, onRemove, canRemove }) => {
           </div>
           <div>
             <label>Thối lại (đ)</label>
-            <input type="number" placeholder="0" value={data.refund||''} onChange={e=>onChange({...data,refund:+e.target.value})} />
+            <input type="number" placeholder="0"
+              value={data.refund||''}
+              onChange={e=>onChange({...data,refund:+e.target.value})} />
           </div>
           {(data.refund||0) > 0 && (
             <div style={{gridColumn:'1/-1'}}>
@@ -405,16 +431,24 @@ const SubOrderForm = ({ index, data, onChange, onRemove, canRemove }) => {
               </select>
             </div>
           )}
-        </div>
-      )}
 
-      {/* Tip preview chỉ cho loại 2 & 3 */}
-      {(type==='2'||type==='3') && (data.collectCustomer||0) > 0 && (
-        <div className="mt-3 p-2 rounded-lg flex justify-between items-center" style={{background:'var(--bg)'}}>
-          <span style={{fontSize:12,color:'var(--muted)'}}>Tip vật lý đơn này</span>
-          <span className="mono" style={{fontSize:13,color: tipCalc>0?'var(--green)':tipCalc<0?'var(--red)':'var(--muted)'}}>
-            {tipCalc >= 0 ? '+' : ''}{fmtFull(tipCalc)}
-          </span>
+          {/* Tip preview */}
+          {(data.collectCustomer||0) > 0 && (data.orderAmount||0) > 0 && (
+            <div style={{gridColumn:'1/-1', padding:'8px 12px', borderRadius:8, background:'var(--bg)',
+              border:`1px solid ${tipCalc>0?'var(--yellow)':'var(--border)'}44`,
+              display:'flex', justifyContent:'space-between', alignItems:'center'}}>
+              <div>
+                <span style={{fontSize:12,color:'var(--muted)'}}>Tip vật lý = </span>
+                <span style={{fontSize:11,color:'var(--muted)'}}>
+                  {fmtFull(data.collectCustomer||0)} - {fmtFull(data.orderAmount||0)} - {fmtFull(data.refund||0)}
+                </span>
+              </div>
+              <span className="mono" style={{fontSize:14,fontWeight:700,
+                color: tipCalc>0?'var(--yellow)':tipCalc<0?'var(--red)':'var(--muted)'}}>
+                {tipCalc>=0?'+':''}{fmtFull(tipCalc)}
+              </span>
+            </div>
+          )}
         </div>
       )}
 
@@ -520,7 +554,7 @@ const OrderModal = ({ onClose, onSave, initialData }) => {
           <div className="grid gap-2">
             <div className="flex justify-between"><span style={{fontSize:13,color:'var(--muted)'}}>Ví App thay đổi</span><span className="mono" style={{fontSize:13,color:appDelta>=0?'var(--green)':'var(--red)'}}>{appDelta>=0?'+':''}{fmtFull(appDelta)}</span></div>
             {subOrders.map((s,i)=>{
-              const tipPhy = (s.collectCustomer||0) - (s.payShop||0) - (s.refund||0);
+              const tipPhy = (s.collectCustomer||0) - (s.orderAmount||0) - (s.refund||0);
               const cashDelta = (s.collectMethod==='cash'?(s.collectCustomer||0):0) - (s.payShopMethod==='cash'?(s.payShop||0):0) - (s.refundMethod==='cash'?(s.refund||0):0);
               const mbDelta = (s.collectMethod==='mb'?(s.collectCustomer||0):0) - (s.payShopMethod==='mb'?(s.payShop||0):0);
               const momoDelta = -(s.payShopMethod==='momo'?(s.payShop||0):0) - (s.refundMethod==='momo'?(s.refund||0):0);
@@ -727,7 +761,7 @@ const Dashboard = ({ data }) => {
 
   // Compute totals
   const totalTipPhysical = orders.reduce((acc,o) =>
-    acc + o.subOrders.reduce((a,s) => a + Math.max(0,(s.collectCustomer||0)-(s.payShop||0)-(s.refund||0)), 0), 0);
+    acc + o.subOrders.reduce((a,s) => a + Math.max(0,(s.collectCustomer||0)-(s.orderAmount||0)-(s.refund||0)), 0), 0);
   const totalTipApp = tipApp.reduce((a,t)=>a+t.amount,0);
   const totalShip = orders.reduce((a,o)=>a+o.shipTotal,0);
   const totalIncome = totalShip + totalTipPhysical + totalTipApp;
@@ -812,7 +846,7 @@ const Dashboard = ({ data }) => {
               <tr><td colSpan={6} style={{textAlign:'center',color:'var(--muted)',padding:32}}>Chưa có đơn nào. Nhấn "Nhập đơn" để bắt đầu!</td></tr>
             )}
             {[...orders].reverse().slice(0,15).map(o => {
-              const tipPhy = o.subOrders.reduce((a,s)=>a+Math.max(0,(s.collectCustomer||0)-(s.payShop||0)-(s.refund||0)),0);
+              const tipPhy = o.subOrders.reduce((a,s)=>a+Math.max(0,(s.collectCustomer||0)-(s.orderAmount||0)-(s.refund||0)),0);
               const chenhLech = o.subOrders.reduce((a,s)=>{
                 if(s.type==='2') return a+(s.collectCustomer||0);
                 if(s.type==='3') return a+(s.collectCustomer||0)-(s.payShop||0);
@@ -948,7 +982,7 @@ const HistoryPage = ({ data, onDeleteOrder, onDeleteTransfer, onEditOrder }) => 
             <tbody>
               {orders.length===0 && <tr><td colSpan={9} style={{textAlign:'center',color:'var(--muted)',padding:32}}>Chưa có đơn nào</td></tr>}
               {[...orders].reverse().map(o=>{
-                const tipPhy = o.subOrders.reduce((a,s)=>a+Math.max(0,(s.collectCustomer||0)-(s.payShop||0)-(s.refund||0)),0);
+                const tipPhy = o.subOrders.reduce((a,s)=>a+Math.max(0,(s.collectCustomer||0)-(s.orderAmount||0)-(s.refund||0)),0);
                 const chenhLech = o.subOrders.reduce((a,s)=>{
                   if(s.type==='2') return a+(s.collectCustomer||0);
                   if(s.type==='3') return a+(s.collectCustomer||0)-(s.payShop||0);
@@ -1174,8 +1208,8 @@ const BackupModal = ({ data, onClose, onRestore }) => {
         const w = {...data.wallets};
         newOrders.forEach(order => {
           const cl = order.subOrders.reduce((a,s)=>{
-            if(s.type==='2') return a+(s.collectCustomer||0);
-            if(s.type==='3') return a+(s.collectCustomer||0)-(s.payShop||0);
+            if(s.type==='2') return a+(s.orderAmount||s.collectCustomer||0);
+            if(s.type==='3') return a+(s.orderAmount||s.collectCustomer||0)-(s.payShop||0);
             return a;
           },0);
           w.app += order.shipTotal - cl + (order.tipApp||0);
