@@ -10,7 +10,7 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/prop-types@15/prop-types.min.js"></script>
   <script src="https://unpkg.com/recharts@2.12.7/umd/Recharts.js"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>@import url('https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap');</style>
   <style>
     :root {
       --orange: #FF6B2B;
@@ -23,6 +23,8 @@
       --blue-dim: #4D9EFF15;
       --yellow: #FFD166;
       --yellow-dim: #FFD16615;
+      --purple: #A78BFA;
+      --purple-dim: #A78BFA15;
       --bg: #0D0F14;
       --surface: #161922;
       --surface2: #1E2330;
@@ -31,9 +33,9 @@
       --muted: #6B7A99;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; min-height: 100vh; }
-    h1, h2, h3, .font-display { font-family: 'Syne', sans-serif; }
-    .mono { font-family: 'DM Mono', monospace; }
+    body { background: var(--bg); color: var(--text); font-family: 'Nunito', sans-serif; min-height: 100vh; }
+    h1, h2, h3, .font-display { font-family: 'Nunito', sans-serif; }
+    .mono { font-family: 'Nunito', sans-serif; }
 
     ::-webkit-scrollbar { width: 6px; height: 6px; }
     ::-webkit-scrollbar-track { background: var(--surface); }
@@ -66,11 +68,12 @@
     .stat-card.blue::before { background: var(--blue); }
     .stat-card.yellow::before { background: var(--yellow); }
     .stat-card.red::before { background: var(--red); }
+    .stat-card.purple::before { background: var(--purple); }
 
     .tab-btn {
       padding: 8px 18px;
       border-radius: 8px;
-      font-family: 'Syne', sans-serif;
+      font-family: 'Nunito', sans-serif;
       font-weight: 600;
       font-size: 13px;
       cursor: pointer;
@@ -91,7 +94,7 @@
       border-radius: 8px;
       color: var(--text);
       padding: 9px 12px;
-      font-family: 'DM Sans', sans-serif;
+      font-family: 'Nunito', sans-serif;
       font-size: 14px;
       width: 100%;
       outline: none;
@@ -104,7 +107,7 @@
     .btn {
       padding: 10px 20px;
       border-radius: 10px;
-      font-family: 'Syne', sans-serif;
+      font-family: 'Nunito', sans-serif;
       font-weight: 700;
       font-size: 14px;
       cursor: pointer;
@@ -125,7 +128,7 @@
       border-radius: 5px;
       font-size: 11px;
       font-weight: 600;
-      font-family: 'DM Mono', monospace;
+      font-family: 'Nunito', sans-serif;
     }
     .badge-orange { background: var(--orange-dim); color: var(--orange); }
     .badge-green { background: var(--green-dim); color: var(--green); }
@@ -134,7 +137,7 @@
     .badge-yellow { background: var(--yellow-dim); color: var(--yellow); }
 
     table { width: 100%; border-collapse: collapse; }
-    th { font-family: 'Syne', sans-serif; font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; padding: 10px 12px; text-align: left; border-bottom: 1px solid var(--border); }
+    th { font-family: 'Nunito', sans-serif; font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; padding: 10px 12px; text-align: left; border-bottom: 1px solid var(--border); }
     td { padding: 10px 12px; font-size: 13px; border-bottom: 1px solid #1E2330; }
     tr:last-child td { border-bottom: none; }
     tr:hover td { background: var(--surface2); }
@@ -144,7 +147,7 @@
     .neu { color: var(--muted); }
 
     .section-title {
-      font-family: 'Syne', sans-serif;
+      font-family: 'Nunito', sans-serif;
       font-size: 11px;
       font-weight: 700;
       color: var(--muted);
@@ -168,8 +171,14 @@
       width: 100%; max-width: 640px;
       max-height: 90vh;
       overflow-y: auto;
+      overflow-x: hidden;
       padding: 28px;
+      scrollbar-width: thin;
+      scrollbar-color: var(--border) transparent;
     }
+    .modal::-webkit-scrollbar { width: 4px; }
+    .modal::-webkit-scrollbar-track { background: transparent; }
+    .modal::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
 
     .order-sub-card {
       background: var(--bg);
@@ -206,7 +215,7 @@
       padding: 10px 14px;
       border-radius: 10px;
       cursor: pointer;
-      font-family: 'Syne', sans-serif;
+      font-family: 'Nunito', sans-serif;
       font-weight: 600;
       font-size: 14px;
       color: var(--muted);
@@ -220,7 +229,7 @@
     .nav-item:hover:not(.active) { background: var(--surface2); color: var(--text); }
 
     .number-big {
-      font-family: 'DM Mono', monospace;
+      font-family: 'Nunito', sans-serif;
       font-size: 22px;
       font-weight: 500;
     }
@@ -330,28 +339,10 @@ const SubOrderForm = ({ index, data, onChange, onRemove, canRemove }) => {
   const type = data.type;
   const tipCalc = (data.collectCustomer||0) - (data.payShop||0) - (data.refund||0);
 
-  // Shared: block trả quán (dùng cho loại 3 và 4)
-  const PayShopBlock = () => (
-    <div className="grid gap-3" style={{gridTemplateColumns:'1fr 1fr'}}>
-      <div style={{gridColumn:'1/-1'}}>
-        <label>Trả quán (đ)</label>
-        <input type="number" placeholder="0" value={data.payShop||''} onChange={e=>onChange({...data,payShop:+e.target.value})} />
-      </div>
-      <div style={{gridColumn:'1/-1'}}>
-        <label>Hình thức trả quán</label>
-        <select value={data.payShopMethod||'cash'} onChange={e=>onChange({...data,payShopMethod:e.target.value})}>
-          <option value="cash">Tiền mặt</option>
-          <option value="momo">Momo</option>
-          <option value="mb">CK MB Bank</option>
-        </select>
-      </div>
-    </div>
-  );
-
   return (
     <div className="order-sub-card fade-in">
       <div className="flex items-center justify-between mb-3">
-        <span style={{fontFamily:'Syne',fontWeight:700,fontSize:13}}>Đơn #{index+1}</span>
+        <span style={{fontFamily:'Nunito',fontWeight:700,fontSize:13}}>Đơn #{index+1}</span>
         <div className="flex gap-2 items-center flex-wrap">
           {['1','2','3','4'].map(t => (
             <button key={t} className={`chip ${data.type===t?'active':''}`} onClick={()=>onChange({...data,type:t,payShop:0,collectCustomer:0,refund:0})}>
@@ -369,7 +360,25 @@ const SubOrderForm = ({ index, data, onChange, onRemove, canRemove }) => {
         {type==='4' && '🔵 Bỏ tiền trả quán, không thu khách — App hoàn lại tiền quán + ship'}
       </div>
 
-      {/* Loại 2 & 3: thu khách */}
+      {/* Loại 3 & 4: trả quán TRƯỚC */}
+      {(type==='3'||type==='4') && (
+        <div className="grid gap-3 mb-3" style={{gridTemplateColumns:'1fr 1fr'}}>
+          <div>
+            <label>Trả quán (đ)</label>
+            <input type="number" placeholder="0" value={data.payShop||''} onChange={e=>onChange({...data,payShop:+e.target.value})} />
+          </div>
+          <div>
+            <label>Hình thức trả quán</label>
+            <select value={data.payShopMethod||'cash'} onChange={e=>onChange({...data,payShopMethod:e.target.value})}>
+              <option value="cash">Tiền mặt</option>
+              <option value="momo">Momo</option>
+              <option value="mb">CK MB Bank</option>
+            </select>
+          </div>
+        </div>
+      )}
+
+      {/* Loại 2 & 3: thu khách SAU */}
       {(type==='2'||type==='3') && (
         <div className="grid gap-3 mb-3" style={{gridTemplateColumns:'1fr 1fr'}}>
           <div style={{gridColumn:'1/-1'}}>
@@ -398,12 +407,6 @@ const SubOrderForm = ({ index, data, onChange, onRemove, canRemove }) => {
           )}
         </div>
       )}
-
-      {/* Loại 3: trả quán */}
-      {type==='3' && <PayShopBlock />}
-
-      {/* Loại 4: chỉ trả quán, không thu khách */}
-      {type==='4' && <PayShopBlock />}
 
       {/* Tip preview chỉ cho loại 2 & 3 */}
       {(type==='2'||type==='3') && (data.collectCustomer||0) > 0 && (
@@ -458,7 +461,7 @@ const OrderModal = ({ onClose, onSave, initialData }) => {
   };
 
   return (
-    <div className="modal-overlay" onClick={e=>e.target===e.currentTarget&&onClose()}>
+    <div className="modal-overlay">
       <div className="modal fade-in">
         <div className="flex justify-between items-center mb-6">
           <h2 style={{fontSize:20}}>
@@ -524,7 +527,7 @@ const OrderModal = ({ onClose, onSave, initialData }) => {
               return (
                 <React.Fragment key={i}>
                   {cashDelta!==0 && <div className="flex justify-between"><span style={{fontSize:13,color:'var(--muted)'}}>Tiền mặt {isBundle?`(đơn #${i+1})`:''}</span><span className="mono" style={{fontSize:13,color:cashDelta>0?'var(--green)':'var(--red)'}}>{cashDelta>0?'+':''}{fmtFull(cashDelta)}</span></div>}
-                  {mbDelta!==0 && <div className="flex justify-between"><span style={{fontSize:13,color:'var(--muted)'}}>MB Bank {isBundle?`(đơn #${i+1})`:''}</span><span className="mono" style={{fontSize:13,color:'var(--green)'}}>+{fmtFull(mbDelta)}</span></div>}
+                  {mbDelta!==0 && <div className="flex justify-between"><span style={{fontSize:13,color:'var(--muted)'}}>MB Bank {isBundle?`(đơn #${i+1})`:''}</span><span className="mono" style={{fontSize:13,color:mbDelta>0?'var(--green)':'var(--red)'}}>{mbDelta>0?'+':''}{fmtFull(mbDelta)}</span></div>}
                   {momoDelta!==0 && <div className="flex justify-between"><span style={{fontSize:13,color:'var(--muted)'}}>Momo {isBundle?`(đơn #${i+1})`:''}</span><span className="mono" style={{fontSize:13,color:'var(--red)'}}>{fmtFull(momoDelta)}</span></div>}
                   {tipPhy>0 && <div className="flex justify-between"><span style={{fontSize:13,color:'var(--muted)'}}>Tip vật lý {isBundle?`(đơn #${i+1})`:''}</span><span className="mono" style={{fontSize:13,color:'var(--yellow)'}}>+{fmtFull(tipPhy)}</span></div>}
                 </React.Fragment>
@@ -560,7 +563,7 @@ const TransferModal = ({ onClose, onSave }) => {
   };
 
   return (
-    <div className="modal-overlay" onClick={e=>e.target===e.currentTarget&&onClose()}>
+    <div className="modal-overlay">
       <div className="modal fade-in" style={{maxWidth:400}}>
         <div className="flex justify-between items-center mb-6">
           <h2 style={{fontSize:20}}><Icon name="transfer" size={18}/>&nbsp; Chuyển tiền nội bộ</h2>
@@ -631,7 +634,7 @@ const TipAppModal = ({ onClose, onSave }) => {
     onClose();
   };
   return (
-    <div className="modal-overlay" onClick={e=>e.target===e.currentTarget&&onClose()}>
+    <div className="modal-overlay">
       <div className="modal fade-in" style={{maxWidth:360}}>
         <div className="flex justify-between items-center mb-6">
           <h2 style={{fontSize:20}}><Icon name="tip" size={18}/>&nbsp; Tip App</h2>
@@ -673,7 +676,7 @@ const LoginScreen = ({ onLogin }) => {
     <div style={{minHeight:'100vh',display:'flex',alignItems:'center',justifyContent:'center',background:'var(--bg)',padding:16}}>
       <div style={{background:'var(--surface)',border:'1px solid var(--border)',borderRadius:20,padding:'36px 32px',width:'100%',maxWidth:380}} className="fade-in">
         <div style={{textAlign:'center',marginBottom:28}}>
-          <div style={{fontFamily:'Syne',fontWeight:800,fontSize:30,color:'var(--orange)',letterSpacing:'-0.02em',marginBottom:6}}>ShipFlow</div>
+          <div style={{fontFamily:'Nunito',fontWeight:800,fontSize:30,color:'var(--orange)',letterSpacing:'-0.02em',marginBottom:6}}>ShipFlow</div>
           <div style={{fontSize:13,color:'var(--muted)'}}>Quản lý dòng tiền Shopee Food</div>
         </div>
 
@@ -757,7 +760,7 @@ const Dashboard = ({ data }) => {
         }}>
           <span style={{fontSize:20}}>⚠️</span>
           <div>
-            <div style={{fontFamily:'Syne',fontWeight:700,fontSize:13,color:'var(--red)'}}>
+            <div style={{fontFamily:'Nunito',fontWeight:700,fontSize:13,color:'var(--red)'}}>
               Ví App đang âm {fmtFull(Math.abs(wallets.app))}!
             </div>
             <div style={{fontSize:12,color:'var(--muted)',marginTop:2}}>
@@ -784,9 +787,9 @@ const Dashboard = ({ data }) => {
           <div className="section-title" style={{marginBottom:4}}>Tip vật lý</div>
           <div className="number-big" style={{color:'var(--yellow)'}}>{fmtFull(totalTipPhysical)}</div>
         </div>
-        <div className="stat-card" style={{'--color':'var(--green)'}}>
+        <div className="stat-card purple">
           <div className="section-title" style={{marginBottom:4}}>Tip App</div>
-          <div className="number-big" style={{color:'var(--green)'}}>{fmtFull(totalTipApp)}</div>
+          <div className="number-big" style={{color:'var(--purple)'}}>{fmtFull(totalTipApp)}</div>
         </div>
       </div>
 
@@ -888,7 +891,7 @@ const ChartPage = ({ data }) => {
                 <XAxis dataKey="key" tick={{fill:'#6B7A99',fontSize:11}} axisLine={false} tickLine={false} />
                 <YAxis tick={{fill:'#6B7A99',fontSize:11}} axisLine={false} tickLine={false} tickFormatter={v=>fmt(v)} />
                 <Tooltip
-                  contentStyle={{background:'#1E2330',border:'1px solid #2A3040',borderRadius:10,fontFamily:'DM Mono'}}
+                  contentStyle={{background:'#1E2330',border:'1px solid #2A3040',borderRadius:10,fontFamily:'Nunito'}}
                   labelStyle={{color:'#E8ECF4',marginBottom:4}}
                   formatter={(v,n)=>[fmtFull(v), n==='ship'?'Công ship':'Tip']}
                 />
@@ -905,7 +908,7 @@ const ChartPage = ({ data }) => {
                 <XAxis dataKey="key" tick={{fill:'#6B7A99',fontSize:11}} axisLine={false} tickLine={false} />
                 <YAxis tick={{fill:'#6B7A99',fontSize:11}} axisLine={false} tickLine={false} tickFormatter={v=>fmt(v)} />
                 <Tooltip
-                  contentStyle={{background:'#1E2330',border:'1px solid #2A3040',borderRadius:10,fontFamily:'DM Mono'}}
+                  contentStyle={{background:'#1E2330',border:'1px solid #2A3040',borderRadius:10,fontFamily:'Nunito'}}
                   formatter={(v)=>[fmtFull(v),'Thu nhập']}
                 />
                 <Line type="monotone" dataKey="total" stroke="#00E5A0" strokeWidth={2.5} dot={{fill:'#00E5A0',r:4}} />
@@ -1031,7 +1034,7 @@ const HistoryPage = ({ data, onDeleteOrder, onDeleteTransfer, onEditOrder }) => 
 const WalletSetupModal = ({ wallets, onSave, onClose }) => {
   const [vals, setVals] = useState({...wallets});
   return (
-    <div className="modal-overlay" onClick={e=>e.target===e.currentTarget&&onClose()}>
+    <div className="modal-overlay">
       <div className="modal fade-in" style={{maxWidth:380}}>
         <div className="flex justify-between items-center mb-6">
           <h2 style={{fontSize:18}}>⚙️ Cài số dư ban đầu</h2>
@@ -1215,7 +1218,7 @@ const BackupModal = ({ data, onClose, onRestore }) => {
   };
 
   return (
-    <div className="modal-overlay" onClick={e=>e.target===e.currentTarget&&onClose()}>
+    <div className="modal-overlay">
       <div className="modal fade-in" style={{maxWidth:560}}>
         <div className="flex justify-between items-center mb-5">
           <h2 style={{fontSize:20}}>💾 Backup & Restore</h2>
@@ -1296,7 +1299,7 @@ const BackupModal = ({ data, onClose, onRestore }) => {
                 placeholder='Dán nội dung file JSON hoặc CSV...'
                 value={importText}
                 onChange={e=>setImportText(e.target.value)}
-                style={{resize:'vertical',fontFamily:'DM Mono',fontSize:11}}
+                style={{resize:'vertical',fontFamily:'Nunito',fontSize:11}}
               />
             </div>
 
@@ -1467,7 +1470,7 @@ const App = () => {
   if (loadingData) return (
     <div style={{minHeight:'100vh',display:'flex',alignItems:'center',justifyContent:'center',flexDirection:'column',gap:12}}>
       <div style={{fontSize:28}}>⏳</div>
-      <div style={{fontFamily:'Syne',fontSize:16,color:'var(--muted)'}}>Đang tải dữ liệu...</div>
+      <div style={{fontFamily:'Nunito',fontSize:16,color:'var(--muted)'}}>Đang tải dữ liệu...</div>
     </div>
   );
 
@@ -1482,7 +1485,7 @@ const App = () => {
       {/* Sidebar */}
       <aside style={{width:220,background:'var(--surface)',borderRight:'1px solid var(--border)',padding:'24px 16px',display:'flex',flexDirection:'column',position:'sticky',top:0,height:'100vh'}}>
         <div style={{marginBottom:28}}>
-          <div style={{fontFamily:'Syne',fontWeight:800,fontSize:20,color:'var(--orange)',letterSpacing:'-0.02em'}}>ShipFlow</div>
+          <div style={{fontFamily:'Nunito',fontWeight:800,fontSize:20,color:'var(--orange)',letterSpacing:'-0.02em'}}>ShipFlow</div>
           <div style={{fontSize:11,color:'var(--muted)',marginTop:2}}>Shopee Food Tracker</div>
           <div style={{marginTop:8,display:'flex',alignItems:'center',justifyContent:'space-between'}}>
             <span style={{fontSize:11,color:'var(--blue)',fontWeight:600}}>👤 {username}</span>
