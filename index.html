@@ -102,13 +102,13 @@
     }
     input:focus, select:focus { border-color: var(--orange); }
 
-    /* Money inputs: padding thoáng hơn, chữ căn phải */
+    /* Money inputs: giữ padding trái phải gốc, bỏ padding trên dưới thêm, căn trái */
     input.money-input {
-      padding: 10px 14px;
-      font-size: 15px;
+      padding-top: 0;
+      padding-bottom: 0;
+      font-size: 14px;
       font-weight: 600;
-      text-align: right;
-      letter-spacing: 0.01em;
+      text-align: left;
     }
     input.money-input::placeholder { color: var(--muted); opacity: 0.55; font-weight: 400; font-size: 13px; }
 
@@ -131,7 +131,7 @@
       font-size: 18px !important;
       font-weight: 800 !important;
       color: var(--orange) !important;
-      text-align: right;
+      text-align: left;
     }
     .order-amount-wrap input::placeholder { color: #FF6B2B55 !important; font-weight: 400 !important; font-size: 13px !important; opacity: 1 !important; }
     select option { background: var(--surface2); }
