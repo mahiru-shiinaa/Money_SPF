@@ -1,0 +1,1563 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ShipFlow – Quản lý dòng tiền Shopee Food</title>
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/prop-types@15/prop-types.min.js"></script>
+  <script src="https://unpkg.com/recharts@2.12.7/umd/Recharts.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --orange: #FF6B2B;
+      --orange-dim: #FF6B2B22;
+      --green: #00E5A0;
+      --green-dim: #00E5A015;
+      --red: #FF4D6A;
+      --red-dim: #FF4D6A15;
+      --blue: #4D9EFF;
+      --blue-dim: #4D9EFF15;
+      --yellow: #FFD166;
+      --yellow-dim: #FFD16615;
+      --bg: #0D0F14;
+      --surface: #161922;
+      --surface2: #1E2330;
+      --border: #2A3040;
+      --text: #E8ECF4;
+      --muted: #6B7A99;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; min-height: 100vh; }
+    h1, h2, h3, .font-display { font-family: 'Syne', sans-serif; }
+    .mono { font-family: 'DM Mono', monospace; }
+
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: var(--surface); }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      transition: border-color 0.2s;
+    }
+    .card:hover { border-color: #3A4560; }
+
+    .stat-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 18px 20px;
+      position: relative;
+      overflow: hidden;
+    }
+    .stat-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+    }
+    .stat-card.orange::before { background: var(--orange); }
+    .stat-card.green::before { background: var(--green); }
+    .stat-card.blue::before { background: var(--blue); }
+    .stat-card.yellow::before { background: var(--yellow); }
+    .stat-card.red::before { background: var(--red); }
+
+    .tab-btn {
+      padding: 8px 18px;
+      border-radius: 8px;
+      font-family: 'Syne', sans-serif;
+      font-weight: 600;
+      font-size: 13px;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s;
+      background: transparent;
+      color: var(--muted);
+    }
+    .tab-btn.active {
+      background: var(--orange);
+      color: white;
+    }
+    .tab-btn:hover:not(.active) { background: var(--surface2); color: var(--text); }
+
+    input, select, textarea {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      padding: 9px 12px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      width: 100%;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    input:focus, select:focus { border-color: var(--orange); }
+    select option { background: var(--surface2); }
+    label { font-size: 12px; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px; display: block; }
+
+    .btn {
+      padding: 10px 20px;
+      border-radius: 10px;
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 14px;
+      cursor: pointer;
+      border: none;
+      transition: all 0.18s;
+    }
+    .btn-primary { background: var(--orange); color: white; }
+    .btn-primary:hover { background: #e55a1f; transform: translateY(-1px); }
+    .btn-ghost { background: var(--surface2); color: var(--text); border: 1px solid var(--border); }
+    .btn-ghost:hover { border-color: var(--orange); color: var(--orange); }
+    .btn-danger { background: var(--red-dim); color: var(--red); border: 1px solid #FF4D6A44; }
+    .btn-danger:hover { background: var(--red); color: white; }
+    .btn-sm { padding: 6px 12px; font-size: 12px; border-radius: 7px; }
+
+    .badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 5px;
+      font-size: 11px;
+      font-weight: 600;
+      font-family: 'DM Mono', monospace;
+    }
+    .badge-orange { background: var(--orange-dim); color: var(--orange); }
+    .badge-green { background: var(--green-dim); color: var(--green); }
+    .badge-red { background: var(--red-dim); color: var(--red); }
+    .badge-blue { background: var(--blue-dim); color: var(--blue); }
+    .badge-yellow { background: var(--yellow-dim); color: var(--yellow); }
+
+    table { width: 100%; border-collapse: collapse; }
+    th { font-family: 'Syne', sans-serif; font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; padding: 10px 12px; text-align: left; border-bottom: 1px solid var(--border); }
+    td { padding: 10px 12px; font-size: 13px; border-bottom: 1px solid #1E2330; }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: var(--surface2); }
+
+    .pos { color: var(--green); }
+    .neg { color: var(--red); }
+    .neu { color: var(--muted); }
+
+    .section-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 10px;
+    }
+
+    .modal-overlay {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.75);
+      backdrop-filter: blur(4px);
+      z-index: 100;
+      display: flex; align-items: center; justify-content: center;
+      padding: 16px;
+    }
+    .modal {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      width: 100%; max-width: 640px;
+      max-height: 90vh;
+      overflow-y: auto;
+      padding: 28px;
+    }
+
+    .order-sub-card {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 14px;
+      margin-bottom: 10px;
+    }
+
+    .chip {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 5px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--muted);
+      transition: all 0.15s;
+    }
+    .chip.active { border-color: var(--orange); color: var(--orange); background: var(--orange-dim); }
+    .chip:hover:not(.active) { border-color: #3A4560; color: var(--text); }
+
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+    .fade-in { animation: fadeIn 0.25s ease; }
+    @keyframes pulse-red {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(255,77,106,0); border-color: #FF4D6A55; }
+      50% { box-shadow: 0 0 0 6px rgba(255,77,106,0.12); border-color: #FF4D6Aaa; }
+    }
+
+    .nav-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 14px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-family: 'Syne', sans-serif;
+      font-weight: 600;
+      font-size: 14px;
+      color: var(--muted);
+      transition: all 0.15s;
+      border: none;
+      background: transparent;
+      width: 100%;
+      text-align: left;
+    }
+    .nav-item.active { background: var(--orange-dim); color: var(--orange); }
+    .nav-item:hover:not(.active) { background: var(--surface2); color: var(--text); }
+
+    .number-big {
+      font-family: 'DM Mono', monospace;
+      font-size: 22px;
+      font-weight: 500;
+    }
+  </style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const { useState, useEffect, useMemo, useCallback } = React;
+const { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, LineChart, Line, CartesianGrid } = Recharts;
+
+// ── Helpers ──────────────────────────────────────────────────────────────────
+const fmt = (n) => {
+  const abs = Math.abs(n);
+  const s = abs >= 1000 ? (abs/1000).toFixed(abs%1000===0?0:1)+'k' : abs.toString();
+  return (n < 0 ? '-' : '') + s;
+};
+const fmtFull = (n) => new Intl.NumberFormat('vi-VN').format(n) + 'đ';
+const today = () => new Date().toISOString().split('T')[0];
+const genId = () => Date.now().toString(36) + Math.random().toString(36).slice(2,5);
+
+const INITIAL = {
+  wallets: { app: 0, momo: 0, mb: 0, cash: 0 },
+  orders: [],
+  transfers: [],
+  tipApp: [],
+};
+
+const api = {
+  async loadData(username) {
+    const r = await fetch(`/api/data?username=${encodeURIComponent(username)}`);
+    if (!r.ok) throw new Error('Không tải được dữ liệu');
+    return r.json();
+  },
+  async saveData(username, data) {
+    await fetch('/api/data', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username, ...data })
+    });
+  },
+  async auth(username, action) {
+    const r = await fetch('/api/auth', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username, action })
+    });
+    return { ok: r.ok, data: await r.json() };
+  }
+};
+
+// ORDER types
+// sub-order: { id, type:'1'|'2'|'3', payShop, payShopMethod:'cash'|'momo', collectCustomer, collectMethod:'cash'|'mb', refund, refundMethod:'cash'|'momo', tip }
+// order: { id, date, isBundle, shipTotal, shipMethod:'app', subOrders:[], note }
+
+// TRANSFER: { id, date, from:'app'|'momo'|'mb'|'cash', to, amount, note }
+
+// Icons (simple SVG inline)
+const Icon = ({ name, size=16 }) => {
+  const icons = {
+    dashboard: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>,
+    order: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><path d="M9 12h6M9 16h4"/></svg>,
+    transfer: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M7 16V4m0 0L3 8m4-4l4 4M17 8v12m0 0l4-4m-4 4l-4-4"/></svg>,
+    chart: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>,
+    plus: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>,
+    trash: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg>,
+    tip: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>,
+    wallet: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20 7H4a2 2 0 00-2 2v10a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2z"/><path d="M16 14a1 1 0 100-2 1 1 0 000 2z" fill="currentColor"/><path d="M16 7V5a2 2 0 00-2-2H6a2 2 0 00-2 2v2"/></svg>,
+    close: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>,
+    ship: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M5 17H3a2 2 0 01-2-2V5a2 2 0 012-2h11a2 2 0 012 2v3"/><rect x="9" y="11" width="14" height="10" rx="2"/><circle cx="12" cy="21" r="1"/><circle cx="20" cy="21" r="1"/></svg>,
+  };
+  return icons[name] || null;
+};
+
+// ── Wallet Card ───────────────────────────────────────────────────────────────
+const WalletCard = ({ label, value, color, icon, warnNegative }) => {
+  const isNeg = warnNegative && value < 0;
+  return (
+    <div className={`stat-card ${isNeg ? 'red' : color}`} style={isNeg ? {
+      borderColor:'#FF4D6A55',
+      animation:'pulse-red 1.8s ease-in-out infinite'
+    } : {}}>
+      <div className="flex items-center justify-between mb-2">
+        <span className="section-title" style={{marginBottom:0}}>{label}</span>
+        <span style={{color: isNeg ? 'var(--red)' : `var(--${color})`}}>
+          {isNeg ? '⚠️' : <Icon name={icon} size={18}/>}
+        </span>
+      </div>
+      <div className="number-big" style={{color: isNeg ? 'var(--red)' : 'var(--text)'}}>
+        {fmtFull(value)}
+      </div>
+      {isNeg && (
+        <div style={{
+          marginTop:8, fontSize:11, color:'var(--red)',
+          background:'var(--red-dim)', borderRadius:6,
+          padding:'4px 8px', fontWeight:600
+        }}>
+          Cần nạp tiền vào ví app!
+        </div>
+      )}
+    </div>
+  );
+};
+
+// ── Sub Order Form ────────────────────────────────────────────────────────────
+const SubOrderForm = ({ index, data, onChange, onRemove, canRemove }) => {
+  const type = data.type;
+  const tipCalc = (data.collectCustomer||0) - (data.payShop||0) - (data.refund||0);
+
+  // Shared: block trả quán (dùng cho loại 3 và 4)
+  const PayShopBlock = () => (
+    <div className="grid gap-3" style={{gridTemplateColumns:'1fr 1fr'}}>
+      <div style={{gridColumn:'1/-1'}}>
+        <label>Trả quán (đ)</label>
+        <input type="number" placeholder="0" value={data.payShop||''} onChange={e=>onChange({...data,payShop:+e.target.value})} />
+      </div>
+      <div style={{gridColumn:'1/-1'}}>
+        <label>Hình thức trả quán</label>
+        <select value={data.payShopMethod||'cash'} onChange={e=>onChange({...data,payShopMethod:e.target.value})}>
+          <option value="cash">Tiền mặt</option>
+          <option value="momo">Momo</option>
+          <option value="mb">CK MB Bank</option>
+        </select>
+      </div>
+    </div>
+  );
+
+  return (
+    <div className="order-sub-card fade-in">
+      <div className="flex items-center justify-between mb-3">
+        <span style={{fontFamily:'Syne',fontWeight:700,fontSize:13}}>Đơn #{index+1}</span>
+        <div className="flex gap-2 items-center flex-wrap">
+          {['1','2','3','4'].map(t => (
+            <button key={t} className={`chip ${data.type===t?'active':''}`} onClick={()=>onChange({...data,type:t,payShop:0,collectCustomer:0,refund:0})}>
+              Loại {t}
+            </button>
+          ))}
+          {canRemove && <button className="btn btn-sm btn-danger" onClick={onRemove}><Icon name="trash" size={13}/></button>}
+        </div>
+      </div>
+
+      <div className="text-xs mb-3 p-2 rounded-lg" style={{color:'var(--muted)',background:'var(--bg)'}}>
+        {type==='1' && '🟢 Không trả quán, không thu khách — App cộng ship'}
+        {type==='2' && '🟡 Không trả quán, thu tiền khách — App cộng ship rồi trừ thu khách'}
+        {type==='3' && '🔴 Bỏ tiền trả quán + thu khách — App trừ chênh lệch (thu - trả)'}
+        {type==='4' && '🔵 Bỏ tiền trả quán, không thu khách — App hoàn lại tiền quán + ship'}
+      </div>
+
+      {/* Loại 2 & 3: thu khách */}
+      {(type==='2'||type==='3') && (
+        <div className="grid gap-3 mb-3" style={{gridTemplateColumns:'1fr 1fr'}}>
+          <div style={{gridColumn:'1/-1'}}>
+            <label>Thu khách (đ)</label>
+            <input type="number" placeholder="0" value={data.collectCustomer||''} onChange={e=>onChange({...data,collectCustomer:+e.target.value})} />
+          </div>
+          <div>
+            <label>Hình thức thu</label>
+            <select value={data.collectMethod||'cash'} onChange={e=>onChange({...data,collectMethod:e.target.value})}>
+              <option value="cash">Tiền mặt</option>
+              <option value="mb">CK MB Bank</option>
+            </select>
+          </div>
+          <div>
+            <label>Thối lại (đ)</label>
+            <input type="number" placeholder="0" value={data.refund||''} onChange={e=>onChange({...data,refund:+e.target.value})} />
+          </div>
+          {(data.refund||0) > 0 && (
+            <div style={{gridColumn:'1/-1'}}>
+              <label>Hình thức thối</label>
+              <select value={data.refundMethod||'cash'} onChange={e=>onChange({...data,refundMethod:e.target.value})}>
+                <option value="cash">Tiền mặt</option>
+                <option value="momo">Momo</option>
+              </select>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Loại 3: trả quán */}
+      {type==='3' && <PayShopBlock />}
+
+      {/* Loại 4: chỉ trả quán, không thu khách */}
+      {type==='4' && <PayShopBlock />}
+
+      {/* Tip preview chỉ cho loại 2 & 3 */}
+      {(type==='2'||type==='3') && (data.collectCustomer||0) > 0 && (
+        <div className="mt-3 p-2 rounded-lg flex justify-between items-center" style={{background:'var(--bg)'}}>
+          <span style={{fontSize:12,color:'var(--muted)'}}>Tip vật lý đơn này</span>
+          <span className="mono" style={{fontSize:13,color: tipCalc>0?'var(--green)':tipCalc<0?'var(--red)':'var(--muted)'}}>
+            {tipCalc >= 0 ? '+' : ''}{fmtFull(tipCalc)}
+          </span>
+        </div>
+      )}
+
+      {/* Loại 4: preview app hoàn lại */}
+      {type==='4' && (data.payShop||0) > 0 && (
+        <div className="mt-3 p-2 rounded-lg flex justify-between items-center" style={{background:'var(--bg)'}}>
+          <span style={{fontSize:12,color:'var(--muted)'}}>App hoàn vào ví (chưa tính ship)</span>
+          <span className="mono" style={{fontSize:13,color:'var(--blue)'}}>+{fmtFull(data.payShop||0)}</span>
+        </div>
+      )}
+    </div>
+  );
+};
+
+// ── Order Modal ───────────────────────────────────────────────────────────────
+const OrderModal = ({ onClose, onSave, initialData }) => {
+  const isEdit = !!initialData;
+  const [isBundle, setIsBundle] = useState(initialData?.isBundle || false);
+  const [date, setDate] = useState(initialData?.date || today());
+  const [shipTotal, setShipTotal] = useState(initialData?.shipTotal || '');
+  const [note, setNote] = useState(initialData?.note || '');
+  const [tipAppAmount, setTipAppAmount] = useState(initialData?.tipApp || '');
+  const [subOrders, setSubOrders] = useState(initialData?.subOrders || [{ id:genId(), type:'1', payShop:0, payShopMethod:'cash', collectCustomer:0, collectMethod:'cash', refund:0, refundMethod:'cash' }]);
+
+  const addSub = () => setSubOrders(p=>[...p,{ id:genId(), type:'1', payShop:0, payShopMethod:'cash', collectCustomer:0, collectMethod:'cash', refund:0, refundMethod:'cash' }]);
+  const updateSub = (i,v) => setSubOrders(p=>p.map((x,idx)=>idx===i?v:x));
+  const removeSub = (i) => setSubOrders(p=>p.filter((_,idx)=>idx!==i));
+
+  // Preview calculations
+  const ship = +shipTotal || 0;
+  const totalChenhLech = subOrders.reduce((acc,s) => {
+    if(s.type==='2') return acc + (s.collectCustomer||0);
+    if(s.type==='3') return acc + (s.collectCustomer||0) - (s.payShop||0);
+    if(s.type==='4') return acc - (s.payShop||0); // app hoàn lại tiền quán → trừ âm = cộng
+    return acc;
+  }, 0);
+  const appDelta = ship - totalChenhLech + (+tipAppAmount||0);
+
+  const handleSave = () => {
+    if(!ship) { alert('Nhập tiền ship đi bạn!'); return; }
+    const order = { id: initialData?.id || genId(), date, isBundle, shipTotal:ship, note, tipApp:+tipAppAmount||0, subOrders };
+    onSave(order);
+    onClose();
+  };
+
+  return (
+    <div className="modal-overlay" onClick={e=>e.target===e.currentTarget&&onClose()}>
+      <div className="modal fade-in">
+        <div className="flex justify-between items-center mb-6">
+          <h2 style={{fontSize:20}}>
+            <Icon name="order" size={18}/>&nbsp; {isEdit ? 'Sửa đơn' : 'Nhập đơn mới'}
+          </h2>
+          <button className="btn btn-ghost btn-sm" onClick={onClose}><Icon name="close" size={16}/></button>
+        </div>
+
+        {/* Date + type */}
+        <div className="grid gap-3 mb-4" style={{gridTemplateColumns:'1fr 1fr'}}>
+          <div>
+            <label>Ngày</label>
+            <input type="date" value={date} onChange={e=>setDate(e.target.value)} />
+          </div>
+          <div>
+            <label>Loại đơn</label>
+            <div className="flex gap-2 mt-1">
+              <button className={`chip ${!isBundle?'active':''}`} onClick={()=>{setIsBundle(false);setSubOrders(s=>s.slice(0,1))}}>Đơn lẻ</button>
+              <button className={`chip ${isBundle?'active':''}`} onClick={()=>setIsBundle(true)}>Đơn ghép</button>
+            </div>
+          </div>
+        </div>
+
+        {/* Ship + tip app */}
+        <div className="grid gap-3 mb-4" style={{gridTemplateColumns:'1fr 1fr'}}>
+          <div>
+            <label>Tiền ship {isBundle?'(cả chùm)':''}(đ) *</label>
+            <input type="number" placeholder="VD: 25000" value={shipTotal} onChange={e=>setShipTotal(e.target.value)} />
+          </div>
+          <div>
+            <label>Tip app (nếu có)</label>
+            <input type="number" placeholder="0" value={tipAppAmount} onChange={e=>setTipAppAmount(e.target.value)} />
+          </div>
+        </div>
+
+        {/* Sub orders */}
+        <div className="section-title mb-2">Chi tiết {isBundle?'từng đơn trong chùm':'đơn'}</div>
+        {subOrders.map((s,i)=>(
+          <SubOrderForm key={s.id} index={i} data={s} onChange={v=>updateSub(i,v)} onRemove={()=>removeSub(i)} canRemove={subOrders.length>1} />
+        ))}
+        {isBundle && (
+          <button className="btn btn-ghost btn-sm mb-4" onClick={addSub} style={{width:'100%'}}>
+            <Icon name="plus" size={14}/> Thêm đơn con
+          </button>
+        )}
+
+        {/* Note */}
+        <div className="mb-4">
+          <label>Ghi chú</label>
+          <input placeholder="VD: khu vực xa, khách dễ tính..." value={note} onChange={e=>setNote(e.target.value)} />
+        </div>
+
+        {/* Preview */}
+        <div className="p-3 rounded-xl mb-5" style={{background:'var(--bg)',border:'1px solid var(--border)'}}>
+          <div className="section-title mb-2">Xem trước tác động</div>
+          <div className="grid gap-2">
+            <div className="flex justify-between"><span style={{fontSize:13,color:'var(--muted)'}}>Ví App thay đổi</span><span className="mono" style={{fontSize:13,color:appDelta>=0?'var(--green)':'var(--red)'}}>{appDelta>=0?'+':''}{fmtFull(appDelta)}</span></div>
+            {subOrders.map((s,i)=>{
+              const tipPhy = (s.collectCustomer||0) - (s.payShop||0) - (s.refund||0);
+              const cashDelta = (s.collectMethod==='cash'?(s.collectCustomer||0):0) - (s.payShopMethod==='cash'?(s.payShop||0):0) - (s.refundMethod==='cash'?(s.refund||0):0);
+              const mbDelta = (s.collectMethod==='mb'?(s.collectCustomer||0):0) - (s.payShopMethod==='mb'?(s.payShop||0):0);
+              const momoDelta = -(s.payShopMethod==='momo'?(s.payShop||0):0) - (s.refundMethod==='momo'?(s.refund||0):0);
+              return (
+                <React.Fragment key={i}>
+                  {cashDelta!==0 && <div className="flex justify-between"><span style={{fontSize:13,color:'var(--muted)'}}>Tiền mặt {isBundle?`(đơn #${i+1})`:''}</span><span className="mono" style={{fontSize:13,color:cashDelta>0?'var(--green)':'var(--red)'}}>{cashDelta>0?'+':''}{fmtFull(cashDelta)}</span></div>}
+                  {mbDelta!==0 && <div className="flex justify-between"><span style={{fontSize:13,color:'var(--muted)'}}>MB Bank {isBundle?`(đơn #${i+1})`:''}</span><span className="mono" style={{fontSize:13,color:'var(--green)'}}>+{fmtFull(mbDelta)}</span></div>}
+                  {momoDelta!==0 && <div className="flex justify-between"><span style={{fontSize:13,color:'var(--muted)'}}>Momo {isBundle?`(đơn #${i+1})`:''}</span><span className="mono" style={{fontSize:13,color:'var(--red)'}}>{fmtFull(momoDelta)}</span></div>}
+                  {tipPhy>0 && <div className="flex justify-between"><span style={{fontSize:13,color:'var(--muted)'}}>Tip vật lý {isBundle?`(đơn #${i+1})`:''}</span><span className="mono" style={{fontSize:13,color:'var(--yellow)'}}>+{fmtFull(tipPhy)}</span></div>}
+                </React.Fragment>
+              );
+            })}
+          </div>
+        </div>
+
+        <div className="flex gap-3">
+          <button className="btn btn-ghost" style={{flex:1}} onClick={onClose}>Huỷ</button>
+          <button className="btn btn-primary" style={{flex:2}} onClick={handleSave}>{isEdit ? 'Cập nhật đơn' : 'Lưu đơn'}</button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// ── Transfer Modal ────────────────────────────────────────────────────────────
+const TransferModal = ({ onClose, onSave }) => {
+  const [date, setDate] = useState(today());
+  const [from, setFrom] = useState('momo');
+  const [to, setTo] = useState('app');
+  const [amount, setAmount] = useState('');
+  const [note, setNote] = useState('');
+
+  const walletNames = { app:'Ví App', momo:'Momo', mb:'MB Bank', cash:'Tiền mặt' };
+
+  const handleSave = () => {
+    if(!amount) { alert('Nhập số tiền!'); return; }
+    if(from===to) { alert('Từ và đến phải khác nhau!'); return; }
+    onSave({ id:genId(), date, from, to, amount:+amount, note });
+    onClose();
+  };
+
+  return (
+    <div className="modal-overlay" onClick={e=>e.target===e.currentTarget&&onClose()}>
+      <div className="modal fade-in" style={{maxWidth:400}}>
+        <div className="flex justify-between items-center mb-6">
+          <h2 style={{fontSize:20}}><Icon name="transfer" size={18}/>&nbsp; Chuyển tiền nội bộ</h2>
+          <button className="btn btn-ghost btn-sm" onClick={onClose}><Icon name="close" size={16}/></button>
+        </div>
+        <div className="grid gap-3 mb-4">
+          <div>
+            <label>Ngày</label>
+            <input type="date" value={date} onChange={e=>setDate(e.target.value)} />
+          </div>
+          <div className="grid gap-3" style={{gridTemplateColumns:'1fr 1fr'}}>
+            <div>
+              <label>Từ</label>
+              <select value={from} onChange={e=>setFrom(e.target.value)}>
+                <option value="app">Ví App</option>
+                <option value="momo">Momo</option>
+                <option value="mb">MB Bank</option>
+                <option value="cash">Tiền mặt</option>
+              </select>
+            </div>
+            <div>
+              <label>Đến</label>
+              <select value={to} onChange={e=>setTo(e.target.value)}>
+                <option value="app">Ví App</option>
+                <option value="momo">Momo</option>
+                <option value="mb">MB Bank</option>
+                <option value="cash">Tiền mặt</option>
+              </select>
+            </div>
+          </div>
+          <div>
+            <label>Số tiền (đ)</label>
+            <input type="number" placeholder="VD: 200000" value={amount} onChange={e=>setAmount(e.target.value)} />
+          </div>
+          <div>
+            <label>Ghi chú</label>
+            <input placeholder="VD: Nạp tiền vào ví app" value={note} onChange={e=>setNote(e.target.value)} />
+          </div>
+        </div>
+        {amount && from!==to && (
+          <div className="p-3 rounded-xl mb-4" style={{background:'var(--bg)',border:'1px solid var(--border)'}}>
+            <div className="flex justify-between text-sm">
+              <span style={{color:'var(--muted)'}}>{{app:'Ví App',momo:'Momo',mb:'MB Bank',cash:'Tiền mặt'}[from]}</span>
+              <span className="mono neg">-{fmtFull(+amount)}</span>
+            </div>
+            <div className="flex justify-between text-sm mt-1">
+              <span style={{color:'var(--muted)'}}>{{app:'Ví App',momo:'Momo',mb:'MB Bank',cash:'Tiền mặt'}[to]}</span>
+              <span className="mono pos">+{fmtFull(+amount)}</span>
+            </div>
+          </div>
+        )}
+        <div className="flex gap-3">
+          <button className="btn btn-ghost" style={{flex:1}} onClick={onClose}>Huỷ</button>
+          <button className="btn btn-primary" style={{flex:2}} onClick={handleSave}>Xác nhận</button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// ── TipApp Modal ──────────────────────────────────────────────────────────────
+const TipAppModal = ({ onClose, onSave }) => {
+  const [date, setDate] = useState(today());
+  const [amount, setAmount] = useState('');
+  const handleSave = () => {
+    if(!amount) return;
+    onSave({ id:genId(), date, amount:+amount });
+    onClose();
+  };
+  return (
+    <div className="modal-overlay" onClick={e=>e.target===e.currentTarget&&onClose()}>
+      <div className="modal fade-in" style={{maxWidth:360}}>
+        <div className="flex justify-between items-center mb-6">
+          <h2 style={{fontSize:20}}><Icon name="tip" size={18}/>&nbsp; Tip App</h2>
+          <button className="btn btn-ghost btn-sm" onClick={onClose}><Icon name="close" size={16}/></button>
+        </div>
+        <div className="grid gap-3 mb-4">
+          <div><label>Ngày</label><input type="date" value={date} onChange={e=>setDate(e.target.value)} /></div>
+          <div><label>Số tiền tip app (đ)</label><input type="number" placeholder="VD: 15000" value={amount} onChange={e=>setAmount(e.target.value)} /></div>
+        </div>
+        <div className="flex gap-3">
+          <button className="btn btn-ghost" style={{flex:1}} onClick={onClose}>Huỷ</button>
+          <button className="btn btn-primary" style={{flex:2}} onClick={handleSave}>Lưu</button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+
+
+// ── Login Screen ──────────────────────────────────────────────────────────────
+const LoginScreen = ({ onLogin }) => {
+  const [username, setUsername] = React.useState('');
+  const [mode, setMode] = React.useState('login');
+  const [loading, setLoading] = React.useState(false);
+  const [error, setError] = React.useState('');
+
+  const handle = async () => {
+    const clean = username.trim();
+    if (!clean) return;
+    setLoading(true); setError('');
+    const { ok, data } = await api.auth(clean, mode);
+    setLoading(false);
+    if (!ok) { setError(data.error || 'Lỗi không xác định'); return; }
+    onLogin(clean.toLowerCase());
+  };
+
+  return (
+    <div style={{minHeight:'100vh',display:'flex',alignItems:'center',justifyContent:'center',background:'var(--bg)',padding:16}}>
+      <div style={{background:'var(--surface)',border:'1px solid var(--border)',borderRadius:20,padding:'36px 32px',width:'100%',maxWidth:380}} className="fade-in">
+        <div style={{textAlign:'center',marginBottom:28}}>
+          <div style={{fontFamily:'Syne',fontWeight:800,fontSize:30,color:'var(--orange)',letterSpacing:'-0.02em',marginBottom:6}}>ShipFlow</div>
+          <div style={{fontSize:13,color:'var(--muted)'}}>Quản lý dòng tiền Shopee Food</div>
+        </div>
+
+        <div style={{display:'flex',gap:4,marginBottom:20,background:'var(--bg)',padding:4,borderRadius:10}}>
+          <button className={`tab-btn ${mode==='login'?'active':''}`} style={{flex:1}} onClick={()=>{setMode('login');setError('');}}>Đăng nhập</button>
+          <button className={`tab-btn ${mode==='register'?'active':''}`} style={{flex:1}} onClick={()=>{setMode('register');setError('');}}>Đăng ký</button>
+        </div>
+
+        <div style={{marginBottom:16}}>
+          <label>Tên đăng nhập</label>
+          <input
+            type="text"
+            placeholder="VD: mahiru, ship_rider_01"
+            value={username}
+            onChange={e=>{ setUsername(e.target.value); setError(''); }}
+            onKeyDown={e=>e.key==='Enter'&&handle()}
+            autoFocus
+          />
+          <div style={{fontSize:11,color:'var(--muted)',marginTop:5}}>3-20 ký tự, chữ thường không dấu, số, dấu _</div>
+        </div>
+
+        {error && (
+          <div style={{padding:'8px 12px',borderRadius:8,marginBottom:14,background:'var(--red-dim)',border:'1px solid #FF4D6A44',fontSize:13,color:'var(--red)'}}>
+            {error}
+          </div>
+        )}
+
+        <button
+          className="btn btn-primary"
+          style={{width:'100%',padding:13,fontSize:15}}
+          onClick={handle}
+          disabled={loading || !username.trim()}
+        >
+          {loading ? '⏳ Đang xử lý...' : mode==='login' ? '🚀 Đăng nhập' : '✨ Đăng ký'}
+        </button>
+
+        <div style={{marginTop:14,fontSize:12,color:'var(--muted)',textAlign:'center'}}>
+          {mode==='login' ? 'Chưa có tài khoản? Bấm Đăng ký.' : 'Đã có tài khoản? Bấm Đăng nhập.'}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// ── Dashboard ─────────────────────────────────────────────────────────────────
+const Dashboard = ({ data }) => {
+  const { wallets, orders, transfers, tipApp } = data;
+
+  // Compute totals
+  const totalTipPhysical = orders.reduce((acc,o) =>
+    acc + o.subOrders.reduce((a,s) => a + Math.max(0,(s.collectCustomer||0)-(s.payShop||0)-(s.refund||0)), 0), 0);
+  const totalTipApp = tipApp.reduce((a,t)=>a+t.amount,0);
+  const totalShip = orders.reduce((a,o)=>a+o.shipTotal,0);
+  const totalIncome = totalShip + totalTipPhysical + totalTipApp;
+  const totalOrders = orders.length;
+
+  return (
+    <div className="fade-in">
+      <div className="mb-6">
+        <h2 style={{fontSize:24,marginBottom:4}}>Tổng quan</h2>
+        <p style={{color:'var(--muted)',fontSize:13}}>Dòng tiền thực tế của bạn</p>
+      </div>
+
+      {/* Wallets */}
+      <div className="section-title">Số dư các ví</div>
+      <div style={{display:'grid',gridTemplateColumns:'repeat(4,1fr)',gap:12,marginBottom:24}}>
+        <WalletCard label="Ví App Shopee" value={wallets.app} color="orange" icon="wallet" warnNegative />
+        <WalletCard label="Tiền mặt" value={wallets.cash} color="green" icon="wallet" />
+        <WalletCard label="MB Bank" value={wallets.mb} color="blue" icon="wallet" />
+        <WalletCard label="Momo" value={wallets.momo} color="yellow" icon="wallet" />
+      </div>
+
+      {/* Alert banner khi ví app âm */}
+      {wallets.app < 0 && (
+        <div style={{
+          marginBottom:20, padding:'12px 16px',
+          background:'var(--red-dim)',
+          border:'1px solid #FF4D6A55',
+          borderRadius:12,
+          display:'flex', alignItems:'center', gap:10,
+        }}>
+          <span style={{fontSize:20}}>⚠️</span>
+          <div>
+            <div style={{fontFamily:'Syne',fontWeight:700,fontSize:13,color:'var(--red)'}}>
+              Ví App đang âm {fmtFull(Math.abs(wallets.app))}!
+            </div>
+            <div style={{fontSize:12,color:'var(--muted)',marginTop:2}}>
+              Cần nạp thêm tiền vào ví Shopee Food để tránh bị khoá tài khoản. Dùng chức năng <strong style={{color:'var(--text)'}}>Chuyển tiền</strong> để ghi nhận.
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Stats */}
+      <div className="section-title">Thu nhập</div>
+      <div style={{display:'grid',gridTemplateColumns:'repeat(4,1fr)',gap:12,marginBottom:24}}>
+        <div className="stat-card green">
+          <div className="before-green" />
+          <div className="section-title" style={{marginBottom:4}}>Tổng thu nhập</div>
+          <div className="number-big pos">{fmtFull(totalIncome)}</div>
+          <div style={{fontSize:11,color:'var(--muted)',marginTop:4}}>{totalOrders} đơn</div>
+        </div>
+        <div className="stat-card orange">
+          <div className="section-title" style={{marginBottom:4}}>Công ship</div>
+          <div className="number-big" style={{color:'var(--orange)'}}>{fmtFull(totalShip)}</div>
+        </div>
+        <div className="stat-card yellow">
+          <div className="section-title" style={{marginBottom:4}}>Tip vật lý</div>
+          <div className="number-big" style={{color:'var(--yellow)'}}>{fmtFull(totalTipPhysical)}</div>
+        </div>
+        <div className="stat-card" style={{'--color':'var(--green)'}}>
+          <div className="section-title" style={{marginBottom:4}}>Tip App</div>
+          <div className="number-big" style={{color:'var(--green)'}}>{fmtFull(totalTipApp)}</div>
+        </div>
+      </div>
+
+      {/* Recent orders */}
+      <div className="section-title">Đơn gần đây</div>
+      <div className="card">
+        <table>
+          <thead>
+            <tr>
+              <th>Ngày</th>
+              <th>Loại</th>
+              <th>Ship</th>
+              <th>Tip vật lý</th>
+              <th>Ví App</th>
+              <th>Ghi chú</th>
+            </tr>
+          </thead>
+          <tbody>
+            {orders.length === 0 && (
+              <tr><td colSpan={6} style={{textAlign:'center',color:'var(--muted)',padding:32}}>Chưa có đơn nào. Nhấn "Nhập đơn" để bắt đầu!</td></tr>
+            )}
+            {[...orders].reverse().slice(0,15).map(o => {
+              const tipPhy = o.subOrders.reduce((a,s)=>a+Math.max(0,(s.collectCustomer||0)-(s.payShop||0)-(s.refund||0)),0);
+              const chenhLech = o.subOrders.reduce((a,s)=>{
+                if(s.type==='2') return a+(s.collectCustomer||0);
+                if(s.type==='3') return a+(s.collectCustomer||0)-(s.payShop||0);
+                return a;
+              },0);
+              const appDelta = o.shipTotal - chenhLech + (o.tipApp||0);
+              return (
+                <tr key={o.id}>
+                  <td className="mono" style={{fontSize:12}}>{o.date}</td>
+                  <td><span className={`badge ${o.isBundle?'badge-blue':'badge-orange'}`}>{o.isBundle?'Ghép':'Lẻ'}</span></td>
+                  <td className="mono pos">+{fmt(o.shipTotal)}</td>
+                  <td className="mono" style={{color:'var(--yellow)'}}>{tipPhy>0?'+'+fmt(tipPhy):'-'}</td>
+                  <td className="mono" style={{color:appDelta>=0?'var(--green)':'var(--red)'}}>{appDelta>=0?'+':''}{fmt(appDelta)}</td>
+                  <td style={{color:'var(--muted)',fontSize:12}}>{o.note||'-'}</td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+};
+
+// ── Chart Page ────────────────────────────────────────────────────────────────
+const ChartPage = ({ data }) => {
+  const [period, setPeriod] = useState('day');
+  const { orders } = data;
+
+  const chartData = useMemo(() => {
+    const groups = {};
+    orders.forEach(o => {
+      let key = o.date;
+      if(period==='week') {
+        const d = new Date(o.date);
+        const wk = Math.ceil(d.getDate()/7);
+        key = `${o.date.slice(0,7)}-W${wk}`;
+      } else if(period==='month') {
+        key = o.date.slice(0,7);
+      } else if(period==='year') {
+        key = o.date.slice(0,4);
+      }
+      if(!groups[key]) groups[key] = { key, ship:0, tip:0, total:0, orders:0 };
+      const tipPhy = o.subOrders.reduce((a,s)=>a+Math.max(0,(s.collectCustomer||0)-(s.payShop||0)-(s.refund||0)),0);
+      groups[key].ship += o.shipTotal;
+      groups[key].tip += tipPhy + (o.tipApp||0);
+      groups[key].total += o.shipTotal + tipPhy + (o.tipApp||0);
+      groups[key].orders += 1;
+    });
+    return Object.values(groups).sort((a,b)=>a.key.localeCompare(b.key));
+  }, [orders, period]);
+
+  return (
+    <div className="fade-in">
+      <div className="mb-6 flex justify-between items-center">
+        <div>
+          <h2 style={{fontSize:24,marginBottom:4}}>Biểu đồ thu nhập</h2>
+          <p style={{color:'var(--muted)',fontSize:13}}>Theo thời gian</p>
+        </div>
+        <div className="flex gap-1">
+          {[['day','Ngày'],['week','Tuần'],['month','Tháng'],['year','Năm']].map(([v,l])=>(
+            <button key={v} className={`tab-btn ${period===v?'active':''}`} onClick={()=>setPeriod(v)}>{l}</button>
+          ))}
+        </div>
+      </div>
+
+      {chartData.length === 0 ? (
+        <div className="card" style={{padding:48,textAlign:'center',color:'var(--muted)'}}>Chưa có dữ liệu để hiển thị biểu đồ</div>
+      ) : (
+        <>
+          <div className="card p-5 mb-4">
+            <div className="section-title mb-4">Công ship + Tip</div>
+            <ResponsiveContainer width="100%" height={260}>
+              <BarChart data={chartData} barGap={4}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#2A3040" />
+                <XAxis dataKey="key" tick={{fill:'#6B7A99',fontSize:11}} axisLine={false} tickLine={false} />
+                <YAxis tick={{fill:'#6B7A99',fontSize:11}} axisLine={false} tickLine={false} tickFormatter={v=>fmt(v)} />
+                <Tooltip
+                  contentStyle={{background:'#1E2330',border:'1px solid #2A3040',borderRadius:10,fontFamily:'DM Mono'}}
+                  labelStyle={{color:'#E8ECF4',marginBottom:4}}
+                  formatter={(v,n)=>[fmtFull(v), n==='ship'?'Công ship':'Tip']}
+                />
+                <Bar dataKey="ship" fill="#FF6B2B" radius={[4,4,0,0]} />
+                <Bar dataKey="tip" fill="#FFD166" radius={[4,4,0,0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+          <div className="card p-5">
+            <div className="section-title mb-4">Tổng thu nhập</div>
+            <ResponsiveContainer width="100%" height={220}>
+              <LineChart data={chartData}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#2A3040" />
+                <XAxis dataKey="key" tick={{fill:'#6B7A99',fontSize:11}} axisLine={false} tickLine={false} />
+                <YAxis tick={{fill:'#6B7A99',fontSize:11}} axisLine={false} tickLine={false} tickFormatter={v=>fmt(v)} />
+                <Tooltip
+                  contentStyle={{background:'#1E2330',border:'1px solid #2A3040',borderRadius:10,fontFamily:'DM Mono'}}
+                  formatter={(v)=>[fmtFull(v),'Thu nhập']}
+                />
+                <Line type="monotone" dataKey="total" stroke="#00E5A0" strokeWidth={2.5} dot={{fill:'#00E5A0',r:4}} />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+        </>
+      )}
+    </div>
+  );
+};
+
+// ── History Page ──────────────────────────────────────────────────────────────
+const HistoryPage = ({ data, onDeleteOrder, onDeleteTransfer, onEditOrder }) => {
+  const [tab, setTab] = useState('orders');
+  const { orders, transfers, tipApp } = data;
+
+  return (
+    <div className="fade-in">
+      <div className="mb-6">
+        <h2 style={{fontSize:24,marginBottom:12}}>Lịch sử</h2>
+        <div className="flex gap-1">
+          <button className={`tab-btn ${tab==='orders'?'active':''}`} onClick={()=>setTab('orders')}>Đơn hàng</button>
+          <button className={`tab-btn ${tab==='transfers'?'active':''}`} onClick={()=>setTab('transfers')}>Chuyển tiền</button>
+          <button className={`tab-btn ${tab==='tipapp'?'active':''}`} onClick={()=>setTab('tipapp')}>Tip App</button>
+        </div>
+      </div>
+
+      {tab==='orders' && (
+        <div className="card">
+          <table>
+            <thead>
+              <tr>
+                <th>Ngày</th><th>Loại</th><th>Ship</th><th>Tip vật lý</th><th>Ví App Δ</th><th>Cash Δ</th><th>MB Δ</th><th>Ghi chú</th><th></th>
+              </tr>
+            </thead>
+            <tbody>
+              {orders.length===0 && <tr><td colSpan={9} style={{textAlign:'center',color:'var(--muted)',padding:32}}>Chưa có đơn nào</td></tr>}
+              {[...orders].reverse().map(o=>{
+                const tipPhy = o.subOrders.reduce((a,s)=>a+Math.max(0,(s.collectCustomer||0)-(s.payShop||0)-(s.refund||0)),0);
+                const chenhLech = o.subOrders.reduce((a,s)=>{
+                  if(s.type==='2') return a+(s.collectCustomer||0);
+                  if(s.type==='3') return a+(s.collectCustomer||0)-(s.payShop||0);
+                  return a;
+                },0);
+                const appDelta = o.shipTotal - chenhLech + (o.tipApp||0);
+                const cashDelta = o.subOrders.reduce((a,s)=>{
+                  let d=0;
+                  if(s.collectMethod==='cash') d+=(s.collectCustomer||0);
+                  if(s.payShopMethod==='cash') d-=(s.payShop||0);
+                  if(s.refundMethod==='cash') d-=(s.refund||0);
+                  return a+d;
+                },0);
+                const mbDelta = o.subOrders.reduce((a,s)=>a+(s.collectMethod==='mb'?(s.collectCustomer||0):0),0);
+                return (
+                  <tr key={o.id}>
+                    <td className="mono" style={{fontSize:12}}>{o.date}</td>
+                    <td><span className={`badge ${o.isBundle?'badge-blue':'badge-orange'}`}>{o.isBundle?`Ghép(${o.subOrders.length})`:'Lẻ'}</span></td>
+                    <td className="mono pos">+{fmt(o.shipTotal)}</td>
+                    <td className="mono" style={{color:'var(--yellow)'}}>{tipPhy>0?'+'+fmt(tipPhy):'-'}</td>
+                    <td className="mono" style={{color:appDelta>=0?'var(--green)':'var(--red)'}}>{appDelta>=0?'+':''}{fmt(appDelta)}</td>
+                    <td className="mono" style={{color:cashDelta>=0?'var(--green)':'var(--red)'}}>{cashDelta!==0?(cashDelta>0?'+':'')+fmt(cashDelta):'-'}</td>
+                    <td className="mono" style={{color:'var(--blue)'}}>{mbDelta>0?'+'+fmt(mbDelta):'-'}</td>
+                    <td style={{color:'var(--muted)',fontSize:12}}>{o.note||'-'}</td>
+                    <td style={{display:'flex',gap:4}}>
+                      <button className="btn btn-sm btn-ghost" onClick={()=>onEditOrder(o)} style={{color:'var(--blue)',borderColor:'var(--blue-dim)'}}>✏️</button>
+                      <button className="btn btn-sm btn-danger" onClick={()=>onDeleteOrder(o.id)}><Icon name="trash" size={12}/></button>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      )}
+
+      {tab==='transfers' && (
+        <div className="card">
+          <table>
+            <thead><tr><th>Ngày</th><th>Từ</th><th>Đến</th><th>Số tiền</th><th>Ghi chú</th><th></th></tr></thead>
+            <tbody>
+              {transfers.length===0 && <tr><td colSpan={6} style={{textAlign:'center',color:'var(--muted)',padding:32}}>Chưa có giao dịch chuyển tiền</td></tr>}
+              {[...transfers].reverse().map(t=>{
+                const names={app:'Ví App',momo:'Momo',mb:'MB Bank',cash:'Tiền mặt'};
+                return (
+                  <tr key={t.id}>
+                    <td className="mono" style={{fontSize:12}}>{t.date}</td>
+                    <td><span className="badge badge-red">{names[t.from]}</span></td>
+                    <td><span className="badge badge-green">{names[t.to]}</span></td>
+                    <td className="mono">{fmtFull(t.amount)}</td>
+                    <td style={{color:'var(--muted)',fontSize:12}}>{t.note||'-'}</td>
+                    <td><button className="btn btn-sm btn-danger" onClick={()=>onDeleteTransfer(t.id)}><Icon name="trash" size={12}/></button></td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      )}
+
+      {tab==='tipapp' && (
+        <div className="card">
+          <table>
+            <thead><tr><th>Ngày</th><th>Tip App</th><th></th></tr></thead>
+            <tbody>
+              {tipApp.length===0 && <tr><td colSpan={3} style={{textAlign:'center',color:'var(--muted)',padding:32}}>Chưa có tip app</td></tr>}
+              {[...tipApp].reverse().map(t=>(
+                <tr key={t.id}>
+                  <td className="mono" style={{fontSize:12}}>{t.date}</td>
+                  <td className="mono" style={{color:'var(--green)'}}>+{fmtFull(t.amount)}</td>
+                  <td></td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+    </div>
+  );
+};
+
+// ── Wallet Setup Modal ────────────────────────────────────────────────────────
+const WalletSetupModal = ({ wallets, onSave, onClose }) => {
+  const [vals, setVals] = useState({...wallets});
+  return (
+    <div className="modal-overlay" onClick={e=>e.target===e.currentTarget&&onClose()}>
+      <div className="modal fade-in" style={{maxWidth:380}}>
+        <div className="flex justify-between items-center mb-6">
+          <h2 style={{fontSize:18}}>⚙️ Cài số dư ban đầu</h2>
+          <button className="btn btn-ghost btn-sm" onClick={onClose}><Icon name="close" size={16}/></button>
+        </div>
+        {[['app','Ví App Shopee'],['cash','Tiền mặt'],['mb','MB Bank'],['momo','Momo']].map(([k,l])=>(
+          <div key={k} className="mb-3">
+            <label>{l} (đ)</label>
+            <input type="number" value={vals[k]} onChange={e=>setVals(p=>({...p,[k]:+e.target.value}))} />
+          </div>
+        ))}
+        <div className="flex gap-3 mt-4">
+          <button className="btn btn-ghost" style={{flex:1}} onClick={onClose}>Huỷ</button>
+          <button className="btn btn-primary" style={{flex:2}} onClick={()=>{onSave(vals);onClose();}}>Lưu</button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+
+// ── Backup / Restore Modal ────────────────────────────────────────────────────
+const BackupModal = ({ data, onClose, onRestore }) => {
+  const [tab, setTab] = useState('export');
+  const [importText, setImportText] = useState('');
+  const [importMode, setImportMode] = useState('merge'); // 'merge' | 'overwrite'
+  const [importResult, setImportResult] = useState(null); // { ok, msg }
+  const [dragOver, setDragOver] = useState(false);
+
+  // ── Export ──
+  const exportJSON = () => {
+    const json = JSON.stringify(data, null, 2);
+    const blob = new Blob([json], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `shipflow_backup_${today()}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const exportCSV = () => {
+    const rows = [
+      ['TYPE','id','date','isBundle','shipTotal','tipApp','note',
+       'sub_index','sub_type','sub_payShop','sub_payShopMethod',
+       'sub_collectCustomer','sub_collectMethod','sub_refund','sub_refundMethod']
+    ];
+    data.orders.forEach(o => {
+      o.subOrders.forEach((s, i) => {
+        rows.push([
+          'ORDER', o.id, o.date, o.isBundle?1:0, o.shipTotal, o.tipApp||0, o.note||'',
+          i, s.type, s.payShop||0, s.payShopMethod||'cash',
+          s.collectCustomer||0, s.collectMethod||'cash', s.refund||0, s.refundMethod||'cash'
+        ]);
+      });
+    });
+    rows.push(['---']);
+    rows.push(['TYPE','id','date','from','to','amount','note']);
+    data.transfers.forEach(t => {
+      rows.push(['TRANSFER', t.id, t.date, t.from, t.to, t.amount, t.note||'']);
+    });
+    rows.push(['---']);
+    rows.push(['TYPE','id','date','amount']);
+    data.tipApp.forEach(t => {
+      rows.push(['TIPAPP', t.id, t.date, t.amount]);
+    });
+    rows.push(['---']);
+    rows.push(['TYPE','app','cash','mb','momo']);
+    rows.push(['WALLETS', data.wallets.app, data.wallets.cash, data.wallets.mb, data.wallets.momo]);
+
+    const csv = rows.map(r => r.join(',')).join('\n');
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `shipflow_backup_${today()}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  // ── Import ──
+  const parseAndImport = (text) => {
+    setImportResult(null);
+    try {
+      // Try JSON first
+      let parsed = null;
+      const trimmed = text.trim();
+      if (trimmed.startsWith('{')) {
+        parsed = JSON.parse(trimmed);
+        if (!parsed.wallets || !parsed.orders) throw new Error('File JSON không đúng định dạng ShipFlow');
+      } else {
+        // Parse CSV
+        const lines = trimmed.split('\n').map(l => l.trim()).filter(Boolean);
+        const orders = [];
+        const transfers = [];
+        const tipApp = [];
+        let wallets = null;
+        let orderMap = {};
+
+        lines.forEach(line => {
+          if (line.startsWith('---') || line.startsWith('TYPE')) return;
+          const cols = line.split(',');
+          const type = cols[0];
+          if (type === 'ORDER') {
+            const [,id,date,isBundle,shipTotal,tipAppAmt,note,subIdx,subType,payShop,payShopMethod,collectCustomer,collectMethod,refund,refundMethod] = cols;
+            if (!orderMap[id]) {
+              orderMap[id] = { id, date, isBundle:isBundle==='1', shipTotal:+shipTotal, tipApp:+tipAppAmt, note, subOrders:[] };
+              orders.push(orderMap[id]);
+            }
+            orderMap[id].subOrders.push({ id: genId(), type:subType, payShop:+payShop, payShopMethod, collectCustomer:+collectCustomer, collectMethod, refund:+refund, refundMethod });
+          } else if (type === 'TRANSFER') {
+            const [,id,date,from,to,amount,note] = cols;
+            transfers.push({ id, date, from, to, amount:+amount, note });
+          } else if (type === 'TIPAPP') {
+            const [,id,date,amount] = cols;
+            tipApp.push({ id, date, amount:+amount });
+          } else if (type === 'WALLETS') {
+            wallets = { app:+cols[1], cash:+cols[2], mb:+cols[3], momo:+cols[4] };
+          }
+        });
+        parsed = { orders, transfers, tipApp, wallets: wallets || { app:0, cash:0, mb:0, momo:0 } };
+      }
+
+      // Merge or overwrite
+      if (importMode === 'overwrite') {
+        onRestore(parsed);
+        setImportResult({ ok:true, msg:`✅ Ghi đè thành công! ${parsed.orders.length} đơn, ${parsed.transfers.length} chuyển tiền, ${parsed.tipApp.length} tip app.` });
+      } else {
+        // Merge: keep existing, add only new IDs
+        onRestore(prev => {
+          const existOrderIds = new Set(prev.orders.map(o=>o.id));
+          const existTransIds = new Set(prev.transfers.map(t=>t.id));
+          const existTipIds = new Set(prev.tipApp.map(t=>t.id));
+          const newOrders = parsed.orders.filter(o=>!existOrderIds.has(o.id));
+          const newTrans = parsed.transfers.filter(t=>!existTransIds.has(t.id));
+          const newTip = parsed.tipApp.filter(t=>!existTipIds.has(t.id));
+
+          // Recalculate wallets from scratch: start with imported wallets, add new items' effect
+          // Simplest: keep current wallets and apply new orders on top
+          const w = {...prev.wallets};
+          newOrders.forEach(order => {
+            const cl = order.subOrders.reduce((a,s)=>{
+              if(s.type==='2') return a+(s.collectCustomer||0);
+              if(s.type==='3') return a+(s.collectCustomer||0)-(s.payShop||0);
+              if(s.type==='4') return a-(s.payShop||0);
+              return a;
+            },0);
+            w.app += order.shipTotal - cl + (order.tipApp||0);
+            order.subOrders.forEach(s=>{
+              if(s.collectMethod==='cash') w.cash += (s.collectCustomer||0);
+              if(s.collectMethod==='mb')   w.mb   += (s.collectCustomer||0);
+              if(s.payShopMethod==='cash') w.cash -= (s.payShop||0);
+              if(s.payShopMethod==='momo') w.momo -= (s.payShop||0);
+              if(s.payShopMethod==='mb')   w.mb   -= (s.payShop||0);
+              if(s.refundMethod==='cash')  w.cash -= (s.refund||0);
+              if(s.refundMethod==='momo')  w.momo -= (s.refund||0);
+            });
+          });
+          newTrans.forEach(t=>{ w[t.from]-=t.amount; w[t.to]+=t.amount; });
+          newTip.forEach(t=>{ w.app+=t.amount; });
+
+          setImportResult({ ok:true, msg:`✅ Gộp thành công! Thêm ${newOrders.length} đơn mới, ${newTrans.length} chuyển tiền mới, ${newTip.length} tip mới. (${parsed.orders.length-newOrders.length} đơn trùng bỏ qua)` });
+          return {
+            ...prev,
+            wallets: w,
+            orders: [...prev.orders, ...newOrders],
+            transfers: [...prev.transfers, ...newTrans],
+            tipApp: [...prev.tipApp, ...newTip],
+          };
+        });
+      }
+    } catch(e) {
+      setImportResult({ ok:false, msg:'❌ Lỗi: ' + e.message });
+    }
+  };
+
+  const handleFile = (file) => {
+    const reader = new FileReader();
+    reader.onload = e => { setImportText(e.target.result); };
+    reader.readAsText(file, 'utf-8');
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault(); setDragOver(false);
+    const file = e.dataTransfer.files[0];
+    if (file) handleFile(file);
+  };
+
+  return (
+    <div className="modal-overlay" onClick={e=>e.target===e.currentTarget&&onClose()}>
+      <div className="modal fade-in" style={{maxWidth:560}}>
+        <div className="flex justify-between items-center mb-5">
+          <h2 style={{fontSize:20}}>💾 Backup & Restore</h2>
+          <button className="btn btn-ghost btn-sm" onClick={onClose}><Icon name="close" size={16}/></button>
+        </div>
+
+        <div className="flex gap-1 mb-5">
+          <button className={`tab-btn ${tab==='export'?'active':''}`} onClick={()=>setTab('export')}>📤 Xuất dữ liệu</button>
+          <button className={`tab-btn ${tab==='import'?'active':''}`} onClick={()=>setTab('import')}>📥 Nhập dữ liệu</button>
+        </div>
+
+        {tab==='export' && (
+          <div>
+            <p style={{fontSize:13,color:'var(--muted)',marginBottom:20,lineHeight:1.6}}>
+              Xuất toàn bộ dữ liệu ra file để backup hoặc chuyển sang máy khác.<br/>
+              <strong style={{color:'var(--text)'}}>JSON</strong> — đầy đủ, dùng để restore lại chính xác 100%.<br/>
+              <strong style={{color:'var(--text)'}}>CSV</strong> — mở được bằng Excel để xem/phân tích.
+            </p>
+            <div className="grid gap-3" style={{gridTemplateColumns:'1fr 1fr'}}>
+              <button className="btn btn-primary" style={{padding:'14px',fontSize:15}} onClick={exportJSON}>
+                📄 Xuất file JSON
+              </button>
+              <button className="btn btn-ghost" style={{padding:'14px',fontSize:15}} onClick={exportCSV}>
+                📊 Xuất file CSV
+              </button>
+            </div>
+            <div className="mt-4 p-3 rounded-xl" style={{background:'var(--bg)',border:'1px solid var(--border)',fontSize:12,color:'var(--muted)'}}>
+              📦 Dữ liệu hiện tại: <strong style={{color:'var(--text)'}}>{data.orders.length}</strong> đơn · <strong style={{color:'var(--text)'}}>{data.transfers.length}</strong> chuyển tiền · <strong style={{color:'var(--text)'}}>{data.tipApp.length}</strong> tip app
+            </div>
+          </div>
+        )}
+
+        {tab==='import' && (
+          <div>
+            {/* Import mode */}
+            <div className="mb-4">
+              <div className="section-title mb-2">Chế độ nhập</div>
+              <div className="flex gap-2">
+                <button className={`chip ${importMode==='merge'?'active':''}`} onClick={()=>setImportMode('merge')}>
+                  🔀 Gộp dữ liệu
+                </button>
+                <button className={`chip ${importMode==='overwrite'?'active':''}`} style={importMode==='overwrite'?{borderColor:'var(--red)',color:'var(--red)',background:'var(--red-dim)'}:{}} onClick={()=>setImportMode('overwrite')}>
+                  ⚠️ Ghi đè tất cả
+                </button>
+              </div>
+              <p style={{fontSize:11,color:'var(--muted)',marginTop:6,lineHeight:1.5}}>
+                {importMode==='merge'
+                  ? '🔀 Giữ dữ liệu cũ, chỉ thêm dữ liệu mới (bỏ qua trùng lặp theo ID). Ví sẽ được cộng thêm effect của đơn mới.'
+                  : '⚠️ XÓA TOÀN BỘ dữ liệu hiện tại và thay bằng file import. Không thể hoàn tác!'}
+              </p>
+            </div>
+
+            {/* Drop zone */}
+            <div
+              onDragOver={e=>{e.preventDefault();setDragOver(true)}}
+              onDragLeave={()=>setDragOver(false)}
+              onDrop={handleDrop}
+              style={{
+                border: `2px dashed ${dragOver?'var(--orange)':'var(--border)'}`,
+                borderRadius:12, padding:'20px 16px', textAlign:'center',
+                background: dragOver?'var(--orange-dim)':'var(--bg)',
+                cursor:'pointer', marginBottom:12, transition:'all 0.2s'
+              }}
+              onClick={()=>document.getElementById('file-input').click()}
+            >
+              <div style={{fontSize:28,marginBottom:6}}>📂</div>
+              <div style={{fontSize:13,color:'var(--muted)'}}>Kéo thả file vào đây hoặc <span style={{color:'var(--orange)'}}>click để chọn file</span></div>
+              <div style={{fontSize:11,color:'var(--muted)',marginTop:4}}>Hỗ trợ .json và .csv</div>
+              <input id="file-input" type="file" accept=".json,.csv,.txt" style={{display:'none'}}
+                onChange={e=>{ if(e.target.files[0]) handleFile(e.target.files[0]); }} />
+            </div>
+
+            {/* Text area paste */}
+            <div className="mb-3">
+              <label>Hoặc dán nội dung file vào đây</label>
+              <textarea
+                rows={5}
+                placeholder='Dán nội dung file JSON hoặc CSV...'
+                value={importText}
+                onChange={e=>setImportText(e.target.value)}
+                style={{resize:'vertical',fontFamily:'DM Mono',fontSize:11}}
+              />
+            </div>
+
+            {importResult && (
+              <div className="mb-3 p-3 rounded-xl" style={{
+                background: importResult.ok ? 'var(--green-dim)' : 'var(--red-dim)',
+                border: `1px solid ${importResult.ok ? 'var(--green)' : 'var(--red)'}44`,
+                fontSize:12, color: importResult.ok ? 'var(--green)' : 'var(--red)',
+                lineHeight:1.5
+              }}>
+                {importResult.msg}
+              </div>
+            )}
+
+            {importMode==='overwrite' && (
+              <div className="mb-3 p-3 rounded-xl" style={{background:'var(--red-dim)',border:'1px solid var(--red)44',fontSize:12,color:'var(--red)'}}>
+                ⚠️ Ghi đè sẽ XÓA {data.orders.length} đơn và {data.transfers.length} chuyển tiền hiện tại. Hãy xuất backup trước!
+              </div>
+            )}
+
+            <div className="flex gap-3">
+              <button className="btn btn-ghost" style={{flex:1}} onClick={onClose}>Đóng</button>
+              <button
+                className="btn btn-primary" style={{flex:2, background: importMode==='overwrite'?'var(--red)':undefined}}
+                onClick={()=>parseAndImport(importText)}
+                disabled={!importText.trim()}
+              >
+                {importMode==='merge' ? '🔀 Gộp dữ liệu' : '⚠️ Ghi đè tất cả'}
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+// ── App ───────────────────────────────────────────────────────────────────────
+const App = () => {
+  const [username, setUsername] = useState(() => localStorage.getItem('spf_user') || null);
+  const [page, setPage] = useState('dashboard');
+  const [modal, setModal] = useState(null);
+  const [editingOrder, setEditingOrder] = useState(null);
+  const [showBackup, setShowBackup] = useState(false);
+  const [data, setData] = useState(INITIAL);
+  const [saving, setSaving] = useState(false);
+  const [loadingData, setLoadingData] = useState(false);
+  const saveTimer = React.useRef(null);
+
+  // Load data when user logs in
+  useEffect(() => {
+    if (!username) return;
+    setLoadingData(true);
+    api.loadData(username)
+      .then(d => setData(d))
+      .catch(e => console.error('Load error:', e))
+      .finally(() => setLoadingData(false));
+  }, [username]);
+
+  // Debounced auto-save to MongoDB (1.5s after last change)
+  useEffect(() => {
+    if (!username) return;
+    if (saveTimer.current) clearTimeout(saveTimer.current);
+    setSaving(true);
+    saveTimer.current = setTimeout(() => {
+      api.saveData(username, data)
+        .catch(e => console.error('Save error:', e))
+        .finally(() => setSaving(false));
+    }, 1500);
+    return () => clearTimeout(saveTimer.current);
+  }, [data, username]);
+
+  const handleLogin = (uname) => {
+    localStorage.setItem('spf_user', uname);
+    setUsername(uname);
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('spf_user');
+    setUsername(null);
+    setData(INITIAL);
+    setPage('dashboard');
+  };
+
+  if (!username) return <LoginScreen onLogin={handleLogin} />;
+
+  if (loadingData) return (
+    <div style={{minHeight:'100vh',display:'flex',alignItems:'center',justifyContent:'center',flexDirection:'column',gap:12}}>
+      <div style={{fontSize:28}}>⏳</div>
+      <div style={{fontFamily:'Syne',fontSize:16,color:'var(--muted)'}}>Đang tải dữ liệu...</div>
+    </div>
+  );
+
+  // ── Tính chênh lệch ví app từ sub-orders ──
+  const calcChenhLech = (subOrders) => subOrders.reduce((a,s)=>{
+    if(s.type==='2') return a+(s.collectCustomer||0);
+    if(s.type==='3') return a+(s.collectCustomer||0)-(s.payShop||0);
+    if(s.type==='4') return a-(s.payShop||0); // app hoàn lại tiền quán
+    return a;
+  },0);
+
+  // ── Tính tác động lên các ví tiền mặt/MB/Momo ──
+  const applySubWallet = (w, s, sign=1) => {
+    // Thu khách
+    if(s.collectMethod==='cash') w.cash += sign*(s.collectCustomer||0);
+    if(s.collectMethod==='mb')   w.mb   += sign*(s.collectCustomer||0);
+    // Trả quán (loại 3 & 4)
+    if(s.payShopMethod==='cash') w.cash -= sign*(s.payShop||0);
+    if(s.payShopMethod==='momo') w.momo -= sign*(s.payShop||0);
+    if(s.payShopMethod==='mb')   w.mb   -= sign*(s.payShop||0);
+    // Thối khách
+    if(s.refundMethod==='cash')  w.cash -= sign*(s.refund||0);
+    if(s.refundMethod==='momo')  w.momo -= sign*(s.refund||0);
+  };
+
+  // Apply order to wallets
+  const applyOrder = useCallback((order) => {
+    setData(prev => {
+      const w = {...prev.wallets};
+      w.app += order.shipTotal - calcChenhLech(order.subOrders) + (order.tipApp||0);
+      order.subOrders.forEach(s => applySubWallet(w, s, 1));
+      return { ...prev, wallets: w, orders: [...prev.orders, order] };
+    });
+  }, []);
+
+  const applyTransfer = useCallback((t) => {
+    setData(prev => {
+      const w = {...prev.wallets};
+      w[t.from] -= t.amount;
+      w[t.to] += t.amount;
+      return { ...prev, wallets: w, transfers: [...prev.transfers, t] };
+    });
+  }, []);
+
+  const applyTipApp = useCallback((t) => {
+    setData(prev => {
+      const w = {...prev.wallets};
+      w.app += t.amount;
+      return { ...prev, wallets: w, tipApp: [...prev.tipApp, t] };
+    });
+  }, []);
+
+  const deleteOrder = useCallback((id) => {
+    if(!confirm('Xoá đơn này? Số dư ví sẽ được hoàn lại.')) return;
+    setData(prev => {
+      const order = prev.orders.find(o=>o.id===id);
+      if(!order) return prev;
+      const w = {...prev.wallets};
+      w.app -= order.shipTotal - calcChenhLech(order.subOrders) + (order.tipApp||0);
+      order.subOrders.forEach(s => applySubWallet(w, s, -1));
+      return { ...prev, wallets: w, orders: prev.orders.filter(o=>o.id!==id) };
+    });
+  }, []);
+
+  const deleteTransfer = useCallback((id) => {
+    if(!confirm('Xoá giao dịch chuyển tiền này?')) return;
+    setData(prev => {
+      const t = prev.transfers.find(x=>x.id===id);
+      if(!t) return prev;
+      const w = {...prev.wallets};
+      w[t.from] += t.amount;
+      w[t.to] -= t.amount;
+      return { ...prev, wallets: w, transfers: prev.transfers.filter(x=>x.id!==id) };
+    });
+  }, []);
+
+  const editOrder = useCallback((order) => {
+    setData(prev => {
+      const w = {...prev.wallets};
+      w.app -= order.shipTotal - calcChenhLech(order.subOrders) + (order.tipApp||0);
+      order.subOrders.forEach(s => applySubWallet(w, s, -1));
+      return { ...prev, wallets: w, orders: prev.orders.filter(o=>o.id!==order.id) };
+    });
+    setEditingOrder(order);
+    setModal('order');
+  }, []);
+
+  const pages = [
+    { id:'dashboard', label:'Dashboard', icon:'dashboard' },
+    { id:'chart', label:'Biểu đồ', icon:'chart' },
+    { id:'history', label:'Lịch sử', icon:'order' },
+  ];
+
+  return (
+    <div style={{display:'flex',minHeight:'100vh'}}>
+      {/* Sidebar */}
+      <aside style={{width:220,background:'var(--surface)',borderRight:'1px solid var(--border)',padding:'24px 16px',display:'flex',flexDirection:'column',position:'sticky',top:0,height:'100vh'}}>
+        <div style={{marginBottom:28}}>
+          <div style={{fontFamily:'Syne',fontWeight:800,fontSize:20,color:'var(--orange)',letterSpacing:'-0.02em'}}>ShipFlow</div>
+          <div style={{fontSize:11,color:'var(--muted)',marginTop:2}}>Shopee Food Tracker</div>
+          <div style={{marginTop:8,display:'flex',alignItems:'center',justifyContent:'space-between'}}>
+            <span style={{fontSize:11,color:'var(--blue)',fontWeight:600}}>👤 {username}</span>
+            <span style={{fontSize:10,color:saving?'var(--yellow)':'var(--green)'}}>
+              {saving ? '⏳ Đang lưu...' : '✅ Đã lưu'}
+            </span>
+          </div>
+        </div>
+
+        <nav style={{flex:1}}>
+          {pages.map(p=>(
+            <button key={p.id} className={`nav-item ${page===p.id?'active':''}`} onClick={()=>setPage(p.id)}>
+              <Icon name={p.icon} size={16}/> {p.label}
+            </button>
+          ))}
+        </nav>
+
+        <div style={{borderTop:'1px solid var(--border)',paddingTop:16,display:'flex',flexDirection:'column',gap:8}}>
+          <div className="section-title">Thao tác nhanh</div>
+          <button className="btn btn-primary btn-sm" onClick={()=>setModal('order')} style={{width:'100%'}}>
+            <Icon name="plus" size={13}/> Nhập đơn
+          </button>
+          <button className="btn btn-ghost btn-sm" onClick={()=>setModal('transfer')} style={{width:'100%'}}>
+            <Icon name="transfer" size={13}/> Chuyển tiền
+          </button>
+          <button className="btn btn-ghost btn-sm" onClick={()=>setModal('tipapp')} style={{width:'100%'}}>
+            <Icon name="tip" size={13}/> Tip App
+          </button>
+          <button className="btn btn-ghost btn-sm" onClick={()=>setModal('wallet')} style={{width:'100%'}}>
+            ⚙️ Số dư ban đầu
+          </button>
+          <button className="btn btn-ghost btn-sm" onClick={()=>setShowBackup(true)} style={{width:'100%'}}>
+            💾 Backup / Restore
+          </button>
+          <button className="btn btn-ghost btn-sm" onClick={handleLogout} style={{width:'100%',color:'var(--red)',borderColor:'var(--red-dim)'}}>
+            🚪 Đăng xuất
+          </button>
+          <button className="btn btn-ghost btn-sm" onClick={handleLogout} style={{width:'100%',color:'var(--red)',borderColor:'var(--red-dim)'}}>
+            🚪 Đăng xuất
+          </button>
+        </div>
+      </aside>
+
+      {/* Main */}
+      <main style={{flex:1,padding:'32px 36px',maxWidth:1100,margin:'0 auto',width:'100%'}}>
+        {page==='dashboard' && <Dashboard data={data} />}
+        {page==='chart' && <ChartPage data={data} />}
+        {page==='history' && <HistoryPage data={data} onDeleteOrder={deleteOrder} onDeleteTransfer={deleteTransfer} onEditOrder={editOrder} />}
+      </main>
+
+      {/* Modals */}
+      {modal==='order' && <OrderModal onClose={()=>{setModal(null);setEditingOrder(null);}} onSave={applyOrder} initialData={editingOrder} />}
+      {modal==='transfer' && <TransferModal onClose={()=>setModal(null)} onSave={applyTransfer} />}
+      {modal==='tipapp' && <TipAppModal onClose={()=>setModal(null)} onSave={applyTipApp} />}
+      {modal==='wallet' && <WalletSetupModal wallets={data.wallets} onSave={w=>setData(p=>({...p,wallets:w}))} onClose={()=>setModal(null)} />}
+      {showBackup && <BackupModal data={data} onClose={()=>setShowBackup(false)} onRestore={(restored)=>{
+        if(typeof restored==='function') setData(restored);
+        else setData(restored);
+        // DB save triggered automatically by data useEffect
+        setShowBackup(false);
+      }} />}
+    </div>
+  );
+};
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
+</html>

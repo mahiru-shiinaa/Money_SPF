@@ -1,0 +1,12 @@
+{
+  "name": "money-spf",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Quản lý dòng tiền Shopee Food",
+  "dependencies": {
+    "mongodb": "^6.3.0"
+  },
+  "engines": {
+    "node": ">=18.x"
+  }
+}
