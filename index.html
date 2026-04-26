@@ -88,6 +88,10 @@
     }
     .tab-btn:hover:not(.active) { background: var(--surface2); color: var(--text); }
 
+    /* FIX: ensure date and text inputs have consistent left padding */
+    input[type=date],
+    input[type=text] { padding-left: 14px !important; }
+
     input, select, textarea {
       background: var(--surface2);
       border: 1px solid var(--border);
@@ -195,12 +199,14 @@
       margin-bottom: 10px;
     }
 
+    /* FIX: chip buttons now 44px tall, square-ish corners to match inputs */
     .chip {
-      display: inline-flex; align-items: center; gap: 6px;
-      padding: 5px 12px;
-      border-radius: 20px;
-      font-size: 12px;
-      font-weight: 600;
+      display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+      padding: 0 20px;
+      height: 44px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 700;
       cursor: pointer;
       border: 1px solid var(--border);
       background: transparent;
@@ -551,8 +557,8 @@ const OrderModal = ({ onClose, onSave, initialData }) => {
           <div>
             <label>Loại đơn</label>
             <div className="flex gap-2 mt-1">
-              <button className={`chip ${!isBundle?'active':''}`} onClick={()=>{setIsBundle(false);setSubOrders(s=>s.slice(0,1))}}>Đơn lẻ</button>
-              <button className={`chip ${isBundle?'active':''}`} onClick={()=>setIsBundle(true)}>Đơn ghép</button>
+              <button className={`chip ${!isBundle?'active':''}`} style={{flex:1}} onClick={()=>{setIsBundle(false);setSubOrders(s=>s.slice(0,1))}}>Đơn lẻ</button>
+              <button className={`chip ${isBundle?'active':''}`} style={{flex:1}} onClick={()=>setIsBundle(true)}>Đơn ghép</button>
             </div>
           </div>
         </div>
