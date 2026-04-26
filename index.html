@@ -101,6 +101,8 @@
       transition: border-color 0.2s;
     }
     input[type=number] { -moz-appearance: textfield; }
+    .money-input { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; color: var(--text); padding: 9px 14px; font-family: 'Nunito', sans-serif; font-size: 14px; width: 100%; outline: none; transition: border-color 0.2s; }
+    .money-input:focus { border-color: var(--orange); }
     input[type=number]::-webkit-inner-spin-button { opacity: 0.4; }
     input:focus, select:focus { border-color: var(--orange); }
     select option { background: var(--surface2); }
@@ -362,7 +364,7 @@ const MoneyInput = ({ value, onChange, placeholder, style, className }) => {
       onChange={handleChange}
       placeholder={placeholder || '0'}
       style={style}
-      className={className}
+      className={className || 'money-input'}
     />
   );
 };
@@ -394,7 +396,7 @@ const SubOrderForm = ({ index, data, onChange, onRemove, canRemove }) => {
       <div className="text-xs mb-3 p-2 rounded-lg" style={{color:'var(--muted)',background:'var(--bg)'}}>
         {type==='1' && '🟢 Không trả quán, không thu khách — App cộng ship'}
         {type==='2' && '🟡 Không trả quán, thu tiền khách — App cộng ship rồi trừ thu khách'}
-        {type==='3' && '🔴 Trả quán + thu khách — App trừ chênh lệch (thu khách - trả quán)'}
+        {type==='3' && '🔴 Trả quán + thu khách — App trừ chênh lệch (số cần thu - trả quán)'}
         {type==='4' && '🔵 Trả quán, không thu khách — App hoàn lại tiền quán + ship'}
       </div>
 
@@ -403,8 +405,7 @@ const SubOrderForm = ({ index, data, onChange, onRemove, canRemove }) => {
         <div className="grid gap-3 mb-3" style={{gridTemplateColumns:'1fr 1fr'}}>
           <div>
             <label>Trả quán (đ)</label>
-            <input type="number" placeholder="0" value={data.payShop||''}
-              onChange={e=>onChange({...data,payShop:+e.target.value})} />
+            <MoneyInput value={data.payShop||0} onChange={v=>onChange({...data,payShop:v})} />
           </div>
           <div>
             <label>Hình thức trả quán</label>
@@ -427,10 +428,11 @@ const SubOrderForm = ({ index, data, onChange, onRemove, canRemove }) => {
             <div style={{fontSize:11,color:'#FF6B2B99',fontWeight:700,textTransform:'uppercase',letterSpacing:'0.05em',marginBottom:6}}>
               Số tiền cần thu (đ) <span style={{color:'var(--orange)'}}>*</span>
             </div>
-            <input type="number" placeholder="Nhập đúng số tiền app yêu cầu thu"
-              value={data.orderAmount||''}
-              onChange={e=>onChange({...data,orderAmount:+e.target.value})}
-              style={{border:'none',background:'transparent',padding:0,fontSize:16,fontWeight:700,color:'var(--orange)'}} />
+            <MoneyInput
+              value={data.orderAmount||0}
+              onChange={v=>onChange({...data,orderAmount:v})}
+              placeholder="Nhập số tiền app yêu cầu thu"
+              style={{border:'none',background:'transparent',padding:'4px 0',fontSize:16,fontWeight:700,color:'var(--orange)',width:'100%'}} />
             <div style={{fontSize:11,color:'var(--muted)',marginTop:4}}>
               {type==='2' ? 'Bằng giá trị đơn hàng (app hiển thị)' : 'Bằng chênh lệch thu khách - trả quán (app hiển thị)'}
             </div>
@@ -440,8 +442,8 @@ const SubOrderForm = ({ index, data, onChange, onRemove, canRemove }) => {
           <div style={{gridColumn:'1/-1'}}>
             <label>Khách trả thực tế (đ)</label>
             <MoneyInput placeholder="Số tiền khách thực tế đưa cho bạn"
-              value={data.collectCustomer||''}
-              onChange={e=>onChange({...data,collectCustomer:+e.target.value})} />
+              value={data.collectCustomer||0}
+              onChange={v=>onChange({...data,collectCustomer:v})} />
           </div>
 
           <div>
@@ -453,9 +455,7 @@ const SubOrderForm = ({ index, data, onChange, onRemove, canRemove }) => {
           </div>
           <div>
             <label>Thối lại (đ)</label>
-            <input type="number" placeholder="0"
-              value={data.refund||''}
-              onChange={e=>onChange({...data,refund:+e.target.value})} />
+            <MoneyInput value={data.refund||0} onChange={v=>onChange({...data,refund:v})} />
           </div>
           {(data.refund||0) > 0 && (
             <div style={{gridColumn:'1/-1'}}>
@@ -515,9 +515,9 @@ const OrderModal = ({ onClose, onSave, initialData }) => {
   // Preview calculations
   const ship = +shipTotal || 0;
   const totalChenhLech = subOrders.reduce((acc,s) => {
-    if(s.type==='2') return acc + (s.collectCustomer||0);
-    if(s.type==='3') return acc + (s.collectCustomer||0) - (s.payShop||0);
-    if(s.type==='4') return acc - (s.payShop||0); // app hoàn lại tiền quán → trừ âm = cộng
+    if(s.type==='2') return acc + (s.orderAmount||0);
+    if(s.type==='3') return acc + (s.orderAmount||0) - (s.payShop||0);
+    if(s.type==='4') return acc - (s.payShop||0);
     return acc;
   }, 0);
   const appDelta = ship - totalChenhLech + (+tipAppAmount||0);
