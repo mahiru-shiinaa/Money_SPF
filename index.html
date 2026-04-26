@@ -88,9 +88,10 @@
     }
     .tab-btn:hover:not(.active) { background: var(--surface2); color: var(--text); }
 
-    /* FIX: ensure date and text inputs have consistent left padding */
-    input[type=date],
-    input[type=text] { padding-left: 14px !important; }
+    /* FIX: ensure all inputs have consistent left padding across all browsers */
+    input:not([type=number]):not([type=checkbox]):not([type=radio]):not([type=file]):not([type=range]) {
+      padding-left: 14px !important;
+    }
 
     input, select, textarea {
       background: var(--surface2);
