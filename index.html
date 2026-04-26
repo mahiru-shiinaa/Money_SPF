@@ -89,7 +89,7 @@
     .tab-btn:hover:not(.active) { background: var(--surface2); color: var(--text); }
 
     /* FIX: ensure all inputs have consistent left padding across all browsers */
-    input:not([type=number]):not([type=checkbox]):not([type=radio]):not([type=file]):not([type=range]) {
+    input:not([type=number]):not([type=checkbox]):not([type=radio]):not([type=file]):not([type=range]):not(.no-pad-left) {
       padding-left: 14px !important;
     }
 
@@ -442,7 +442,8 @@ const SubOrderForm = ({ index, data, onChange, onRemove, canRemove }) => {
               value={data.orderAmount||0}
               onChange={v=>onChange({...data,orderAmount:v})}
               placeholder="Nhập số tiền app yêu cầu thu"
-              style={{border:'none',background:'transparent',padding:'2px 0',height:'auto',fontSize:16,fontWeight:700,color:'var(--orange)',width:'100%'}} />
+              style={{border:'none',background:'transparent',padding:'2px 0',paddingLeft:0,height:'auto',fontSize:16,fontWeight:700,color:'var(--orange)',width:'100%'}}
+              className="no-pad-left" />
             <div style={{fontSize:11,color:'var(--muted)',marginTop:4}}>
               {type==='2' ? 'Bằng giá trị đơn hàng (app hiển thị)' : 'Bằng chênh lệch thu khách - trả quán (app hiển thị)'}
             </div>
