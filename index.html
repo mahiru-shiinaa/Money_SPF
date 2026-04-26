@@ -1160,48 +1160,42 @@ const BackupModal = ({ data, onClose, onRestore }) => {
         onRestore(parsed);
         setImportResult({ ok:true, msg:`✅ Ghi đè thành công! ${parsed.orders.length} đơn, ${parsed.transfers.length} chuyển tiền, ${parsed.tipApp.length} tip app.` });
       } else {
-        // Merge: keep existing, add only new IDs
-        onRestore(prev => {
-          const existOrderIds = new Set(prev.orders.map(o=>o.id));
-          const existTransIds = new Set(prev.transfers.map(t=>t.id));
-          const existTipIds = new Set(prev.tipApp.map(t=>t.id));
-          const newOrders = parsed.orders.filter(o=>!existOrderIds.has(o.id));
-          const newTrans = parsed.transfers.filter(t=>!existTransIds.has(t.id));
-          const newTip = parsed.tipApp.filter(t=>!existTipIds.has(t.id));
+        // Merge: keep existing, add only new IDs — use data prop directly (no function updater)
+        const existOrderIds = new Set(data.orders.map(o=>o.id));
+        const existTransIds = new Set(data.transfers.map(t=>t.id));
+        const existTipIds   = new Set(data.tipApp.map(t=>t.id));
+        const newOrders = parsed.orders.filter(o=>!existOrderIds.has(o.id));
+        const newTrans  = parsed.transfers.filter(t=>!existTransIds.has(t.id));
+        const newTip    = parsed.tipApp.filter(t=>!existTipIds.has(t.id));
 
-          // Recalculate wallets from scratch: start with imported wallets, add new items' effect
-          // Simplest: keep current wallets and apply new orders on top
-          const w = {...prev.wallets};
-          newOrders.forEach(order => {
-            const cl = order.subOrders.reduce((a,s)=>{
-              if(s.type==='2') return a+(s.collectCustomer||0);
-              if(s.type==='3') return a+(s.collectCustomer||0)-(s.payShop||0);
-              if(s.type==='4') return a-(s.payShop||0);
-              return a;
-            },0);
-            w.app += order.shipTotal - cl + (order.tipApp||0);
-            order.subOrders.forEach(s=>{
-              if(s.collectMethod==='cash') w.cash += (s.collectCustomer||0);
-              if(s.collectMethod==='mb')   w.mb   += (s.collectCustomer||0);
-              if(s.payShopMethod==='cash') w.cash -= (s.payShop||0);
-              if(s.payShopMethod==='momo') w.momo -= (s.payShop||0);
-              if(s.payShopMethod==='mb')   w.mb   -= (s.payShop||0);
-              if(s.refundMethod==='cash')  w.cash -= (s.refund||0);
-              if(s.refundMethod==='momo')  w.momo -= (s.refund||0);
-            });
+        const w = {...data.wallets};
+        newOrders.forEach(order => {
+          const cl = order.subOrders.reduce((a,s)=>{
+            if(s.type==='2') return a+(s.collectCustomer||0);
+            if(s.type==='3') return a+(s.collectCustomer||0)-(s.payShop||0);
+            return a;
+          },0);
+          w.app += order.shipTotal - cl + (order.tipApp||0);
+          order.subOrders.forEach(s=>{
+            if(s.collectMethod==='cash') w.cash += (s.collectCustomer||0);
+            if(s.collectMethod==='mb')   w.mb   += (s.collectCustomer||0);
+            if(s.payShopMethod==='cash') w.cash -= (s.payShop||0);
+            if(s.payShopMethod==='momo') w.momo -= (s.payShop||0);
+            if(s.refundMethod==='cash')  w.cash -= (s.refund||0);
+            if(s.refundMethod==='momo')  w.momo -= (s.refund||0);
           });
-          newTrans.forEach(t=>{ w[t.from]-=t.amount; w[t.to]+=t.amount; });
-          newTip.forEach(t=>{ w.app+=t.amount; });
-
-          setImportResult({ ok:true, msg:`✅ Gộp thành công! Thêm ${newOrders.length} đơn mới, ${newTrans.length} chuyển tiền mới, ${newTip.length} tip mới. (${parsed.orders.length-newOrders.length} đơn trùng bỏ qua)` });
-          return {
-            ...prev,
-            wallets: w,
-            orders: [...prev.orders, ...newOrders],
-            transfers: [...prev.transfers, ...newTrans],
-            tipApp: [...prev.tipApp, ...newTip],
-          };
         });
+        newTrans.forEach(t=>{ w[t.from]-=t.amount; w[t.to]+=t.amount; });
+        newTip.forEach(t=>{ w.app+=t.amount; });
+
+        const merged = {
+          wallets: w,
+          orders:    [...data.orders,    ...newOrders],
+          transfers: [...data.transfers, ...newTrans],
+          tipApp:    [...data.tipApp,    ...newTip],
+        };
+        setImportResult({ ok:true, msg:`✅ Gộp thành công! Thêm ${newOrders.length} đơn mới, ${newTrans.length} chuyển tiền mới, ${newTip.length} tip mới. (${parsed.orders.length-newOrders.length} đơn trùng bỏ qua)` });
+        onRestore(merged);
       }
     } catch(e) {
       setImportResult({ ok:false, msg:'❌ Lỗi: ' + e.message });
@@ -1340,6 +1334,24 @@ const BackupModal = ({ data, onClose, onRestore }) => {
   );
 };
 
+// ── Pure wallet-delta helpers (module level, no hooks) ───────────────────────
+const calcChenhLech = (subOrders) => subOrders.reduce((a,s)=>{
+  if(s.type==='2') return a+(s.collectCustomer||0);
+  if(s.type==='3') return a+(s.collectCustomer||0)-(s.payShop||0);
+  if(s.type==='4') return a-(s.payShop||0);
+  return a;
+},0);
+
+const applySubWallet = (w, s, sign=1) => {
+  if(s.collectMethod==='cash') w.cash += sign*(s.collectCustomer||0);
+  if(s.collectMethod==='mb')   w.mb   += sign*(s.collectCustomer||0);
+  if(s.payShopMethod==='cash') w.cash -= sign*(s.payShop||0);
+  if(s.payShopMethod==='momo') w.momo -= sign*(s.payShop||0);
+  if(s.payShopMethod==='mb')   w.mb   -= sign*(s.payShop||0);
+  if(s.refundMethod==='cash')  w.cash -= sign*(s.refund||0);
+  if(s.refundMethod==='momo')  w.momo -= sign*(s.refund||0);
+};
+
 // ── App ───────────────────────────────────────────────────────────────────────
 const App = () => {
   const [username, setUsername] = useState(() => localStorage.getItem('spf_user') || null);
@@ -1385,37 +1397,6 @@ const App = () => {
     setUsername(null);
     setData(INITIAL);
     setPage('dashboard');
-  };
-
-  if (!username) return <LoginScreen onLogin={handleLogin} />;
-
-  if (loadingData) return (
-    <div style={{minHeight:'100vh',display:'flex',alignItems:'center',justifyContent:'center',flexDirection:'column',gap:12}}>
-      <div style={{fontSize:28}}>⏳</div>
-      <div style={{fontFamily:'Syne',fontSize:16,color:'var(--muted)'}}>Đang tải dữ liệu...</div>
-    </div>
-  );
-
-  // ── Tính chênh lệch ví app từ sub-orders ──
-  const calcChenhLech = (subOrders) => subOrders.reduce((a,s)=>{
-    if(s.type==='2') return a+(s.collectCustomer||0);
-    if(s.type==='3') return a+(s.collectCustomer||0)-(s.payShop||0);
-    if(s.type==='4') return a-(s.payShop||0); // app hoàn lại tiền quán
-    return a;
-  },0);
-
-  // ── Tính tác động lên các ví tiền mặt/MB/Momo ──
-  const applySubWallet = (w, s, sign=1) => {
-    // Thu khách
-    if(s.collectMethod==='cash') w.cash += sign*(s.collectCustomer||0);
-    if(s.collectMethod==='mb')   w.mb   += sign*(s.collectCustomer||0);
-    // Trả quán (loại 3 & 4)
-    if(s.payShopMethod==='cash') w.cash -= sign*(s.payShop||0);
-    if(s.payShopMethod==='momo') w.momo -= sign*(s.payShop||0);
-    if(s.payShopMethod==='mb')   w.mb   -= sign*(s.payShop||0);
-    // Thối khách
-    if(s.refundMethod==='cash')  w.cash -= sign*(s.refund||0);
-    if(s.refundMethod==='momo')  w.momo -= sign*(s.refund||0);
   };
 
   // Apply order to wallets
@@ -1480,6 +1461,16 @@ const App = () => {
     setModal('order');
   }, []);
 
+  // Conditional renders AFTER all hooks
+  if (!username) return <LoginScreen onLogin={handleLogin} />;
+
+  if (loadingData) return (
+    <div style={{minHeight:'100vh',display:'flex',alignItems:'center',justifyContent:'center',flexDirection:'column',gap:12}}>
+      <div style={{fontSize:28}}>⏳</div>
+      <div style={{fontFamily:'Syne',fontSize:16,color:'var(--muted)'}}>Đang tải dữ liệu...</div>
+    </div>
+  );
+
   const pages = [
     { id:'dashboard', label:'Dashboard', icon:'dashboard' },
     { id:'chart', label:'Biểu đồ', icon:'chart' },
@@ -1529,9 +1520,6 @@ const App = () => {
           <button className="btn btn-ghost btn-sm" onClick={handleLogout} style={{width:'100%',color:'var(--red)',borderColor:'var(--red-dim)'}}>
             🚪 Đăng xuất
           </button>
-          <button className="btn btn-ghost btn-sm" onClick={handleLogout} style={{width:'100%',color:'var(--red)',borderColor:'var(--red-dim)'}}>
-            🚪 Đăng xuất
-          </button>
         </div>
       </aside>
 
@@ -1547,10 +1535,8 @@ const App = () => {
       {modal==='transfer' && <TransferModal onClose={()=>setModal(null)} onSave={applyTransfer} />}
       {modal==='tipapp' && <TipAppModal onClose={()=>setModal(null)} onSave={applyTipApp} />}
       {modal==='wallet' && <WalletSetupModal wallets={data.wallets} onSave={w=>setData(p=>({...p,wallets:w}))} onClose={()=>setModal(null)} />}
-      {showBackup && <BackupModal data={data} onClose={()=>setShowBackup(false)} onRestore={(restored)=>{
-        if(typeof restored==='function') setData(restored);
-        else setData(restored);
-        // DB save triggered automatically by data useEffect
+      {showBackup && <BackupModal data={data} onClose={()=>setShowBackup(false)} onRestore={(newData)=>{
+        setData(newData);
         setShowBackup(false);
       }} />}
     </div>
