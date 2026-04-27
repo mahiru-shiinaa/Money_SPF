@@ -107,8 +107,13 @@
       box-sizing: border-box;
     }
     textarea { height: auto; min-height: 44px; }
+    input[type="number"] {
+      appearance: textfield;
+      -moz-appearance: textfield;
+    }
     .money-input { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; color: var(--text); padding: 11px 14px; font-family: 'Nunito', sans-serif; font-size: 14px; width: 100%; height: 44px; outline: none; transition: border-color 0.2s; box-sizing: border-box; }
     .money-input:focus { border-color: var(--orange); }
+    input[type=number]::-webkit-inner-spin-button { opacity: 0.4; }
     input:focus, select:focus { border-color: var(--orange); }
     select option { background: var(--surface2); }
     label { font-size: 12px; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px; display: block; }
@@ -165,7 +170,7 @@
       margin-bottom: 10px;
     }
 
-    /* ── PC Modal ── */
+    /* ── PC Modal (unchanged) ── */
     .modal-overlay {
       position: fixed; inset: 0;
       background: rgba(0,0,0,0.75);
@@ -247,8 +252,11 @@
 
     /* ════════════════════════════════════════════
        MOBILE STYLES  (≤ 768px)
+       PC layout is completely untouched above
     ════════════════════════════════════════════ */
     @media (max-width: 768px) {
+
+      /* ── Mobile top header ── */
       .mobile-header {
         display: flex !important;
         position: fixed; top: 0; left: 0; right: 0; z-index: 50;
@@ -261,15 +269,28 @@
         flex-direction: column;
         gap: 1px;
       }
-      .mobile-header-brand { display: flex; align-items: center; gap: 8px; }
-      .mobile-header-brand .brand-name { font-family: 'Nunito', sans-serif; font-weight: 800; font-size: 18px; color: var(--orange); letter-spacing: -0.02em; }
-      .mobile-header-meta { display: flex; align-items: center; gap: 10px; font-size: 11px; }
+      .mobile-header-brand {
+        display: flex; align-items: center; gap: 8px;
+      }
+      .mobile-header-brand .brand-name {
+        font-family: 'Nunito', sans-serif;
+        font-weight: 800;
+        font-size: 18px;
+        color: var(--orange);
+        letter-spacing: -0.02em;
+      }
+      .mobile-header-meta {
+        display: flex; align-items: center; gap: 10px;
+        font-size: 11px;
+      }
       .mobile-header-meta .user-label { color: var(--blue); font-weight: 600; }
       .mobile-header-meta .save-status { color: var(--green); font-weight: 600; }
       .mobile-header-meta .save-status.saving { color: var(--yellow); }
 
+      /* ── Hide PC sidebar on mobile ── */
       aside.pc-sidebar { display: none !important; }
 
+      /* ── Mobile bottom nav ── */
       .mobile-bottom-nav {
         display: flex !important;
         position: fixed; bottom: 0; left: 0; right: 0; z-index: 50;
@@ -280,67 +301,259 @@
         padding: 0 4px;
       }
       .mobile-bottom-nav .nav-tab {
-        flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px;
-        cursor: pointer; padding: 6px 4px; border: none; background: transparent; color: var(--muted);
-        font-family: 'Nunito', sans-serif; font-size: 10px; font-weight: 600; border-radius: 10px;
-        transition: all 0.15s; height: 52px;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 3px;
+        cursor: pointer;
+        padding: 6px 4px;
+        border: none;
+        background: transparent;
+        color: var(--muted);
+        font-family: 'Nunito', sans-serif;
+        font-size: 10px;
+        font-weight: 600;
+        border-radius: 10px;
+        transition: all 0.15s;
+        height: 52px;
       }
       .mobile-bottom-nav .nav-tab.active { color: var(--orange); }
       .mobile-bottom-nav .nav-tab svg { display: block; }
-      .mobile-bottom-nav .nav-fab-slot { flex: 1; display: flex; align-items: center; justify-content: center; }
+      /* FAB center slot */
+      .mobile-bottom-nav .nav-fab-slot {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
       .mobile-fab {
-        width: 52px; height: 52px; border-radius: 50%; background: var(--orange); border: none;
-        display: flex; align-items: center; justify-content: center; cursor: pointer;
-        box-shadow: 0 4px 20px rgba(255,107,43,0.45); transition: all 0.18s; color: white;
-        font-size: 24px; font-weight: 300; line-height: 1; position: relative; top: -8px;
+        width: 52px; height: 52px;
+        border-radius: 50%;
+        background: var(--orange);
+        border: none;
+        display: flex; align-items: center; justify-content: center;
+        cursor: pointer;
+        box-shadow: 0 4px 20px rgba(255,107,43,0.45);
+        transition: all 0.18s;
+        color: white;
+        font-size: 24px;
+        font-weight: 300;
+        line-height: 1;
+        position: relative;
+        top: -8px;
       }
       .mobile-fab:active { transform: scale(0.93); }
 
-      .pc-main { padding: 72px 14px 78px !important; max-width: 100% !important; margin: 0 !important; }
+      /* ── Main content area on mobile ── */
+      .pc-main {
+        padding: 72px 14px 78px !important;
+        max-width: 100% !important;
+        margin: 0 !important;
+      }
+
+      /* ── Wallet grid: 2 cols ── */
       .wallet-grid { grid-template-columns: 1fr 1fr !important; gap: 10px !important; }
       .income-grid { grid-template-columns: 1fr 1fr !important; gap: 10px !important; }
+
+      /* ── Stat cards smaller on mobile ── */
       .stat-card { padding: 14px 14px; }
       .number-big { font-size: 17px !important; }
 
+      /* ── Order history: card block instead of table ── */
       .history-table-wrap { display: none !important; }
       .history-cards-wrap { display: block !important; }
 
-      .m-order-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 13px 14px; margin-bottom: 10px; }
-      .m-order-card-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
+      /* ── Mobile card for order row ── */
+      .m-order-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 13px 14px;
+        margin-bottom: 10px;
+      }
+      .m-order-card-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 5px;
+      }
       .m-order-card-row:last-child { margin-bottom: 0; }
-      .m-transfer-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 13px 14px; margin-bottom: 10px; }
-      .m-tip-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 12px 14px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
-      .m-cash-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 12px 14px; margin-bottom: 8px; }
 
-      .modal-overlay { align-items: flex-end !important; padding: 0 !important; }
-      .modal { border-radius: 20px 20px 0 0 !important; max-width: 100% !important; width: 100% !important; max-height: 92vh !important; padding: 20px 18px 32px !important; animation: slideUp 0.3s cubic-bezier(0.34,1.36,0.64,1) !important; }
-      @keyframes slideUp { from { transform: translateY(100%); opacity: 0.5; } to { transform: translateY(0); opacity: 1; } }
-      .modal::before { content: ''; display: block; width: 40px; height: 4px; background: var(--border); border-radius: 2px; margin: 0 auto 18px; }
+      /* ── Transfers history cards ── */
+      .m-transfer-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 13px 14px;
+        margin-bottom: 10px;
+      }
 
-      .type-chip-row { display: grid !important; grid-template-columns: 1fr 1fr !important; gap: 8px !important; }
-      .type-chip-row .chip { height: 40px !important; font-size: 12px !important; padding: 0 8px !important; width: 100% !important; }
+      /* ── Tip App history cards ── */
+      .m-tip-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 12px 14px;
+        margin-bottom: 8px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      /* ── Cash Tx history cards ── */
+      .m-cash-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 12px 14px;
+        margin-bottom: 8px;
+      }
+
+      /* ── Bottom Sheet (modal on mobile) ── */
+      .modal-overlay {
+        align-items: flex-end !important;
+        padding: 0 !important;
+      }
+      .modal {
+        border-radius: 20px 20px 0 0 !important;
+        max-width: 100% !important;
+        width: 100% !important;
+        max-height: 92vh !important;
+        padding: 20px 18px 32px !important;
+        animation: slideUp 0.3s cubic-bezier(0.34,1.36,0.64,1) !important;
+      }
+      @keyframes slideUp {
+        from { transform: translateY(100%); opacity: 0.5; }
+        to   { transform: translateY(0);    opacity: 1;   }
+      }
+      /* Bottom sheet drag handle */
+      .modal::before {
+        content: '';
+        display: block;
+        width: 40px; height: 4px;
+        background: var(--border);
+        border-radius: 2px;
+        margin: 0 auto 18px;
+      }
+
+      /* ── Type chips 2×2 on mobile ── */
+      .type-chip-row {
+        display: grid !important;
+        grid-template-columns: 1fr 1fr !important;
+        gap: 8px !important;
+      }
+      .type-chip-row .chip {
+        height: 40px !important;
+        font-size: 12px !important;
+        padding: 0 8px !important;
+        width: 100% !important;
+      }
+
+      /* ── Chart page: header stacked, period tabs scrollable ── */
       .chart-header { flex-direction: column !important; align-items: flex-start !important; gap: 12px !important; }
       .period-tabs { overflow-x: auto; white-space: nowrap; display: flex; gap: 4px; padding-bottom: 4px; }
       .period-tabs::-webkit-scrollbar { display: none; }
 
-      .action-sheet-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); z-index: 200; display: flex; align-items: flex-end; }
-      .action-sheet { width: 100%; background: var(--surface); border-radius: 24px 24px 0 0; padding: 8px 16px 36px; animation: slideUp 0.28s cubic-bezier(0.34,1.36,0.64,1); }
-      .action-sheet-handle { width: 40px; height: 4px; background: var(--border); border-radius: 2px; margin: 12px auto 20px; }
-      .action-sheet-title { font-size: 13px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 12px; text-align: center; }
-      .action-item { display: flex; align-items: center; gap: 14px; padding: 14px 12px; border-radius: 12px; cursor: pointer; border: none; background: transparent; width: 100%; text-align: left; font-family: 'Nunito', sans-serif; font-size: 15px; font-weight: 600; color: var(--text); transition: background 0.15s; -webkit-tap-highlight-color: transparent; }
+      /* ── Action Sheet (FAB menu) ── */
+      .action-sheet-overlay {
+        position: fixed; inset: 0;
+        background: rgba(0,0,0,0.6);
+        backdrop-filter: blur(4px);
+        z-index: 200;
+        display: flex;
+        align-items: flex-end;
+      }
+      .action-sheet {
+        width: 100%;
+        background: var(--surface);
+        border-radius: 24px 24px 0 0;
+        padding: 8px 16px 36px;
+        animation: slideUp 0.28s cubic-bezier(0.34,1.36,0.64,1);
+      }
+      .action-sheet-handle {
+        width: 40px; height: 4px;
+        background: var(--border);
+        border-radius: 2px;
+        margin: 12px auto 20px;
+      }
+      .action-sheet-title {
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        margin-bottom: 12px;
+        text-align: center;
+      }
+      .action-item {
+        display: flex; align-items: center; gap: 14px;
+        padding: 14px 12px;
+        border-radius: 12px;
+        cursor: pointer;
+        border: none;
+        background: transparent;
+        width: 100%;
+        text-align: left;
+        font-family: 'Nunito', sans-serif;
+        font-size: 15px;
+        font-weight: 600;
+        color: var(--text);
+        transition: background 0.15s;
+        -webkit-tap-highlight-color: transparent;
+      }
       .action-item:active { background: var(--surface2); }
-      .action-item .action-icon { width: 42px; height: 42px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; }
-      .action-item .action-desc { font-size: 12px; color: var(--muted); font-weight: 400; margin-top: 2px; }
-      .action-sheet-divider { height: 1px; background: var(--border); margin: 6px 0; }
-      .action-item-cancel { display: flex; align-items: center; justify-content: center; padding: 13px; border-radius: 12px; cursor: pointer; border: none; background: var(--surface2); width: 100%; font-family: 'Nunito', sans-serif; font-size: 15px; font-weight: 700; color: var(--muted); margin-top: 8px; -webkit-tap-highlight-color: transparent; }
+      .action-item .action-icon {
+        width: 42px; height: 42px;
+        border-radius: 12px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 20px;
+        flex-shrink: 0;
+      }
+      .action-item .action-desc {
+        font-size: 12px;
+        color: var(--muted);
+        font-weight: 400;
+        margin-top: 2px;
+      }
+      .action-sheet-divider {
+        height: 1px;
+        background: var(--border);
+        margin: 6px 0;
+      }
+      .action-item-cancel {
+        display: flex; align-items: center; justify-content: center;
+        padding: 13px;
+        border-radius: 12px;
+        cursor: pointer;
+        border: none;
+        background: var(--surface2);
+        width: 100%;
+        font-family: 'Nunito', sans-serif;
+        font-size: 15px;
+        font-weight: 700;
+        color: var(--muted);
+        margin-top: 8px;
+        -webkit-tap-highlight-color: transparent;
+      }
 
+      /* Tab buttons on mobile: smaller */
       .tab-btn { padding: 7px 12px; font-size: 12px; }
+
+      /* History tabs scrollable on mobile */
       .history-tabs { overflow-x: auto; white-space: nowrap; display: flex; gap: 4px; padding-bottom: 4px; }
       .history-tabs::-webkit-scrollbar { display: none; }
+
+      /* Reduce padding on history empty state */
       .history-empty td { padding: 20px !important; }
+
+      /* Dashboard page title smaller */
       .dash-title { font-size: 18px !important; }
       .dash-sub { font-size: 12px !important; }
     }
+
+    /* Show/hide helpers */
     .mobile-header { display: none; }
     .mobile-bottom-nav { display: none; }
     .history-cards-wrap { display: none; }
@@ -363,17 +576,12 @@ const fmtFull = (n) => new Intl.NumberFormat('vi-VN').format(n) + 'đ';
 const today = () => new Date().toISOString().split('T')[0];
 const genId = () => Date.now().toString(36) + Math.random().toString(36).slice(2,5);
 
-// HÀM SẮP XẾP CHUẨN: Mới nhất lên đầu
-const getSortedListDesc = (arr) => {
-  return [...arr].map((item, idx) => ({ item, idx })).sort((a, b) => {
-    if (a.item.date !== b.item.date) return a.item.date > b.item.date ? -1 : 1;
-    return b.idx - a.idx;
-  }).map(x => x.item);
-};
-
 const INITIAL = {
   wallets: { app: 0, momo: 0, mb: 0, cash: 0 },
-  orders: [], transfers: [], tipApp: [], cashTx: [],
+  orders: [],
+  transfers: [],
+  tipApp: [],
+  cashTx: [],
 };
 
 // ── API ───────────────────────────────────────────────────────────────────────
@@ -388,6 +596,7 @@ const api = {
   },
   async addOrder(userId, order) {
     const r = await fetch('/api/data', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({userId,action:'addOrder',data:order}) });
+    if(!r.ok) throw new Error('Không thêm được order');
     return (await r.json())._id;
   },
   async updateOrder(userId, order) {
@@ -398,30 +607,21 @@ const api = {
   },
   async addTransfer(userId, transfer) {
     const r = await fetch('/api/data', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({userId,action:'addTransfer',data:transfer}) });
+    if(!r.ok) throw new Error('Không thêm được transfer');
     return (await r.json())._id;
-  },
-  async updateTransfer(userId, transfer) {
-    await fetch('/api/data', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({userId,action:'updateTransfer',data:transfer}) });
   },
   async deleteTransfer(userId, transferId) {
     await fetch('/api/data', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({userId,action:'deleteTransfer',data:{_id:transferId}}) });
   },
   async addTip(userId, tip) {
     const r = await fetch('/api/data', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({userId,action:'addTip',data:tip}) });
+    if(!r.ok) throw new Error('Không thêm được tip');
     return (await r.json())._id;
-  },
-  async updateTip(userId, tip) {
-    await fetch('/api/data', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({userId,action:'updateTip',data:tip}) });
-  },
-  async deleteTip(userId, tipId) {
-    await fetch('/api/data', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({userId,action:'deleteTip',data:{_id:tipId}}) });
   },
   async addCash(userId, tx) {
     const r = await fetch('/api/data', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({userId,action:'addCash',data:tx}) });
+    if(!r.ok) throw new Error('Không thêm được giao dịch');
     return (await r.json())._id;
-  },
-  async updateCash(userId, tx) {
-    await fetch('/api/data', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({userId,action:'updateCash',data:tx}) });
   },
   async deleteCash(userId, txId) {
     await fetch('/api/data', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({userId,action:'deleteCash',data:{_id:txId}}) });
@@ -435,15 +635,18 @@ const api = {
   },
 };
 
+// ── useIsMobile ───────────────────────────────────────────────────────────────
 const useIsMobile = () => {
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   useEffect(() => {
     const handler = () => setIsMobile(window.innerWidth <= 768);
-    window.addEventListener('resize', handler); return () => window.removeEventListener('resize', handler);
+    window.addEventListener('resize', handler);
+    return () => window.removeEventListener('resize', handler);
   }, []);
   return isMobile;
 };
 
+// Icons
 const Icon = ({ name, size=16 }) => {
   const icons = {
     dashboard: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>,
@@ -456,26 +659,34 @@ const Icon = ({ name, size=16 }) => {
     wallet: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20 7H4a2 2 0 00-2 2v10a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2z"/><path d="M16 14a1 1 0 100-2 1 1 0 000 2z" fill="currentColor"/><path d="M16 7V5a2 2 0 00-2-2H6a2 2 0 00-2 2v2"/></svg>,
     close: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>,
     history: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>,
-    logout: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>,
   };
   return icons[name] || null;
 };
 
-// ── Shared UI Components ───────────────────────────────────────────────────
+// ── WalletCard ────────────────────────────────────────────────────────────────
 const WalletCard = ({ label, value, color, icon, warnNegative }) => {
   const isNeg = warnNegative && value < 0;
   return (
     <div className={`stat-card ${isNeg ? 'red' : color}`} style={isNeg ? { borderColor:'#FF4D6A55', animation:'pulse-red 1.8s ease-in-out infinite' } : {}}>
       <div className="flex items-center justify-between mb-2">
         <span className="section-title" style={{marginBottom:0}}>{label}</span>
-        <span style={{color: isNeg ? 'var(--red)' : `var(--${color})`}}>{isNeg ? '⚠️' : <Icon name={icon} size={18}/>}</span>
+        <span style={{color: isNeg ? 'var(--red)' : `var(--${color})`}}>
+          {isNeg ? '⚠️' : <Icon name={icon} size={18}/>}
+        </span>
       </div>
-      <div className="number-big" style={{color: isNeg ? 'var(--red)' : 'var(--text)'}}>{fmtFull(value)}</div>
-      {isNeg && (<div style={{marginTop:8,fontSize:11,color:'var(--red)',background:'var(--red-dim)',borderRadius:6,padding:'4px 8px',fontWeight:600}}>Cần nạp tiền vào ví app!</div>)}
+      <div className="number-big" style={{color: isNeg ? 'var(--red)' : 'var(--text)'}}>
+        {fmtFull(value)}
+      </div>
+      {isNeg && (
+        <div style={{marginTop:8,fontSize:11,color:'var(--red)',background:'var(--red-dim)',borderRadius:6,padding:'4px 8px',fontWeight:600}}>
+          Cần nạp tiền vào ví app!
+        </div>
+      )}
     </div>
   );
 };
 
+// ── MoneyInput ────────────────────────────────────────────────────────────────
 const MoneyInput = ({ value, onChange, placeholder, style, className }) => {
   const [display, setDisplay] = React.useState(value ? Number(value).toLocaleString('vi-VN') : '');
   React.useEffect(() => {
@@ -489,50 +700,43 @@ const MoneyInput = ({ value, onChange, placeholder, style, className }) => {
     setDisplay(raw === '' ? '' : num.toLocaleString('vi-VN'));
     onChange(num);
   };
-  return <input type="text" inputMode="numeric" value={display} onChange={handleChange} placeholder={placeholder || '0'} style={style} className={className || 'money-input'} />;
-};
-
-const Pagination = ({ current, total, onChange }) => {
-  if (total <= 1) return null;
   return (
-    <div className="flex items-center justify-center gap-2 mt-6">
-      <button className="btn btn-sm btn-ghost" disabled={current === 1} onClick={() => onChange(current - 1)}>
-        ⬅️ Trước
-      </button>
-      <span style={{fontSize: 13, color: 'var(--muted)', fontWeight: 700, margin: '0 8px', minWidth: '70px', textAlign: 'center'}}>
-        Trang {current} / {total}
-      </span>
-      <button className="btn btn-sm btn-ghost" disabled={current === total} onClick={() => onChange(current + 1)}>
-        Sau ➡️
-      </button>
-    </div>
+    <input type="text" inputMode="numeric" value={display} onChange={handleChange}
+      placeholder={placeholder || '0'} style={style} className={className || 'money-input'} />
   );
 };
 
-// ── Modals & SubForms ──────────────────────────────────────────────────────
+// ── Sub Order Form ────────────────────────────────────────────────────────────
 const SubOrderForm = ({ index, data, onChange, onRemove, canRemove, isMobile }) => {
   const type = data.type;
   const tipCalc = (data.collectCustomer||0) - (data.orderAmount||0) - (data.refund||0);
+
   return (
     <div className="order-sub-card fade-in">
-      <div className={isMobile ? "" : "flex items-center justify-between mb-3"}>
-        <div className="flex items-center justify-between" style={{ marginBottom: isMobile ? '12px' : '0' }}>
-          <span style={{fontFamily:'Nunito',fontWeight:700,fontSize:16,color:'var(--orange)'}}>Đơn #{index+1}</span>
-          {isMobile && canRemove && (<button className="btn btn-sm btn-danger" onClick={onRemove}><Icon name="trash" size={13}/></button>)}
-        </div>
-        <div className={isMobile ? "type-chip-row mb-3" : "flex gap-2 items-center flex-wrap"}>
-          {['1','2','3','4'].map(t => (
-            <button key={t} className={`chip ${data.type===t?'active':''}`} onClick={()=>onChange({...data,type:t,payShop:0,orderAmount:0,collectCustomer:0,refund:0})}>Loại {t}</button>
-          ))}
-          {!isMobile && canRemove && (<button className="btn btn-sm btn-danger" onClick={onRemove}><Icon name="trash" size={13}/></button>)}
+      <div className="flex items-center justify-between mb-3">
+        <span style={{fontFamily:'Nunito',fontWeight:700,fontSize:13}}>Đơn #{index+1}</span>
+        <div style={{display:'flex',gap:6,alignItems:'center'}}>
+          {canRemove && <button className="btn btn-sm btn-danger" onClick={onRemove}><Icon name="trash" size={13}/></button>}
         </div>
       </div>
+
+      {/* Chip row: 2×2 on mobile, inline on PC */}
+      <div className={isMobile ? "type-chip-row mb-3" : "flex gap-2 items-center flex-wrap mb-3"}>
+        {['1','2','3','4'].map(t => (
+          <button key={t} className={`chip ${data.type===t?'active':''}`}
+            onClick={()=>onChange({...data,type:t,payShop:0,orderAmount:0,collectCustomer:0,refund:0})}>
+            Loại {t}
+          </button>
+        ))}
+      </div>
+
       <div className="text-xs mb-3 p-2 rounded-lg" style={{color:'var(--muted)',background:'var(--bg)'}}>
         {type==='1' && '🟢 Không trả quán, không thu khách — App cộng ship'}
         {type==='2' && '🟡 Không trả quán, thu tiền khách — App cộng ship rồi trừ thu khách'}
         {type==='3' && '🔴 Trả quán + thu khách — App trừ chênh lệch (số cần thu - trả quán)'}
         {type==='4' && '🔵 Trả quán, không thu khách — App hoàn lại tiền quán + ship'}
       </div>
+
       {(type==='3'||type==='4') && (
         <div className="grid gap-3 mb-3" style={{gridTemplateColumns:'1fr 1fr'}}>
           <div><label>Trả quán (đ)</label><MoneyInput value={data.payShop||0} onChange={v=>onChange({...data,payShop:v})} /></div>
@@ -543,34 +747,75 @@ const SubOrderForm = ({ index, data, onChange, onRemove, canRemove, isMobile }) 
           </div>
         </div>
       )}
+
       {(type==='2'||type==='3') && (
         <div className="grid gap-3 mb-3" style={{gridTemplateColumns:'1fr 1fr'}}>
           <div style={{gridColumn:'1/-1', padding:'12px 14px', borderRadius:10, background:'#FF6B2B0A', border:'2px solid var(--orange)', boxShadow:'0 0 0 4px #FF6B2B08'}}>
-            <div style={{fontSize:11,color:'#FF6B2B99',fontWeight:700,textTransform:'uppercase',letterSpacing:'0.05em',marginBottom:6}}>Số tiền cần thu (đ) <span style={{color:'var(--orange)'}}>*</span></div>
-            <MoneyInput value={data.orderAmount||0} onChange={v=>onChange({...data,orderAmount:v})} placeholder="Nhập số tiền app yêu cầu thu" style={{border:'none',background:'transparent',padding:'2px 0',paddingLeft:0,height:'auto',fontSize:16,fontWeight:700,color:'var(--orange)',width:'100%'}} className="no-pad-left" />
+            <div style={{fontSize:11,color:'#FF6B2B99',fontWeight:700,textTransform:'uppercase',letterSpacing:'0.05em',marginBottom:6}}>
+              Số tiền cần thu (đ) <span style={{color:'var(--orange)'}}>*</span>
+            </div>
+            <MoneyInput value={data.orderAmount||0} onChange={v=>onChange({...data,orderAmount:v})}
+              placeholder="Nhập số tiền app yêu cầu thu"
+              style={{border:'none',background:'transparent',padding:'2px 0',paddingLeft:0,height:'auto',fontSize:16,fontWeight:700,color:'var(--orange)',width:'100%'}}
+              className="no-pad-left" />
+            <div style={{fontSize:11,color:'var(--muted)',marginTop:4}}>
+              {type==='2' ? 'Bằng giá trị đơn hàng (app hiển thị)' : 'Bằng chênh lệch thu khách - trả quán (app hiển thị)'}
+            </div>
           </div>
+
           <div style={{gridColumn:'1/-1'}}>
-            <label style={{display:'flex',alignItems:'center',gap:8,cursor:'pointer',textTransform:'none',letterSpacing:'normal',fontSize:13,color:'var(--text)',fontWeight:600}} onClick={()=>onChange({...data,forgotCollect:!data.forgotCollect,collectCustomer:0,refund:0})}>
+            <label style={{display:'flex',alignItems:'center',gap:8,cursor:'pointer',textTransform:'none',letterSpacing:'normal',fontSize:13,color:'var(--text)',fontWeight:600}}
+              onClick={()=>onChange({...data,forgotCollect:!data.forgotCollect,collectCustomer:0,refund:0})}>
               <span style={{width:18,height:18,borderRadius:5,border:`2px solid ${data.forgotCollect?'var(--red)':'var(--border)'}`,background:data.forgotCollect?'var(--red-dim)':'transparent',display:'inline-flex',alignItems:'center',justifyContent:'center',flexShrink:0,transition:'all 0.15s'}}>
                 {data.forgotCollect && <span style={{color:'var(--red)',fontSize:11,fontWeight:900,lineHeight:1}}>✕</span>}
               </span>
               <span>Quên thu / không thu được khách</span>
               {data.forgotCollect && <span className="badge badge-red" style={{marginLeft:4}}>App trừ vào ví</span>}
             </label>
+            {data.forgotCollect && (
+              <div style={{marginTop:8,padding:'8px 12px',borderRadius:8,background:'var(--red-dim)',border:'1px solid #FF4D6A33',fontSize:12,color:'var(--red)',lineHeight:1.5}}>
+                ⚠️ App sẽ trừ <strong>{fmtFull(data.orderAmount||0)}</strong> vào ví app của bạn vì không thu được khách.
+              </div>
+            )}
           </div>
-          {!data.forgotCollect && <div style={{gridColumn:'1/-1'}}><label>Khách trả thực tế (đ)</label><MoneyInput placeholder="Số tiền khách đưa" value={data.collectCustomer||0} onChange={v=>onChange({...data,collectCustomer:v})} /></div>}
+
+          {!data.forgotCollect && <div style={{gridColumn:'1/-1'}}><label>Khách trả thực tế (đ)</label><MoneyInput placeholder="Số tiền khách thực tế đưa cho bạn" value={data.collectCustomer||0} onChange={v=>onChange({...data,collectCustomer:v})} /></div>}
           {!data.forgotCollect && <div><label>Hình thức thu</label>
             <select value={data.collectMethod||'cash'} onChange={e=>onChange({...data,collectMethod:e.target.value})}>
               <option value="cash">Tiền mặt</option><option value="mb">CK MB Bank</option>
             </select>
           </div>}
           {!data.forgotCollect && <div><label>Thối lại (đ)</label><MoneyInput value={data.refund||0} onChange={v=>onChange({...data,refund:v})} /></div>}
+          {!data.forgotCollect && (data.refund||0) > 0 && (
+            <div style={{gridColumn:'1/-1'}}><label>Hình thức thối</label>
+              <select value={data.refundMethod||'cash'} onChange={e=>onChange({...data,refundMethod:e.target.value})}>
+                <option value="cash">Tiền mặt</option><option value="momo">Momo</option>
+              </select>
+            </div>
+          )}
+          {!data.forgotCollect && (data.collectCustomer||0) > 0 && (data.orderAmount||0) > 0 && (
+            <div style={{gridColumn:'1/-1', padding:'8px 12px', borderRadius:8, background:'var(--bg)', border:`1px solid ${tipCalc>0?'var(--yellow)':'var(--border)'}44`, display:'flex', justifyContent:'space-between', alignItems:'center'}}>
+              <div>
+                <span style={{fontSize:12,color:'var(--muted)'}}>Tip vật lý = </span>
+                <span style={{fontSize:11,color:'var(--muted)'}}>{fmtFull(data.collectCustomer||0)} - {fmtFull(data.orderAmount||0)} - {fmtFull(data.refund||0)}</span>
+              </div>
+              <span className="mono" style={{fontSize:14,fontWeight:700,color:tipCalc>0?'var(--yellow)':tipCalc<0?'var(--red)':'var(--muted)'}}>{tipCalc>=0?'+':''}{fmtFull(tipCalc)}</span>
+            </div>
+          )}
+        </div>
+      )}
+
+      {type==='4' && (data.payShop||0) > 0 && (
+        <div className="mt-3 p-2 rounded-lg flex justify-between items-center" style={{background:'var(--bg)'}}>
+          <span style={{fontSize:12,color:'var(--muted)'}}>App hoàn vào ví (chưa tính ship)</span>
+          <span className="mono" style={{fontSize:13,color:'var(--blue)'}}>+{fmtFull(data.payShop||0)}</span>
         </div>
       )}
     </div>
   );
 };
 
+// ── Order Modal ───────────────────────────────────────────────────────────────
 const OrderModal = ({ onClose, onSave, initialData, isMobile }) => {
   const isEdit = !!initialData;
   const [isBundle, setIsBundle] = useState(initialData?.isBundle || false);
@@ -580,9 +825,26 @@ const OrderModal = ({ onClose, onSave, initialData, isMobile }) => {
   const [tipAppAmount, setTipAppAmount] = useState(initialData?.tipApp || '');
   const [subOrders, setSubOrders] = useState(initialData?.subOrders || [{ id:genId(), type:'1', payShop:0, payShopMethod:'cash', collectCustomer:0, collectMethod:'cash', refund:0, refundMethod:'cash' }]);
 
+  const addSub = () => setSubOrders(p=>[...p,{ id:genId(), type:'1', payShop:0, payShopMethod:'cash', collectCustomer:0, collectMethod:'cash', refund:0, refundMethod:'cash' }]);
+  const updateSub = (i,v) => setSubOrders(p=>p.map((x,idx)=>idx===i?v:x));
+  const removeSub = (i) => setSubOrders(p=>p.filter((_,idx)=>idx!==i));
+
+  const ship = +shipTotal || 0;
+  const totalChenhLech = subOrders.reduce((acc,s) => {
+    if(s.type==='2') return acc + (s.orderAmount||0);
+    if(s.type==='3') return acc + (s.orderAmount||0) - (s.payShop||0);
+    if(s.type==='4') return acc - (s.payShop||0);
+    return acc;
+  }, 0);
+  const appDelta = ship - totalChenhLech + (+tipAppAmount||0);
+
   const handleSave = () => {
-    if(!+shipTotal) { alert('Nhập tiền ship!'); return; }
-    onSave({ ...(initialData?._id ? { _id: initialData._id } : {}), date, isBundle, shipTotal:+shipTotal, note, tipApp:+tipAppAmount||0, subOrders });
+    if(!ship) { alert('Nhập tiền ship đi bạn!'); return; }
+    const order = {
+      ...(initialData?._id ? { _id: initialData._id } : {}),
+      date, isBundle, shipTotal:ship, note, tipApp:+tipAppAmount||0, subOrders
+    };
+    onSave(order);
     onClose();
   };
 
@@ -593,6 +855,7 @@ const OrderModal = ({ onClose, onSave, initialData, isMobile }) => {
           <h2 style={{fontSize:20}}><Icon name="order" size={18}/>&nbsp; {isEdit ? 'Sửa đơn' : 'Nhập đơn mới'}</h2>
           <button className="btn btn-ghost btn-sm" onClick={onClose}><Icon name="close" size={16}/></button>
         </div>
+
         <div className="grid gap-3 mb-4" style={{gridTemplateColumns:'1fr 1fr'}}>
           <div><label>Ngày</label><input type="date" value={date} onChange={e=>setDate(e.target.value)} /></div>
           <div><label>Loại đơn</label>
@@ -602,417 +865,985 @@ const OrderModal = ({ onClose, onSave, initialData, isMobile }) => {
             </div>
           </div>
         </div>
+
         <div className="grid gap-3 mb-4" style={{gridTemplateColumns:'1fr 1fr'}}>
-          <div><label>Ship (đ) *</label><MoneyInput value={+shipTotal||0} onChange={v=>setShipTotal(v)} /></div>
-          <div><label>Tip App</label><MoneyInput value={+tipAppAmount||0} onChange={v=>setTipAppAmount(v)} /></div>
+          <div><label>Tiền ship {isBundle?'(cả chùm)':''}(đ) *</label><MoneyInput value={+shipTotal||0} onChange={v=>setShipTotal(v)} placeholder="VD: 25000" /></div>
+          <div><label>Tip app (nếu có)</label><MoneyInput value={+tipAppAmount||0} onChange={v=>setTipAppAmount(v)} placeholder="0" /></div>
         </div>
-        <div className="section-title mb-2">Chi tiết đơn</div>
-        {subOrders.map((s,i)=>(<SubOrderForm key={s.id} index={i} data={s} onChange={(v)=>setSubOrders(p=>p.map((x,idx)=>idx===i?v:x))} onRemove={()=>setSubOrders(p=>p.filter((_,idx)=>idx!==i))} canRemove={subOrders.length>1} isMobile={isMobile} />))}
-        {isBundle && (<button className="btn btn-ghost btn-sm mb-4" onClick={()=>setSubOrders(p=>[...p,{ id:genId(), type:'1', payShop:0, payShopMethod:'cash', collectCustomer:0, collectMethod:'cash', refund:0, refundMethod:'cash' }])} style={{width:'100%'}}><Icon name="plus" size={14}/> Thêm đơn con</button>)}
-        <div className="mb-4"><label>Ghi chú</label><input placeholder="VD: Khách dễ tính..." value={note} onChange={e=>setNote(e.target.value)} /></div>
+
+        <div className="section-title mb-2">Chi tiết {isBundle?'từng đơn trong chùm':'đơn'}</div>
+        {subOrders.map((s,i)=>(
+          <SubOrderForm key={s.id} index={i} data={s} onChange={v=>updateSub(i,v)} onRemove={()=>removeSub(i)} canRemove={subOrders.length>1} isMobile={isMobile} />
+        ))}
+        {isBundle && (
+          <button className="btn btn-ghost btn-sm mb-4" onClick={addSub} style={{width:'100%'}}>
+            <Icon name="plus" size={14}/> Thêm đơn con
+          </button>
+        )}
+
+        <div className="mb-4"><label>Ghi chú</label><input placeholder="VD: khu vực xa, khách dễ tính..." value={note} onChange={e=>setNote(e.target.value)} /></div>
+
+        <div className="p-3 rounded-xl mb-5" style={{background:'var(--bg)',border:'1px solid var(--border)'}}>
+          <div className="section-title mb-2">Xem trước tác động</div>
+          <div className="grid gap-2">
+            <div className="flex justify-between"><span style={{fontSize:13,color:'var(--muted)'}}>Ví App thay đổi</span><span className="mono" style={{fontSize:13,color:appDelta>=0?'var(--green)':'var(--red)'}}>{appDelta>=0?'+':''}{fmtFull(appDelta)}</span></div>
+            {subOrders.map((s,i)=>{
+              const tipPhy = (s.collectCustomer||0) - (s.orderAmount||0) - (s.refund||0);
+              const cashDelta = (s.collectMethod==='cash'?(s.collectCustomer||0):0) - (s.payShopMethod==='cash'?(s.payShop||0):0) - (s.refundMethod==='cash'?(s.refund||0):0);
+              const mbDelta = (s.collectMethod==='mb'?(s.collectCustomer||0):0) - (s.payShopMethod==='mb'?(s.payShop||0):0);
+              const momoDelta = -(s.payShopMethod==='momo'?(s.payShop||0):0) - (s.refundMethod==='momo'?(s.refund||0):0);
+              return (
+                <React.Fragment key={i}>
+                  {cashDelta!==0 && <div className="flex justify-between"><span style={{fontSize:13,color:'var(--muted)'}}>Tiền mặt {isBundle?`(đơn #${i+1})`:''}</span><span className="mono" style={{fontSize:13,color:cashDelta>0?'var(--green)':'var(--red)'}}>{cashDelta>0?'+':''}{fmtFull(cashDelta)}</span></div>}
+                  {mbDelta!==0 && <div className="flex justify-between"><span style={{fontSize:13,color:'var(--muted)'}}>MB Bank {isBundle?`(đơn #${i+1})`:''}</span><span className="mono" style={{fontSize:13,color:mbDelta>0?'var(--green)':'var(--red)'}}>{mbDelta>0?'+':''}{fmtFull(mbDelta)}</span></div>}
+                  {momoDelta!==0 && <div className="flex justify-between"><span style={{fontSize:13,color:'var(--muted)'}}>Momo {isBundle?`(đơn #${i+1})`:''}</span><span className="mono" style={{fontSize:13,color:'var(--red)'}}>{fmtFull(momoDelta)}</span></div>}
+                  {tipPhy>0 && <div className="flex justify-between"><span style={{fontSize:13,color:'var(--muted)'}}>Tip vật lý {isBundle?`(đơn #${i+1})`:''}</span><span className="mono" style={{fontSize:13,color:'var(--yellow)'}}>+{fmtFull(tipPhy)}</span></div>}
+                </React.Fragment>
+              );
+            })}
+          </div>
+        </div>
+
         <div className="flex gap-3">
           <button className="btn btn-ghost" style={{flex:1}} onClick={onClose}>Huỷ</button>
-          <button className="btn btn-primary" style={{flex:2}} onClick={handleSave}>{isEdit ? 'Cập nhật' : 'Lưu đơn'}</button>
+          <button className="btn btn-primary" style={{flex:2}} onClick={handleSave}>{isEdit ? 'Cập nhật đơn' : 'Lưu đơn'}</button>
         </div>
       </div>
     </div>
   );
 };
 
-const TransferModal = ({ onClose, onSave, initialData }) => {
-  const isEdit = !!initialData;
-  const [date, setDate] = useState(initialData?.date || today());
-  const [from, setFrom] = useState(initialData?.from || 'momo');
-  const [to, setTo] = useState(initialData?.to || 'app');
-  const [amount, setAmount] = useState(initialData?.amount || '');
-  const [note, setNote] = useState(initialData?.note || '');
+// ── Transfer Modal ────────────────────────────────────────────────────────────
+const TransferModal = ({ onClose, onSave }) => {
+  const [date, setDate] = useState(today());
+  const [from, setFrom] = useState('momo');
+  const [to, setTo] = useState('app');
+  const [amount, setAmount] = useState('');
+  const [note, setNote] = useState('');
+  const walletNames = { app:'Ví App', momo:'Momo', mb:'MB Bank', cash:'Tiền mặt' };
   const handleSave = () => {
     if(!amount) { alert('Nhập số tiền!'); return; }
-    onSave({ ...(isEdit ? { _id: initialData._id } : {}), date, from, to, amount:+amount, note }); 
-    onClose();
+    if(from===to) { alert('Từ và đến phải khác nhau!'); return; }
+    onSave({ date, from, to, amount:+amount, note }); onClose();
   };
   return (
-    <div className="modal-overlay"><div className="modal fade-in" style={{maxWidth:400}}>
-      <div className="flex justify-between items-center mb-6"><h2><Icon name="transfer" size={18}/>&nbsp; {isEdit ? 'Sửa Chuyển tiền' : 'Chuyển tiền'}</h2><button onClick={onClose}><Icon name="close" size={16}/></button></div>
-      <div className="grid gap-3 mb-4">
-        <div><label>Ngày</label><input type="date" value={date} onChange={e=>setDate(e.target.value)} /></div>
-        <div className="grid gap-3" style={{gridTemplateColumns:'1fr 1fr'}}>
-          <div><label>Từ</label><select value={from} onChange={e=>setFrom(e.target.value)}><option value="app">Ví App</option><option value="momo">Momo</option><option value="mb">MB Bank</option><option value="cash">Tiền mặt</option></select></div>
-          <div><label>Đến</label><select value={to} onChange={e=>setTo(e.target.value)}><option value="app">Ví App</option><option value="momo">Momo</option><option value="mb">MB Bank</option><option value="cash">Tiền mặt</option></select></div>
+    <div className="modal-overlay">
+      <div className="modal fade-in" style={{maxWidth:400}}>
+        <div className="flex justify-between items-center mb-6">
+          <h2 style={{fontSize:20}}><Icon name="transfer" size={18}/>&nbsp; Chuyển tiền nội bộ</h2>
+          <button className="btn btn-ghost btn-sm" onClick={onClose}><Icon name="close" size={16}/></button>
         </div>
-        <div><label>Số tiền (đ)</label><MoneyInput value={+amount||0} onChange={v=>setAmount(v)} /></div>
-        <div><label>Ghi chú</label><input value={note} onChange={e=>setNote(e.target.value)} /></div>
+        <div className="grid gap-3 mb-4">
+          <div><label>Ngày</label><input type="date" value={date} onChange={e=>setDate(e.target.value)} /></div>
+          <div className="grid gap-3" style={{gridTemplateColumns:'1fr 1fr'}}>
+            <div><label>Từ</label>
+              <select value={from} onChange={e=>setFrom(e.target.value)}>
+                <option value="app">Ví App</option><option value="momo">Momo</option><option value="mb">MB Bank</option><option value="cash">Tiền mặt</option>
+              </select>
+            </div>
+            <div><label>Đến</label>
+              <select value={to} onChange={e=>setTo(e.target.value)}>
+                <option value="app">Ví App</option><option value="momo">Momo</option><option value="mb">MB Bank</option><option value="cash">Tiền mặt</option>
+              </select>
+            </div>
+          </div>
+          <div><label>Số tiền (đ)</label><MoneyInput value={+amount||0} onChange={v=>setAmount(v)} placeholder="VD: 200.000" /></div>
+          <div><label>Ghi chú</label><input placeholder="VD: Nạp tiền vào ví app" value={note} onChange={e=>setNote(e.target.value)} /></div>
+        </div>
+        {amount && from!==to && (
+          <div className="p-3 rounded-xl mb-4" style={{background:'var(--bg)',border:'1px solid var(--border)'}}>
+            <div className="flex justify-between text-sm"><span style={{color:'var(--muted)'}}>{walletNames[from]}</span><span className="mono neg">-{fmtFull(+amount)}</span></div>
+            <div className="flex justify-between text-sm mt-1"><span style={{color:'var(--muted)'}}>{walletNames[to]}</span><span className="mono pos">+{fmtFull(+amount)}</span></div>
+          </div>
+        )}
+        <div className="flex gap-3">
+          <button className="btn btn-ghost" style={{flex:1}} onClick={onClose}>Huỷ</button>
+          <button className="btn btn-primary" style={{flex:2}} onClick={handleSave}>Xác nhận</button>
+        </div>
       </div>
-      <button className="btn btn-primary w-full" onClick={handleSave}>Xác nhận</button>
-    </div></div>
+    </div>
   );
 };
 
-const TipAppModal = ({ onClose, onSave, initialData }) => {
-  const isEdit = !!initialData;
-  const [date, setDate] = useState(initialData?.date || today());
-  const [amount, setAmount] = useState(initialData?.amount || '');
+// ── TipApp Modal ──────────────────────────────────────────────────────────────
+const TipAppModal = ({ onClose, onSave }) => {
+  const [date, setDate] = useState(today());
+  const [amount, setAmount] = useState('');
+  const handleSave = () => { if(!amount) return; onSave({ date, amount:+amount }); onClose(); };
   return (
-    <div className="modal-overlay"><div className="modal fade-in" style={{maxWidth:360}}>
-      <div className="flex justify-between items-center mb-6"><h2><Icon name="tip" size={18}/>&nbsp; {isEdit ? 'Sửa Tip App' : 'Tip App'}</h2><button onClick={onClose}><Icon name="close" size={16}/></button></div>
-      <div className="grid gap-3 mb-4">
-        <div><label>Ngày</label><input type="date" value={date} onChange={e=>setDate(e.target.value)} /></div>
-        <div><label>Số tiền tip (đ)</label><MoneyInput value={+amount||0} onChange={v=>setAmount(v)} /></div>
+    <div className="modal-overlay">
+      <div className="modal fade-in" style={{maxWidth:360}}>
+        <div className="flex justify-between items-center mb-6">
+          <h2 style={{fontSize:20}}><Icon name="tip" size={18}/>&nbsp; Tip App</h2>
+          <button className="btn btn-ghost btn-sm" onClick={onClose}><Icon name="close" size={16}/></button>
+        </div>
+        <div className="grid gap-3 mb-4">
+          <div><label>Ngày</label><input type="date" value={date} onChange={e=>setDate(e.target.value)} /></div>
+          <div><label>Số tiền tip app (đ)</label><MoneyInput value={+amount||0} onChange={v=>setAmount(v)} placeholder="VD: 15.000" /></div>
+        </div>
+        <div className="flex gap-3">
+          <button className="btn btn-ghost" style={{flex:1}} onClick={onClose}>Huỷ</button>
+          <button className="btn btn-primary" style={{flex:2}} onClick={handleSave}>Lưu</button>
+        </div>
       </div>
-      <button className="btn btn-primary w-full" onClick={()=>{ if(!amount) return; onSave({ ...(isEdit ? { _id: initialData._id } : {}), date, amount:+amount }); onClose(); }}>Lưu</button>
-    </div></div>
+    </div>
   );
 };
 
-const CashModal = ({ onClose, onSave, initialData }) => {
-  const isEdit = !!initialData;
-  const [txType, setTxType] = useState(initialData?.txType || 'deposit');
-  const [wallet, setWallet] = useState(initialData?.wallet || 'cash');
-  const [amount, setAmount] = useState(initialData?.amount || 0);
-  const [date, setDate] = useState(initialData?.date || today());
+// ── Cash Modal ────────────────────────────────────────────────────────────────
+const WALLET_OPTS = [
+  { value:'cash', label:'Tiền mặt' },
+  { value:'momo', label:'Momo' },
+  { value:'mb',   label:'MB Bank' },
+];
+
+const CashModal = ({ onClose, onSave }) => {
+  const [txType, setTxType] = React.useState('deposit');
+  const [date,   setDate]   = React.useState(today());
+  const [wallet, setWallet] = React.useState('cash');
+  const [amount, setAmount] = React.useState(0);
+  const [note,   setNote]   = React.useState('');
+  const isDeposit = txType === 'deposit';
+  const handleSave = () => {
+    if (!amount || amount <= 0) { alert('Nhập số tiền hợp lệ!'); return; }
+    onSave({ txType, date, wallet, amount, note }); onClose();
+  };
   return (
-    <div className="modal-overlay"><div className="modal fade-in" style={{maxWidth:420}}>
-      <div className="flex justify-between items-center mb-5"><h2>💰 {isEdit ? 'Sửa Nạp/Rút' : 'Nạp/Rút'}</h2><button onClick={onClose}><Icon name="close" size={16}/></button></div>
-      <div className="flex gap-1 mb-4 p-1 bg-black/20 rounded-lg">
-        <button className={`tab-btn flex-1 ${txType==='deposit'?'active':''}`} onClick={()=>setTxType('deposit')}>Nạp</button>
-        <button className={`tab-btn flex-1 ${txType==='withdraw'?'active':''}`} onClick={()=>setTxType('withdraw')}>Rút</button>
+    <div className="modal-overlay">
+      <div className="modal fade-in" style={{maxWidth:420}}>
+        <div className="flex justify-between items-center mb-5">
+          <h2 style={{fontSize:20}}>💰 Nạp / Rút tiền</h2>
+          <button className="btn btn-ghost btn-sm" onClick={onClose}><Icon name="close" size={16}/></button>
+        </div>
+        <div style={{display:'flex',gap:4,marginBottom:20,background:'var(--bg)',padding:4,borderRadius:10}}>
+          {[['deposit','⬆️ Nạp tiền'],['withdraw','⬇️ Rút tiền']].map(([v,l])=>(
+            <button key={v} className={`tab-btn ${txType===v?'active':''}`}
+              style={{flex:1,background:txType===v?(v==='deposit'?'var(--green)':'var(--red)'):'transparent',color:txType===v?'white':'var(--muted)'}}
+              onClick={()=>setTxType(v)}>{l}</button>
+          ))}
+        </div>
+        <div className="grid gap-3 mb-4">
+          <div><label>Ngày</label><input type="date" value={date} onChange={e=>setDate(e.target.value)} /></div>
+          <div><label>{isDeposit ? 'Nạp vào' : 'Rút từ'}</label>
+            <select value={wallet} onChange={e=>setWallet(e.target.value)}>
+              {WALLET_OPTS.map(o=><option key={o.value} value={o.value}>{o.label}</option>)}
+            </select>
+          </div>
+          <div><label>Số tiền (đ)</label><MoneyInput value={amount} onChange={v=>setAmount(v)} placeholder="VD: 500.000" /></div>
+          <div><label>Ghi chú (tuỳ chọn)</label><input placeholder={isDeposit ? 'VD: Nạp lương...' : 'VD: Rút tiêu...'} value={note} onChange={e=>setNote(e.target.value)} /></div>
+        </div>
+        {amount > 0 && (
+          <div className="p-3 rounded-xl mb-4" style={{background:'var(--bg)',border:`1px solid ${isDeposit?'var(--green)':'var(--red)'}44`}}>
+            <div className="flex justify-between text-sm">
+              <span style={{color:'var(--muted)'}}>{WALLET_OPTS.find(o=>o.value===wallet)?.label}</span>
+              <span className="mono" style={{color:isDeposit?'var(--green)':'var(--red)',fontWeight:700}}>{isDeposit?'+':'-'}{fmtFull(amount)}</span>
+            </div>
+          </div>
+        )}
+        <div className="flex gap-3">
+          <button className="btn btn-ghost" style={{flex:1}} onClick={onClose}>Huỷ</button>
+          <button className="btn btn-primary" style={{flex:2,background:isDeposit?'var(--green)':'var(--red)'}} onClick={handleSave}>
+            {isDeposit ? '⬆️ Xác nhận nạp' : '⬇️ Xác nhận rút'}
+          </button>
+        </div>
       </div>
-      <div className="grid gap-3 mb-4">
-        <input type="date" value={date} onChange={e=>setDate(e.target.value)} />
-        <select value={wallet} onChange={e=>setWallet(e.target.value)}><option value="cash">Tiền mặt</option><option value="momo">Momo</option><option value="mb">MB Bank</option></select>
-        <MoneyInput value={amount} onChange={setAmount} />
-      </div>
-      <button className="btn btn-primary w-full" onClick={()=>{ onSave({ ...(isEdit ? { _id: initialData._id } : {}), txType, date, wallet, amount, note:'' }); onClose(); }}>Xác nhận</button>
-    </div></div>
+    </div>
   );
 };
 
+// ── Wallet Setup Modal ────────────────────────────────────────────────────────
 const WalletSetupModal = ({ wallets, onSave, onClose }) => {
   const [vals, setVals] = useState({...wallets});
   return (
-    <div className="modal-overlay"><div className="modal fade-in" style={{maxWidth:380}}>
-      <h2 className="mb-4">⚙️ Số dư ban đầu</h2>
-      {[['app','Ví App'],['cash','Tiền mặt'],['mb','MB Bank'],['momo','Momo']].map(([k,l])=>(
-        <div key={k} className="mb-3"><label>{l}</label><MoneyInput value={vals[k]||0} onChange={v=>setVals(p=>({...p,[k]:v}))} /></div>
-      ))}
-      <button className="btn btn-primary w-full mt-4" onClick={()=>{onSave(vals);onClose();}}>Lưu</button>
-    </div></div>
-  );
-};
-
-const LoginScreen = ({ onLogin }) => {
-  const [username, setUsername] = useState('');
-  const [mode, setMode] = useState('login');
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-  const handle = async () => {
-    if(!username.trim()) return;
-    setLoading(true); setError('');
-    const { ok, data } = await api.auth(username.trim(), mode);
-    setLoading(false);
-    if(!ok) { setError(data.error || 'Lỗi'); return; }
-    onLogin(data.userId, data.username);
-  };
-  return (
-    <div className="flex items-center justify-center min-h-screen bg-[#0D0F14] p-4">
-      <div className="bg-[#161922] p-8 rounded-2xl w-full max-w-[380px] border border-[#2A3040]">
-        <h1 className="text-3xl font-extrabold text-[#FF6B2B] text-center mb-2">ShipFlow</h1>
-        <p className="text-center text-[#6B7A99] mb-8 text-sm">Quản lý dòng tiền Shopee Food</p>
-        <div className="flex gap-1 mb-6 p-1 bg-black/20 rounded-lg">
-          <button className={`tab-btn flex-1 ${mode==='login'?'active':''}`} onClick={()=>setMode('login')}>Đăng nhập</button>
-          <button className={`tab-btn flex-1 ${mode==='register'?'active':''}`} onClick={()=>setMode('register')}>Đăng ký</button>
+    <div className="modal-overlay">
+      <div className="modal fade-in" style={{maxWidth:380}}>
+        <div className="flex justify-between items-center mb-6">
+          <h2 style={{fontSize:18}}>⚙️ Cài số dư ban đầu</h2>
+          <button className="btn btn-ghost btn-sm" onClick={onClose}><Icon name="close" size={16}/></button>
         </div>
-        <input type="text" placeholder="Tên đăng nhập..." value={username} onChange={e=>setUsername(e.target.value)} className="mb-4" />
-        {error && <div className="p-2 mb-4 bg-red-500/10 border border-red-500/20 text-red-500 text-sm rounded-lg">{error}</div>}
-        <button className="btn btn-primary w-full py-3" onClick={handle} disabled={loading}>{loading?'Đang xử lý...':'🚀 Bắt đầu'}</button>
+        {[['app','Ví App Shopee'],['cash','Tiền mặt'],['mb','MB Bank'],['momo','Momo']].map(([k,l])=>(
+          <div key={k} className="mb-3"><label>{l} (đ)</label><MoneyInput value={vals[k]||0} onChange={v=>setVals(p=>({...p,[k]:v}))} /></div>
+        ))}
+        <div className="flex gap-3 mt-4">
+          <button className="btn btn-ghost" style={{flex:1}} onClick={onClose}>Huỷ</button>
+          <button className="btn btn-primary" style={{flex:2}} onClick={()=>{onSave(vals);onClose();}}>Lưu</button>
+        </div>
       </div>
     </div>
   );
 };
 
-// ── Components: Dashboard ──────────────────────────────────────────────────
-const Dashboard = ({ data }) => {
-  const { wallets, orders, tipApp } = data;
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 12;
+// ── Backup / Restore Modal ────────────────────────────────────────────────────
+const BackupModal = ({ data, onClose, onRestore }) => {
+  const [tab, setTab] = useState('export');
+  const [importText, setImportText] = useState('');
+  const [importMode, setImportMode] = useState('merge');
+  const [importResult, setImportResult] = useState(null);
+  const [dragOver, setDragOver] = useState(false);
 
+  const exportJSON = () => {
+    const json = JSON.stringify(data, null, 2);
+    const blob = new Blob([json], { type:'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a'); a.href=url; a.download=`shipflow_backup_${today()}.json`; a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const exportCSV = () => {
+    const rows = [['TYPE','id','date','isBundle','shipTotal','tipApp','note','sub_index','sub_type','sub_payShop','sub_payShopMethod','sub_collectCustomer','sub_collectMethod','sub_refund','sub_refundMethod']];
+    data.orders.forEach(o => o.subOrders.forEach((s,i) => {
+      rows.push(['ORDER',o._id,o.date,o.isBundle?1:0,o.shipTotal,o.tipApp||0,o.note||'',i,s.type,s.payShop||0,s.payShopMethod||'cash',s.collectCustomer||0,s.collectMethod||'cash',s.refund||0,s.refundMethod||'cash']);
+    }));
+    rows.push(['---']);rows.push(['TYPE','id','date','from','to','amount','note']);
+    data.transfers.forEach(t => rows.push(['TRANSFER',t._id,t.date,t.from,t.to,t.amount,t.note||'']));
+    rows.push(['---']);rows.push(['TYPE','id','date','amount']);
+    data.tipApp.forEach(t => rows.push(['TIPAPP',t._id,t.date,t.amount]));
+    rows.push(['---']);rows.push(['TYPE','app','cash','mb','momo']);
+    rows.push(['WALLETS',data.wallets.app,data.wallets.cash,data.wallets.mb,data.wallets.momo]);
+    const csv = rows.map(r=>r.join(',')).join('\n');
+    const blob = new Blob([csv],{type:'text/csv;charset=utf-8'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');a.href=url;a.download=`shipflow_backup_${today()}.csv`;a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const parseAndImport = (text) => {
+    setImportResult(null);
+    try {
+      let parsed = null;
+      const trimmed = text.trim();
+      if (trimmed.startsWith('{')) {
+        parsed = JSON.parse(trimmed);
+        if (!parsed.wallets || !parsed.orders) throw new Error('File JSON không đúng định dạng ShipFlow');
+      } else {
+        const lines = trimmed.split('\n').map(l=>l.trim()).filter(Boolean);
+        const orders=[],transfers=[],tipApp=[];let wallets=null;let orderMap={};
+        lines.forEach(line => {
+          if(line.startsWith('---')||line.startsWith('TYPE')) return;
+          const cols=line.split(',');const type=cols[0];
+          if(type==='ORDER'){const[,id,date,isBundle,shipTotal,tipAppAmt,note,subIdx,subType,payShop,payShopMethod,collectCustomer,collectMethod,refund,refundMethod]=cols;if(!orderMap[id]){orderMap[id]={date,isBundle:isBundle==='1',shipTotal:+shipTotal,tipApp:+tipAppAmt,note,subOrders:[]};orders.push(orderMap[id]);}orderMap[id].subOrders.push({type:subType,payShop:+payShop,payShopMethod,collectCustomer:+collectCustomer,collectMethod,refund:+refund,refundMethod});}
+          else if(type==='TRANSFER'){const[,id,date,from,to,amount,note]=cols;transfers.push({date,from,to,amount:+amount,note});}
+          else if(type==='TIPAPP'){const[,id,date,amount]=cols;tipApp.push({date,amount:+amount});}
+          else if(type==='WALLETS'){wallets={app:+cols[1],cash:+cols[2],mb:+cols[3],momo:+cols[4]};}
+        });
+        parsed={orders,transfers,tipApp,wallets:wallets||{app:0,cash:0,mb:0,momo:0}};
+      }
+      if(importMode==='overwrite'){onRestore(parsed);setImportResult({ok:true,msg:`✅ Ghi đè thành công! ${parsed.orders.length} đơn, ${parsed.transfers.length} chuyển tiền, ${parsed.tipApp.length} tip app.`});}
+      else{
+        const existOrderIds=new Set(data.orders.map(o=>o._id).filter(Boolean));
+        const existTransIds=new Set(data.transfers.map(t=>t._id).filter(Boolean));
+        const existTipIds=new Set(data.tipApp.map(t=>t._id).filter(Boolean));
+        const newOrders=parsed.orders.filter(o=>!o._id||!existOrderIds.has(o._id));
+        const newTrans=parsed.transfers.filter(t=>!t._id||!existTransIds.has(t._id));
+        const newTip=parsed.tipApp.filter(t=>!t._id||!existTipIds.has(t._id));
+        const w={...data.wallets};
+        newOrders.forEach(order=>{const cl=order.subOrders.reduce((a,s)=>{if(s.type==='2')return a+(s.orderAmount||0);if(s.type==='3')return a+(s.orderAmount||0)-(s.payShop||0);return a;},0);w.app+=order.shipTotal-cl+(order.tipApp||0);order.subOrders.forEach(s=>{if(s.collectMethod==='cash')w.cash+=(s.collectCustomer||0);if(s.collectMethod==='mb')w.mb+=(s.collectCustomer||0);if(s.payShopMethod==='cash')w.cash-=(s.payShop||0);if(s.payShopMethod==='momo')w.momo-=(s.payShop||0);if(s.refundMethod==='cash')w.cash-=(s.refund||0);if(s.refundMethod==='momo')w.momo-=(s.refund||0);});});
+        newTrans.forEach(t=>{w[t.from]-=t.amount;w[t.to]+=t.amount;});
+        newTip.forEach(t=>{w.app+=t.amount;});
+        const merged={wallets:w,orders:[...data.orders,...newOrders],transfers:[...data.transfers,...newTrans],tipApp:[...data.tipApp,...newTip]};
+        setImportResult({ok:true,msg:`✅ Gộp thành công! Thêm ${newOrders.length} đơn mới, ${newTrans.length} chuyển tiền mới, ${newTip.length} tip mới.`});
+        onRestore(merged);
+      }
+    } catch(e){setImportResult({ok:false,msg:'❌ Lỗi: '+e.message});}
+  };
+
+  const handleFile = (file) => { const reader=new FileReader();reader.onload=e=>{setImportText(e.target.result);};reader.readAsText(file,'utf-8'); };
+  const handleDrop = (e) => { e.preventDefault();setDragOver(false);const file=e.dataTransfer.files[0];if(file)handleFile(file); };
+
+  return (
+    <div className="modal-overlay">
+      <div className="modal fade-in" style={{maxWidth:560}}>
+        <div className="flex justify-between items-center mb-5">
+          <h2 style={{fontSize:20}}>💾 Backup & Restore</h2>
+          <button className="btn btn-ghost btn-sm" onClick={onClose}><Icon name="close" size={16}/></button>
+        </div>
+        <div className="flex gap-1 mb-5">
+          <button className={`tab-btn ${tab==='export'?'active':''}`} onClick={()=>setTab('export')}>📤 Xuất dữ liệu</button>
+          <button className={`tab-btn ${tab==='import'?'active':''}`} onClick={()=>setTab('import')}>📥 Nhập dữ liệu</button>
+        </div>
+        {tab==='export' && (
+          <div>
+            <p style={{fontSize:13,color:'var(--muted)',marginBottom:20,lineHeight:1.6}}>Xuất toàn bộ dữ liệu ra file để backup hoặc chuyển sang máy khác.<br/><strong style={{color:'var(--text)'}}>JSON</strong> — đầy đủ, dùng để restore lại chính xác 100%.<br/><strong style={{color:'var(--text)'}}>CSV</strong> — mở được bằng Excel để xem/phân tích.</p>
+            <div className="grid gap-3" style={{gridTemplateColumns:'1fr 1fr'}}>
+              <button className="btn btn-primary" style={{padding:'14px',fontSize:15}} onClick={exportJSON}>📄 Xuất file JSON</button>
+              <button className="btn btn-ghost" style={{padding:'14px',fontSize:15}} onClick={exportCSV}>📊 Xuất file CSV</button>
+            </div>
+            <div className="mt-4 p-3 rounded-xl" style={{background:'var(--bg)',border:'1px solid var(--border)',fontSize:12,color:'var(--muted)'}}>
+              📦 Dữ liệu hiện tại: <strong style={{color:'var(--text)'}}>{data.orders.length}</strong> đơn · <strong style={{color:'var(--text)'}}>{data.transfers.length}</strong> chuyển tiền · <strong style={{color:'var(--text)'}}>{data.tipApp.length}</strong> tip app
+            </div>
+          </div>
+        )}
+        {tab==='import' && (
+          <div>
+            <div className="mb-4">
+              <div className="section-title mb-2">Chế độ nhập</div>
+              <div className="flex gap-2">
+                <button className={`chip ${importMode==='merge'?'active':''}`} onClick={()=>setImportMode('merge')}>🔀 Gộp dữ liệu</button>
+                <button className={`chip ${importMode==='overwrite'?'active':''}`} style={importMode==='overwrite'?{borderColor:'var(--red)',color:'var(--red)',background:'var(--red-dim)'}:{}} onClick={()=>setImportMode('overwrite')}>⚠️ Ghi đè tất cả</button>
+              </div>
+              <p style={{fontSize:11,color:'var(--muted)',marginTop:6,lineHeight:1.5}}>{importMode==='merge'?'🔀 Giữ dữ liệu cũ, chỉ thêm dữ liệu mới (bỏ qua trùng lặp theo ID). Ví sẽ được cộng thêm effect của đơn mới.':'⚠️ XÓA TOÀN BỘ dữ liệu hiện tại và thay bằng file import. Không thể hoàn tác!'}</p>
+            </div>
+            <div onDragOver={e=>{e.preventDefault();setDragOver(true)}} onDragLeave={()=>setDragOver(false)} onDrop={handleDrop}
+              style={{border:`2px dashed ${dragOver?'var(--orange)':'var(--border)'}`,borderRadius:12,padding:'20px 16px',textAlign:'center',background:dragOver?'var(--orange-dim)':'var(--bg)',cursor:'pointer',marginBottom:12,transition:'all 0.2s'}}
+              onClick={()=>document.getElementById('file-input').click()}>
+              <div style={{fontSize:28,marginBottom:6}}>📂</div>
+              <div style={{fontSize:13,color:'var(--muted)'}}>Kéo thả file vào đây hoặc <span style={{color:'var(--orange)'}}>click để chọn file</span></div>
+              <div style={{fontSize:11,color:'var(--muted)',marginTop:4}}>Hỗ trợ .json và .csv</div>
+              <input id="file-input" type="file" accept=".json,.csv,.txt" style={{display:'none'}} onChange={e=>{if(e.target.files[0])handleFile(e.target.files[0]);}} />
+            </div>
+            <div className="mb-3"><label>Hoặc dán nội dung file vào đây</label><textarea rows={5} placeholder='Dán nội dung file JSON hoặc CSV...' value={importText} onChange={e=>setImportText(e.target.value)} style={{resize:'vertical',fontFamily:'Nunito',fontSize:11}} /></div>
+            {importResult && (<div className="mb-3 p-3 rounded-xl" style={{background:importResult.ok?'var(--green-dim)':'var(--red-dim)',border:`1px solid ${importResult.ok?'var(--green)':'var(--red)'}44`,fontSize:12,color:importResult.ok?'var(--green)':'var(--red)',lineHeight:1.5}}>{importResult.msg}</div>)}
+            {importMode==='overwrite' && (<div className="mb-3 p-3 rounded-xl" style={{background:'var(--red-dim)',border:'1px solid var(--red)44',fontSize:12,color:'var(--red)'}}>⚠️ Ghi đè sẽ XÓA {data.orders.length} đơn và {data.transfers.length} chuyển tiền hiện tại. Hãy xuất backup trước!</div>)}
+            <div className="flex gap-3">
+              <button className="btn btn-ghost" style={{flex:1}} onClick={onClose}>Đóng</button>
+              <button className="btn btn-primary" style={{flex:2,background:importMode==='overwrite'?'var(--red)':undefined}} onClick={()=>parseAndImport(importText)} disabled={!importText.trim()}>
+                {importMode==='merge' ? '🔀 Gộp dữ liệu' : '⚠️ Ghi đè tất cả'}
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+// ── Login Screen ──────────────────────────────────────────────────────────────
+const LoginScreen = ({ onLogin }) => {
+  const [username, setUsername] = React.useState('');
+  const [mode, setMode] = React.useState('login');
+  const [loading, setLoading] = React.useState(false);
+  const [error, setError] = React.useState('');
+  const handle = async () => {
+    const clean = username.trim(); if(!clean) return;
+    setLoading(true); setError('');
+    const { ok, data } = await api.auth(clean, mode);
+    setLoading(false);
+    if(!ok) { setError(data.error || 'Lỗi không xác định'); return; }
+    onLogin(data.userId, data.username);
+  };
+  return (
+    <div style={{minHeight:'100vh',display:'flex',alignItems:'center',justifyContent:'center',background:'var(--bg)',padding:16}}>
+      <div style={{background:'var(--surface)',border:'1px solid var(--border)',borderRadius:20,padding:'36px 32px',width:'100%',maxWidth:380}} className="fade-in">
+        <div style={{textAlign:'center',marginBottom:28}}>
+          <div style={{fontFamily:'Nunito',fontWeight:800,fontSize:30,color:'var(--orange)',letterSpacing:'-0.02em',marginBottom:6}}>ShipFlow</div>
+          <div style={{fontSize:13,color:'var(--muted)'}}>Quản lý dòng tiền Shopee Food</div>
+        </div>
+        <div style={{display:'flex',gap:4,marginBottom:20,background:'var(--bg)',padding:4,borderRadius:10}}>
+          <button className={`tab-btn ${mode==='login'?'active':''}`} style={{flex:1}} onClick={()=>{setMode('login');setError('');}}>Đăng nhập</button>
+          <button className={`tab-btn ${mode==='register'?'active':''}`} style={{flex:1}} onClick={()=>{setMode('register');setError('');}}>Đăng ký</button>
+        </div>
+        <div style={{marginBottom:16}}>
+          <label>Tên đăng nhập</label>
+          <input type="text" placeholder="VD: mahiru, ship_rider_01" value={username} onChange={e=>{setUsername(e.target.value);setError('');}} onKeyDown={e=>e.key==='Enter'&&handle()} autoFocus />
+          <div style={{fontSize:11,color:'var(--muted)',marginTop:5}}>3-20 ký tự, chữ thường không dấu, số, dấu _</div>
+        </div>
+        {error && (<div style={{padding:'8px 12px',borderRadius:8,marginBottom:14,background:'var(--red-dim)',border:'1px solid #FF4D6A44',fontSize:13,color:'var(--red)'}}>{error}</div>)}
+        <button className="btn btn-primary" style={{width:'100%',padding:13,fontSize:15}} onClick={handle} disabled={loading||!username.trim()}>
+          {loading ? '⏳ Đang xử lý...' : mode==='login' ? '🚀 Đăng nhập' : '✨ Đăng ký'}
+        </button>
+        <div style={{marginTop:14,fontSize:12,color:'var(--muted)',textAlign:'center'}}>
+          {mode==='login' ? 'Chưa có tài khoản? Bấm Đăng ký.' : 'Đã có tài khoản? Bấm Đăng nhập.'}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// ── Mobile Action Sheet ───────────────────────────────────────────────────────
+const MobileActionSheet = ({ onClose, onAction }) => {
+  const actions = [
+    { id:'order',    icon:'🥡', label:'Nhập đơn',       desc:'Thêm đơn giao hàng mới',    bg:'#FF6B2B22', color:'var(--orange)' },
+    { id:'transfer', icon:'💸', label:'Chuyển tiền',    desc:'Chuyển tiền giữa các ví',    bg:'var(--blue-dim)', color:'var(--blue)' },
+    { id:'tipapp',   icon:'💳', label:'Tip App',        desc:'Ghi nhận tip từ ứng dụng',   bg:'var(--purple-dim)', color:'var(--purple)' },
+    { id:'cash',     icon:'💰', label:'Nạp / Rút tiền', desc:'Nạp hoặc rút tiền mặt',     bg:'var(--green-dim)', color:'var(--green)' },
+  ];
+  const settings = [
+    { id:'wallet',  icon:'⚙️',  label:'Số dư ban đầu', desc:'Cài đặt số dư các ví',       bg:'var(--surface2)', color:'var(--muted)' },
+    { id:'backup',  icon:'💾',  label:'Backup / Restore', desc:'Xuất hoặc nhập dữ liệu',  bg:'var(--surface2)', color:'var(--muted)' },
+    { id:'logout',  icon:'🚪',  label:'Đăng xuất',     desc:'',                            bg:'var(--red-dim)', color:'var(--red)' },
+  ];
+  return (
+    <div className="action-sheet-overlay" style={{display:'flex'}} onClick={e=>{if(e.target===e.currentTarget)onClose();}}>
+      <div className="action-sheet">
+        <div className="action-sheet-handle"/>
+        <div className="action-sheet-title">Thao tác nhanh</div>
+        {actions.map(a=>(
+          <button key={a.id} className="action-item" onClick={()=>{ onAction(a.id); onClose(); }}>
+            <span className="action-icon" style={{background:a.bg}}>{a.icon}</span>
+            <span style={{flex:1}}>
+              <span style={{display:'block',color:a.color}}>{a.label}</span>
+              {a.desc && <span className="action-desc">{a.desc}</span>}
+            </span>
+          </button>
+        ))}
+        <div className="action-sheet-divider"/>
+        {settings.map(a=>(
+          <button key={a.id} className="action-item" onClick={()=>{ onAction(a.id); onClose(); }}>
+            <span className="action-icon" style={{background:a.bg}}>{a.icon}</span>
+            <span style={{flex:1}}>
+              <span style={{display:'block',color:a.color}}>{a.label}</span>
+              {a.desc && <span className="action-desc">{a.desc}</span>}
+            </span>
+          </button>
+        ))}
+        <button className="action-item-cancel" onClick={onClose}>Đóng</button>
+      </div>
+    </div>
+  );
+};
+
+// ── Dashboard ─────────────────────────────────────────────────────────────────
+const Dashboard = ({ data }) => {
+  const { wallets, orders, transfers, tipApp } = data;
   const totalTipPhysical = orders.reduce((acc,o) => acc + o.subOrders.reduce((a,s) => a + Math.max(0,(s.collectCustomer||0)-(s.orderAmount||0)-(s.refund||0)), 0), 0);
   const totalTipApp = tipApp.reduce((a,t)=>a+t.amount,0);
   const totalShip = orders.reduce((a,o)=>a+o.shipTotal,0);
-  
-  const sortedOrders = useMemo(() => getSortedListDesc(orders), [orders]);
-  const totalPages = Math.ceil(sortedOrders.length / itemsPerPage) || 1;
-  const paginatedOrders = sortedOrders.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+  const totalIncome = totalShip + totalTipPhysical + totalTipApp;
+  const totalOrders = orders.length;
 
   return (
     <div className="fade-in">
-      <div className="mb-6"><h2 style={{fontSize:24}}>Tổng quan</h2><p style={{color:'var(--muted)',fontSize:13}}>Thống kê dòng tiền thực tế</p></div>
-      
-      <div className="section-title">Ví tiền</div>
-      <div className="wallet-grid grid grid-cols-4 gap-3 mb-8">
+      <div className="mb-6">
+        <h2 className="dash-title" style={{fontSize:24,marginBottom:4}}>Tổng quan</h2>
+        <p className="dash-sub" style={{color:'var(--muted)',fontSize:13}}>Dòng tiền thực tế của bạn</p>
+      </div>
+
+      <div className="section-title">Số dư các ví</div>
+      <div className="wallet-grid" style={{display:'grid',gridTemplateColumns:'repeat(4,1fr)',gap:12,marginBottom:24}}>
         <WalletCard label="Ví App Shopee" value={wallets.app} color="orange" icon="wallet" warnNegative />
         <WalletCard label="Tiền mặt" value={wallets.cash} color="green" icon="wallet" />
         <WalletCard label="MB Bank" value={wallets.mb} color="blue" icon="wallet" />
         <WalletCard label="Momo" value={wallets.momo} color="yellow" icon="wallet" />
       </div>
 
+      {wallets.app < 0 && (
+        <div style={{marginBottom:20,padding:'12px 16px',background:'var(--red-dim)',border:'1px solid #FF4D6A55',borderRadius:12,display:'flex',alignItems:'center',gap:10}}>
+          <span style={{fontSize:20}}>⚠️</span>
+          <div>
+            <div style={{fontFamily:'Nunito',fontWeight:700,fontSize:13,color:'var(--red)'}}>Ví App đang âm {fmtFull(Math.abs(wallets.app))}!</div>
+            <div style={{fontSize:12,color:'var(--muted)',marginTop:2}}>Cần nạp thêm tiền vào ví Shopee Food để tránh bị khoá tài khoản. Dùng chức năng <strong style={{color:'var(--text)'}}>Chuyển tiền</strong> để ghi nhận.</div>
+          </div>
+        </div>
+      )}
+
       <div className="section-title">Thu nhập</div>
-      <div className="income-grid grid grid-cols-4 gap-3 mb-8">
-        <div className="stat-card green"><div className="section-title">Tổng thu</div><div className="number-big pos">{fmtFull(totalShip + totalTipPhysical + totalTipApp)}</div></div>
-        <div className="stat-card orange"><div className="section-title">Công ship</div><div className="number-big text-[#FF6B2B]">{fmtFull(totalShip)}</div></div>
-        <div className="stat-card yellow"><div className="section-title">Tip vật lý</div><div className="number-big text-[#FFD166]">{fmtFull(totalTipPhysical)}</div></div>
-        <div className="stat-card purple"><div className="section-title">Tip App</div><div className="number-big text-[#A78BFA]">{fmtFull(totalTipApp)}</div></div>
+      <div className="income-grid" style={{display:'grid',gridTemplateColumns:'repeat(4,1fr)',gap:12,marginBottom:24}}>
+        <div className="stat-card green"><div className="section-title" style={{marginBottom:4}}>Tổng thu nhập</div><div className="number-big pos">{fmtFull(totalIncome)}</div><div style={{fontSize:11,color:'var(--muted)',marginTop:4}}>{totalOrders} đơn</div></div>
+        <div className="stat-card orange"><div className="section-title" style={{marginBottom:4}}>Công ship</div><div className="number-big" style={{color:'var(--orange)'}}>{fmtFull(totalShip)}</div></div>
+        <div className="stat-card yellow"><div className="section-title" style={{marginBottom:4}}>Tip vật lý</div><div className="number-big" style={{color:'var(--yellow)'}}>{fmtFull(totalTipPhysical)}</div></div>
+        <div className="stat-card purple"><div className="section-title" style={{marginBottom:4}}>Tip App</div><div className="number-big" style={{color:'var(--purple)'}}>{fmtFull(totalTipApp)}</div></div>
       </div>
 
-      <div className="section-title">Đơn hàng gần đây</div>
+      <div className="section-title">Đơn gần đây</div>
+      {/* PC table */}
       <div className="card history-table-wrap">
         <table>
-          <thead><tr><th>Ngày</th><th>Loại</th><th>Ship</th><th>Tip vật lý</th><th>Ví App Δ</th><th>Ghi chú</th></tr></thead>
+          <thead><tr><th>Ngày</th><th>Loại</th><th>Ship</th><th>Tip vật lý</th><th>Ví App</th><th>Ghi chú</th></tr></thead>
           <tbody>
-            {paginatedOrders.length === 0 && (<tr><td colSpan={6} style={{textAlign:'center',padding:40,color:'var(--muted)'}}>Chưa có dữ liệu</td></tr>)}
-            {paginatedOrders.map(o=>{
-              const tp=o.subOrders.reduce((a,s)=>a+Math.max(0,(s.collectCustomer||0)-(s.orderAmount||0)-(s.refund||0)),0);
-              const cl=o.subOrders.reduce((a,s)=>{if(s.type==='2')return a+(s.orderAmount||0);if(s.type==='3')return a+(s.orderAmount||0)-(s.payShop||0);return a;},0);
-              const ad=o.shipTotal-cl+(o.tipApp||0);
-              return (<tr key={o._id}><td>{o.date}</td><td><span className={`badge ${o.isBundle?'badge-blue':'badge-orange'}`}>{o.isBundle?'Ghép':'Lẻ'}</span></td><td className="pos">+{fmt(o.shipTotal)}</td><td className="text-[#FFD166]">{tp>0?'+'+fmt(tp):'-'}</td><td className={ad>=0?'pos':'neg'}>{ad>=0?'+':''}{fmt(ad)}</td><td className="text-xs text-[#6B7A99]">{o.note||'-'}</td></tr>);
+            {orders.length === 0 && (<tr><td colSpan={6} style={{textAlign:'center',color:'var(--muted)',padding:32}}>Chưa có đơn nào. Nhấn "Nhập đơn" để bắt đầu!</td></tr>)}
+            {[...orders].reverse().slice(0,15).map(o=>{
+              const tipPhy=o.subOrders.reduce((a,s)=>a+Math.max(0,(s.collectCustomer||0)-(s.orderAmount||0)-(s.refund||0)),0);
+              const chenhLech=o.subOrders.reduce((a,s)=>{if(s.type==='2')return a+(s.orderAmount||0);if(s.type==='3')return a+(s.orderAmount||0)-(s.payShop||0);return a;},0);
+              const appDelta=o.shipTotal-chenhLech+(o.tipApp||0);
+              return (<tr key={o._id}><td className="mono" style={{fontSize:12}}>{o.date}</td><td><span className={`badge ${o.isBundle?'badge-blue':'badge-orange'}`}>{o.isBundle?'Ghép':'Lẻ'}</span></td><td className="mono pos">+{fmt(o.shipTotal)}</td><td className="mono" style={{color:'var(--yellow)'}}>{tipPhy>0?'+'+fmt(tipPhy):'-'}</td><td className="mono" style={{color:appDelta>=0?'var(--green)':'var(--red)'}}>{appDelta>=0?'+':''}{fmt(appDelta)}</td><td style={{color:'var(--muted)',fontSize:12}}>{o.note||'-'}</td></tr>);
             })}
           </tbody>
         </table>
       </div>
-      <Pagination current={currentPage} total={totalPages} onChange={setCurrentPage} />
+      {/* Mobile cards */}
+      <div className="history-cards-wrap">
+        {orders.length === 0 && (<div style={{textAlign:'center',color:'var(--muted)',padding:'24px 0',fontSize:13}}>Chưa có đơn nào. Nhấn "+" để bắt đầu!</div>)}
+        {[...orders].reverse().slice(0,15).map(o=>{
+          const tipPhy=o.subOrders.reduce((a,s)=>a+Math.max(0,(s.collectCustomer||0)-(s.orderAmount||0)-(s.refund||0)),0);
+          const chenhLech=o.subOrders.reduce((a,s)=>{if(s.type==='2')return a+(s.orderAmount||0);if(s.type==='3')return a+(s.orderAmount||0)-(s.payShop||0);return a;},0);
+          const appDelta=o.shipTotal-chenhLech+(o.tipApp||0);
+          return (
+            <div key={o._id} className="m-order-card">
+              <div className="m-order-card-row">
+                <span style={{fontSize:12,color:'var(--muted)',fontWeight:600}}>{o.date}</span>
+                <span className={`badge ${o.isBundle?'badge-blue':'badge-orange'}`}>{o.isBundle?'Ghép':'Lẻ'}</span>
+              </div>
+              <div className="m-order-card-row">
+                <span style={{fontSize:12,color:'var(--muted)'}}>Công ship</span>
+                <span className="mono pos" style={{fontWeight:700}}>+{fmtFull(o.shipTotal)}</span>
+              </div>
+              {tipPhy > 0 && (<div className="m-order-card-row"><span style={{fontSize:12,color:'var(--muted)'}}>Tip vật lý</span><span className="mono" style={{color:'var(--yellow)',fontWeight:700}}>+{fmtFull(tipPhy)}</span></div>)}
+              <div className="m-order-card-row">
+                <span style={{fontSize:12,color:'var(--muted)'}}>Ví App Δ</span>
+                <span className="mono" style={{color:appDelta>=0?'var(--green)':'var(--red)',fontWeight:700}}>{appDelta>=0?'+':''}{fmtFull(appDelta)}</span>
+              </div>
+              {o.note && (<div style={{fontSize:11,color:'var(--muted)',marginTop:4,borderTop:'1px solid var(--border)',paddingTop:6}}>📝 {o.note}</div>)}
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
 };
 
-// ── Components: History ────────────────────────────────────────────────────
-const HistoryPage = ({ data, onDeleteOrder, onDeleteTransfer, onDeleteTip, onDeleteCash, onEditOrder, onEditTransfer, onEditTip, onEditCash }) => {
-  const [tab, setTab] = useState('orders');
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 12;
+// ── Chart Page ────────────────────────────────────────────────────────────────
+const ChartPage = ({ data }) => {
+  const [period, setPeriod] = useState('day');
+  const { orders } = data;
 
-  const sortedList = useMemo(() => {
-    let raw = [];
-    if(tab==='orders') raw = data.orders;
-    else if(tab==='transfers') raw = data.transfers;
-    else if(tab==='tipapp') raw = data.tipApp;
-    else raw = data.cashTx || [];
-    return getSortedListDesc(raw);
-  }, [tab, data]);
-
-  const totalPages = Math.ceil(sortedList.length / itemsPerPage) || 1;
-  const list = sortedList.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
-
-  const handleTab = (t) => { setTab(t); setCurrentPage(1); };
+  const chartData = useMemo(() => {
+    const groups = {};
+    orders.forEach(o => {
+      let key = o.date;
+      if(period==='week'){const d=new Date(o.date);const wk=Math.ceil(d.getDate()/7);key=`${o.date.slice(0,7)}-W${wk}`;}
+      else if(period==='month'){key=o.date.slice(0,7);}
+      else if(period==='year'){key=o.date.slice(0,4);}
+      if(!groups[key]) groups[key]={key,ship:0,tip:0,total:0,orders:0};
+      const tipPhy=o.subOrders.reduce((a,s)=>a+Math.max(0,(s.collectCustomer||0)-(s.orderAmount||0)-(s.refund||0)),0);
+      groups[key].ship+=o.shipTotal;groups[key].tip+=tipPhy+(o.tipApp||0);groups[key].total+=o.shipTotal+tipPhy+(o.tipApp||0);groups[key].orders+=1;
+    });
+    return Object.values(groups).sort((a,b)=>a.key.localeCompare(b.key));
+  }, [orders, period]);
 
   return (
     <div className="fade-in">
-      <div className="mb-6"><h2 style={{fontSize:24}}>Lịch sử</h2>
-        <div className="history-tabs flex gap-1 mt-4 overflow-x-auto pb-2">
-          {[['orders','🥡 Đơn hàng'],['transfers','💸 Chuyển tiền'],['tipapp','💳 Tip App'],['cashtx','💰 Nạp/Rút']].map(([k,l])=>(
-            <button key={k} className={`tab-btn whitespace-nowrap ${tab===k?'active':''}`} onClick={()=>handleTab(k)}>{l}</button>
+      {/* Header: PC flex row, Mobile stacked */}
+      <div className="chart-header mb-6" style={{display:'flex',justifyContent:'space-between',alignItems:'center'}}>
+        <div>
+          <h2 style={{fontSize:24,marginBottom:4}}>Biểu đồ thu nhập</h2>
+          <p style={{color:'var(--muted)',fontSize:13}}>Theo thời gian</p>
+        </div>
+        <div className="period-tabs flex gap-1">
+          {[['day','Ngày'],['week','Tuần'],['month','Tháng'],['year','Năm']].map(([v,l])=>(
+            <button key={v} className={`tab-btn ${period===v?'active':''}`} onClick={()=>setPeriod(v)} style={{whiteSpace:'nowrap'}}>{l}</button>
           ))}
         </div>
       </div>
 
-      <div className="card history-table-wrap">
-        <table>
-          {tab==='orders' && (
-            <>
-              <thead><tr><th>Ngày</th><th>Loại</th><th>Ship</th><th>Tip VL</th><th>App Δ</th><th>Cash Δ</th><th>Hành động</th></tr></thead>
-              <tbody>
-                {list.map(o=>{
-                  const cl=o.subOrders.reduce((a,s)=>{if(s.type==='2')return a+(s.orderAmount||0);if(s.type==='3')return a+(s.orderAmount||0)-(s.payShop||0);return a;},0);
-                  const cd=o.subOrders.reduce((a,s)=>{let d=0;if(s.collectMethod==='cash')d+=(s.collectCustomer||0);if(s.payShopMethod==='cash')d-=(s.payShop||0);if(s.refundMethod==='cash')d-=(s.refund||0);return a+d;},0);
-                  return (<tr key={o._id}><td>{o.date}</td><td><span className={`badge ${o.isBundle?'badge-blue':'badge-orange'}`}>{o.isBundle?'Ghép':'Lẻ'}</span></td><td className="pos">+{fmt(o.shipTotal)}</td><td className="text-[#FFD166]">+{fmt(o.subOrders.reduce((a,s)=>a+Math.max(0,(s.collectCustomer||0)-(s.orderAmount||0)-(s.refund||0)),0))}</td><td className={o.shipTotal-cl>=0?'pos':'neg'}>{fmt(o.shipTotal-cl)}</td><td className={cd>=0?'pos':'neg'}>{fmt(cd)}</td><td><div className="flex gap-2"><button onClick={()=>onEditOrder(o)}>✏️</button><button onClick={()=>onDeleteOrder(o._id)}>🗑️</button></div></td></tr>);
-                })}
-              </tbody>
-            </>
-          )}
-          {tab==='transfers' && (
-            <>
-              <thead><tr><th>Ngày</th><th>Từ</th><th>Đến</th><th>Số tiền</th><th>Ghi chú</th><th>Hành động</th></tr></thead>
-              <tbody>{list.map(t=>(<tr key={t._id}><td>{t.date}</td><td><span className="badge badge-red">{t.from}</span></td><td><span className="badge badge-green">{t.to}</span></td><td className="mono">{fmtFull(t.amount)}</td><td className="text-xs">{t.note||'-'}</td><td><div className="flex gap-2"><button onClick={()=>onEditTransfer(t)}>✏️</button><button onClick={()=>onDeleteTransfer(t._id)}>🗑️</button></div></td></tr>))}</tbody>
-            </>
-          )}
-          {tab==='tipapp' && (
-            <>
-              <thead><tr><th>Ngày</th><th>Số tiền</th><th>Hành động</th></tr></thead>
-              <tbody>{list.map(t=>(<tr key={t._id}><td>{t.date}</td><td className="pos">+{fmtFull(t.amount)}</td><td><div className="flex gap-2"><button onClick={()=>onEditTip(t)}>✏️</button><button onClick={()=>onDeleteTip(t._id)}>🗑️</button></div></td></tr>))}</tbody>
-            </>
-          )}
-          {tab==='cashtx' && (
-            <>
-              <thead><tr><th>Ngày</th><th>Loại</th><th>Ví</th><th>Số tiền</th><th>Hành động</th></tr></thead>
-              <tbody>{list.map(t=>(<tr key={t._id}><td>{t.date}</td><td><span className={`badge ${t.txType==='deposit'?'badge-green':'badge-red'}`}>{t.txType==='deposit'?'Nạp':'Rút'}</span></td><td>{t.wallet}</td><td className={t.txType==='deposit'?'pos':'neg'}>{fmtFull(t.amount)}</td><td><div className="flex gap-2"><button onClick={()=>onEditCash(t)}>✏️</button><button onClick={()=>onDeleteCash(t._id)}>🗑️</button></div></td></tr>))}</tbody>
-            </>
-          )}
-        </table>
-      </div>
-      <Pagination current={currentPage} total={totalPages} onChange={setCurrentPage} />
+      {chartData.length === 0 ? (
+        <div className="card" style={{padding:48,textAlign:'center',color:'var(--muted)'}}>Chưa có dữ liệu để hiển thị biểu đồ</div>
+      ) : (
+        <>
+          <div className="card p-5 mb-4">
+            <div className="section-title mb-4">Công ship + Tip</div>
+            <ResponsiveContainer width="100%" height={260}>
+              <BarChart data={chartData} barGap={4}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#2A3040" />
+                <XAxis dataKey="key" tick={{fill:'#6B7A99',fontSize:11}} axisLine={false} tickLine={false} />
+                <YAxis tick={{fill:'#6B7A99',fontSize:11}} axisLine={false} tickLine={false} tickFormatter={v=>fmt(v)} />
+                <Tooltip contentStyle={{background:'#1E2330',border:'1px solid #2A3040',borderRadius:10,fontFamily:'Nunito'}} labelStyle={{color:'#E8ECF4',marginBottom:4}} formatter={(v,n)=>[fmtFull(v),n==='ship'?'Công ship':'Tip']} />
+                <Bar dataKey="ship" fill="#FF6B2B" radius={[4,4,0,0]} />
+                <Bar dataKey="tip" fill="#FFD166" radius={[4,4,0,0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+          <div className="card p-5">
+            <div className="section-title mb-4">Tổng thu nhập</div>
+            <ResponsiveContainer width="100%" height={220}>
+              <LineChart data={chartData}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#2A3040" />
+                <XAxis dataKey="key" tick={{fill:'#6B7A99',fontSize:11}} axisLine={false} tickLine={false} />
+                <YAxis tick={{fill:'#6B7A99',fontSize:11}} axisLine={false} tickLine={false} tickFormatter={v=>fmt(v)} />
+                <Tooltip contentStyle={{background:'#1E2330',border:'1px solid #2A3040',borderRadius:10,fontFamily:'Nunito'}} formatter={(v)=>[fmtFull(v),'Thu nhập']} />
+                <Line type="monotone" dataKey="total" stroke="#00E5A0" strokeWidth={2.5} dot={{fill:'#00E5A0',r:4}} />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+        </>
+      )}
     </div>
   );
 };
 
-// ── App Container ──────────────────────────────────────────────────────────
+// ── History Page ──────────────────────────────────────────────────────────────
+const HistoryPage = ({ data, onDeleteOrder, onDeleteTransfer, onEditOrder, onDeleteCash }) => {
+  const [tab, setTab] = useState('orders');
+  const { orders, transfers, tipApp, cashTx = [] } = data;
+
+  return (
+    <div className="fade-in">
+      <div className="mb-6">
+        <h2 style={{fontSize:24,marginBottom:12}}>Lịch sử</h2>
+        {/* Scrollable on mobile */}
+        <div className="history-tabs flex gap-1" style={{flexWrap:'nowrap'}}>
+          <button className={`tab-btn ${tab==='orders'?'active':''}`} onClick={()=>setTab('orders')} style={{whiteSpace:'nowrap'}}>🥡 Đơn hàng</button>
+          <button className={`tab-btn ${tab==='transfers'?'active':''}`} onClick={()=>setTab('transfers')} style={{whiteSpace:'nowrap'}}>💸 Chuyển tiền</button>
+          <button className={`tab-btn ${tab==='tipapp'?'active':''}`} onClick={()=>setTab('tipapp')} style={{whiteSpace:'nowrap'}}>💳 Tip App</button>
+          <button className={`tab-btn ${tab==='cashtx'?'active':''}`} onClick={()=>setTab('cashtx')} style={{whiteSpace:'nowrap'}}>💰 Nạp/Rút</button>
+        </div>
+      </div>
+
+      {tab==='orders' && (
+        <>
+          {/* PC table */}
+          <div className="card history-table-wrap">
+            <table>
+              <thead><tr><th>Ngày</th><th>Loại</th><th>Ship</th><th>Tip vật lý</th><th>Ví App Δ</th><th>Cash Δ</th><th>MB Δ</th><th>Ghi chú</th><th></th></tr></thead>
+              <tbody>
+                {orders.length===0 && <tr><td colSpan={9} style={{textAlign:'center',color:'var(--muted)',padding:32}}>Chưa có đơn nào</td></tr>}
+                {[...orders].reverse().map(o=>{
+                  const tipPhy=o.subOrders.reduce((a,s)=>a+Math.max(0,(s.collectCustomer||0)-(s.orderAmount||0)-(s.refund||0)),0);
+                  const chenhLech=o.subOrders.reduce((a,s)=>{if(s.type==='2')return a+(s.orderAmount||0);if(s.type==='3')return a+(s.orderAmount||0)-(s.payShop||0);return a;},0);
+                  const appDelta=o.shipTotal-chenhLech+(o.tipApp||0);
+                  const cashDelta=o.subOrders.reduce((a,s)=>{let d=0;if(s.collectMethod==='cash')d+=(s.collectCustomer||0);if(s.payShopMethod==='cash')d-=(s.payShop||0);if(s.refundMethod==='cash')d-=(s.refund||0);return a+d;},0);
+                  const mbDelta=o.subOrders.reduce((a,s)=>a+(s.collectMethod==='mb'?(s.collectCustomer||0):0),0);
+                  return (<tr key={o._id}><td className="mono" style={{fontSize:12}}>{o.date}</td><td><span className={`badge ${o.isBundle?'badge-blue':'badge-orange'}`}>{o.isBundle?`Ghép(${o.subOrders.length})`:'Lẻ'}</span></td><td className="mono pos">+{fmt(o.shipTotal)}</td><td className="mono" style={{color:'var(--yellow)'}}>{tipPhy>0?'+'+fmt(tipPhy):'-'}</td><td className="mono" style={{color:appDelta>=0?'var(--green)':'var(--red)'}}>{appDelta>=0?'+':''}{fmt(appDelta)}</td><td className="mono" style={{color:cashDelta>=0?'var(--green)':'var(--red)'}}>{cashDelta!==0?(cashDelta>0?'+':'')+fmt(cashDelta):'-'}</td><td className="mono" style={{color:'var(--blue)'}}>{mbDelta>0?'+'+fmt(mbDelta):'-'}</td><td style={{color:'var(--muted)',fontSize:12}}>{o.note||'-'}</td><td style={{display:'flex',gap:4}}><button className="btn btn-sm btn-ghost" onClick={()=>onEditOrder(o)} style={{color:'var(--blue)',borderColor:'var(--blue-dim)'}}>✏️</button><button className="btn btn-sm btn-danger" onClick={()=>onDeleteOrder(o._id)}><Icon name="trash" size={12}/></button></td></tr>);
+                })}
+              </tbody>
+            </table>
+          </div>
+          {/* Mobile cards */}
+          <div className="history-cards-wrap">
+            {orders.length===0 && (<div style={{textAlign:'center',color:'var(--muted)',padding:'24px 0',fontSize:13}}>Chưa có đơn nào</div>)}
+            {[...orders].reverse().map(o=>{
+              const tipPhy=o.subOrders.reduce((a,s)=>a+Math.max(0,(s.collectCustomer||0)-(s.orderAmount||0)-(s.refund||0)),0);
+              const chenhLech=o.subOrders.reduce((a,s)=>{if(s.type==='2')return a+(s.orderAmount||0);if(s.type==='3')return a+(s.orderAmount||0)-(s.payShop||0);return a;},0);
+              const appDelta=o.shipTotal-chenhLech+(o.tipApp||0);
+              const cashDelta=o.subOrders.reduce((a,s)=>{let d=0;if(s.collectMethod==='cash')d+=(s.collectCustomer||0);if(s.payShopMethod==='cash')d-=(s.payShop||0);if(s.refundMethod==='cash')d-=(s.refund||0);return a+d;},0);
+              return (
+                <div key={o._id} className="m-order-card">
+                  <div className="m-order-card-row">
+                    <span style={{fontSize:12,color:'var(--muted)',fontWeight:600}}>{o.date}</span>
+                    <div style={{display:'flex',gap:6,alignItems:'center'}}>
+                      <span className={`badge ${o.isBundle?'badge-blue':'badge-orange'}`}>{o.isBundle?`Ghép(${o.subOrders.length})`:'Lẻ'}</span>
+                      <button className="btn btn-sm btn-ghost" onClick={()=>onEditOrder(o)} style={{color:'var(--blue)',borderColor:'var(--blue-dim)',padding:'4px 8px'}}>✏️</button>
+                      <button className="btn btn-sm btn-danger" onClick={()=>onDeleteOrder(o._id)} style={{padding:'4px 8px'}}><Icon name="trash" size={12}/></button>
+                    </div>
+                  </div>
+                  <div className="m-order-card-row"><span style={{fontSize:12,color:'var(--muted)'}}>Công ship</span><span className="mono pos" style={{fontWeight:700}}>+{fmtFull(o.shipTotal)}</span></div>
+                  {tipPhy>0 && (<div className="m-order-card-row"><span style={{fontSize:12,color:'var(--muted)'}}>Tip vật lý</span><span className="mono" style={{color:'var(--yellow)',fontWeight:700}}>+{fmtFull(tipPhy)}</span></div>)}
+                  <div className="m-order-card-row"><span style={{fontSize:12,color:'var(--muted)'}}>Ví App Δ</span><span className="mono" style={{color:appDelta>=0?'var(--green)':'var(--red)',fontWeight:700}}>{appDelta>=0?'+':''}{fmtFull(appDelta)}</span></div>
+                  {cashDelta!==0 && (<div className="m-order-card-row"><span style={{fontSize:12,color:'var(--muted)'}}>Tiền mặt Δ</span><span className="mono" style={{color:cashDelta>=0?'var(--green)':'var(--red)',fontWeight:700}}>{cashDelta>0?'+':''}{fmtFull(cashDelta)}</span></div>)}
+                  {o.note && (<div style={{fontSize:11,color:'var(--muted)',marginTop:6,borderTop:'1px solid var(--border)',paddingTop:6}}>📝 {o.note}</div>)}
+                </div>
+              );
+            })}
+          </div>
+        </>
+      )}
+
+      {tab==='transfers' && (
+        <>
+          <div className="card history-table-wrap">
+            <table>
+              <thead><tr><th>Ngày</th><th>Từ</th><th>Đến</th><th>Số tiền</th><th>Ghi chú</th><th></th></tr></thead>
+              <tbody>
+                {transfers.length===0 && <tr><td colSpan={6} style={{textAlign:'center',color:'var(--muted)',padding:32}}>Chưa có giao dịch chuyển tiền</td></tr>}
+                {[...transfers].reverse().map(t=>{
+                  const names={app:'Ví App',momo:'Momo',mb:'MB Bank',cash:'Tiền mặt'};
+                  return (<tr key={t._id}><td className="mono" style={{fontSize:12}}>{t.date}</td><td><span className="badge badge-red">{names[t.from]}</span></td><td><span className="badge badge-green">{names[t.to]}</span></td><td className="mono">{fmtFull(t.amount)}</td><td style={{color:'var(--muted)',fontSize:12}}>{t.note||'-'}</td><td><button className="btn btn-sm btn-danger" onClick={()=>onDeleteTransfer(t._id)}><Icon name="trash" size={12}/></button></td></tr>);
+                })}
+              </tbody>
+            </table>
+          </div>
+          <div className="history-cards-wrap">
+            {transfers.length===0 && (<div style={{textAlign:'center',color:'var(--muted)',padding:'24px 0',fontSize:13}}>Chưa có giao dịch chuyển tiền</div>)}
+            {[...transfers].reverse().map(t=>{
+              const names={app:'Ví App',momo:'Momo',mb:'MB Bank',cash:'Tiền mặt'};
+              return (
+                <div key={t._id} className="m-transfer-card">
+                  <div className="m-order-card-row">
+                    <span style={{fontSize:12,color:'var(--muted)',fontWeight:600}}>{t.date}</span>
+                    <button className="btn btn-sm btn-danger" onClick={()=>onDeleteTransfer(t._id)} style={{padding:'4px 8px'}}><Icon name="trash" size={12}/></button>
+                  </div>
+                  <div className="m-order-card-row">
+                    <span style={{display:'flex',alignItems:'center',gap:6}}>
+                      <span className="badge badge-red">{names[t.from]}</span>
+                      <span style={{fontSize:12,color:'var(--muted)'}}>→</span>
+                      <span className="badge badge-green">{names[t.to]}</span>
+                    </span>
+                    <span className="mono" style={{fontWeight:700,color:'var(--text)'}}>{fmtFull(t.amount)}</span>
+                  </div>
+                  {t.note && (<div style={{fontSize:11,color:'var(--muted)',marginTop:4}}>📝 {t.note}</div>)}
+                </div>
+              );
+            })}
+          </div>
+        </>
+      )}
+
+      {tab==='tipapp' && (
+        <>
+          <div className="card history-table-wrap">
+            <table><thead><tr><th>Ngày</th><th>Tip App</th><th></th></tr></thead>
+              <tbody>
+                {tipApp.length===0 && <tr><td colSpan={3} style={{textAlign:'center',color:'var(--muted)',padding:32}}>Chưa có tip app</td></tr>}
+                {[...tipApp].reverse().map(t=>(<tr key={t._id}><td className="mono" style={{fontSize:12}}>{t.date}</td><td className="mono" style={{color:'var(--green)'}}>+{fmtFull(t.amount)}</td><td></td></tr>))}
+              </tbody>
+            </table>
+          </div>
+          <div className="history-cards-wrap">
+            {tipApp.length===0 && (<div style={{textAlign:'center',color:'var(--muted)',padding:'24px 0',fontSize:13}}>Chưa có tip app</div>)}
+            {[...tipApp].reverse().map(t=>(
+              <div key={t._id} className="m-tip-card">
+                <span style={{fontSize:12,color:'var(--muted)',fontWeight:600}}>{t.date}</span>
+                <span className="mono" style={{color:'var(--green)',fontWeight:700}}>+{fmtFull(t.amount)}</span>
+              </div>
+            ))}
+          </div>
+        </>
+      )}
+
+      {tab==='cashtx' && (
+        <>
+          <div className="card history-table-wrap">
+            <table><thead><tr><th>Ngày</th><th>Loại</th><th>Ví</th><th>Số tiền</th><th>Ghi chú</th><th></th></tr></thead>
+              <tbody>
+                {cashTx.length===0 && (<tr><td colSpan={6} style={{textAlign:'center',color:'var(--muted)',padding:32}}>Chưa có giao dịch nạp/rút</td></tr>)}
+                {[...cashTx].reverse().map(t=>{const walletLabel={cash:'Tiền mặt',momo:'Momo',mb:'MB Bank'}[t.wallet]||t.wallet;const isDeposit=t.txType==='deposit';return(<tr key={t._id}><td className="mono" style={{fontSize:12}}>{t.date}</td><td><span className={`badge ${isDeposit?'badge-green':'badge-red'}`}>{isDeposit?'⬆️ Nạp':'⬇️ Rút'}</span></td><td style={{color:'var(--muted)',fontSize:13}}>{walletLabel}</td><td className="mono" style={{color:isDeposit?'var(--green)':'var(--red)',fontWeight:600}}>{isDeposit?'+':'-'}{fmtFull(t.amount)}</td><td style={{color:'var(--muted)',fontSize:12}}>{t.note||'-'}</td><td><button className="btn btn-sm btn-danger" onClick={()=>onDeleteCash(t._id)}><Icon name="trash" size={12}/></button></td></tr>);
+                })}
+              </tbody>
+            </table>
+          </div>
+          <div className="history-cards-wrap">
+            {cashTx.length===0 && (<div style={{textAlign:'center',color:'var(--muted)',padding:'24px 0',fontSize:13}}>Chưa có giao dịch nạp/rút</div>)}
+            {[...cashTx].reverse().map(t=>{
+              const walletLabel={cash:'Tiền mặt',momo:'Momo',mb:'MB Bank'}[t.wallet]||t.wallet;
+              const isDeposit=t.txType==='deposit';
+              return (
+                <div key={t._id} className="m-cash-card">
+                  <div className="m-order-card-row">
+                    <div style={{display:'flex',alignItems:'center',gap:8}}>
+                      <span className={`badge ${isDeposit?'badge-green':'badge-red'}`}>{isDeposit?'⬆️ Nạp':'⬇️ Rút'}</span>
+                      <span style={{fontSize:12,color:'var(--muted)'}}>{walletLabel}</span>
+                    </div>
+                    <button className="btn btn-sm btn-danger" onClick={()=>onDeleteCash(t._id)} style={{padding:'4px 8px'}}><Icon name="trash" size={12}/></button>
+                  </div>
+                  <div className="m-order-card-row">
+                    <span style={{fontSize:12,color:'var(--muted)',fontWeight:600}}>{t.date}</span>
+                    <span className="mono" style={{color:isDeposit?'var(--green)':'var(--red)',fontWeight:700}}>{isDeposit?'+':'-'}{fmtFull(t.amount)}</span>
+                  </div>
+                  {t.note && (<div style={{fontSize:11,color:'var(--muted)',marginTop:4}}>📝 {t.note}</div>)}
+                </div>
+              );
+            })}
+          </div>
+        </>
+      )}
+    </div>
+  );
+};
+
+// ── Pure wallet-delta helpers ─────────────────────────────────────────────────
+const calcChenhLech = (subOrders) => subOrders.reduce((a,s)=>{
+  if(s.forgotCollect){if(s.type==='2')return a+(s.orderAmount||0);if(s.type==='3')return a+(s.orderAmount||0)-(s.payShop||0);return a;}
+  if(s.type==='2') return a+(s.orderAmount||0);
+  if(s.type==='3') return a+(s.orderAmount||0)-(s.payShop||0);
+  if(s.type==='4') return a-(s.payShop||0);
+  return a;
+},0);
+
+const applySubWallet = (w, s, sign=1) => {
+  if(!s.forgotCollect){
+    if(s.collectMethod==='cash') w.cash+=sign*(s.collectCustomer||0);
+    if(s.collectMethod==='mb') w.mb+=sign*(s.collectCustomer||0);
+    if(s.refundMethod==='cash') w.cash-=sign*(s.refund||0);
+    if(s.refundMethod==='momo') w.momo-=sign*(s.refund||0);
+  }
+  if(s.payShopMethod==='cash') w.cash-=sign*(s.payShop||0);
+  if(s.payShopMethod==='momo') w.momo-=sign*(s.payShop||0);
+  if(s.payShopMethod==='mb') w.mb-=sign*(s.payShop||0);
+};
+
+// ── App ───────────────────────────────────────────────────────────────────────
 const App = () => {
-  const [userId, setUserId] = useState(() => localStorage.getItem('spf_userId') || null);
-  const [username, setUsername] = useState(() => localStorage.getItem('spf_user') || null);
+  const [userId,   setUserId]   = useState(() => localStorage.getItem('spf_userId') || null);
+  const [username, setUsername] = useState(() => localStorage.getItem('spf_user')   || null);
   const [page, setPage] = useState('dashboard');
   const [modal, setModal] = useState(null);
-  const [editingItem, setEditingItem] = useState(null);
+  const [editingOrder, setEditingOrder] = useState(null);
+  const [showBackup, setShowBackup] = useState(false);
+  const [showActionSheet, setShowActionSheet] = useState(false);
   const [data, setData] = useState(INITIAL);
   const [saving, setSaving] = useState(false);
+  const [loadingData, setLoadingData] = useState(false);
   const isMobile = useIsMobile();
 
   useEffect(() => {
-    if (userId) api.loadData(userId).then(setData).catch(console.error);
+    if (!userId) return;
+    setLoadingData(true);
+    api.loadData(userId).then(d=>setData(d)).catch(e=>console.error('Load error:',e)).finally(()=>setLoadingData(false));
   }, [userId]);
 
-  const saveWallets = (w) => {
-    setData(prev => ({...prev, wallets: w}));
-    api.saveWallets(userId, w).catch(console.error);
+  const handleLogin = (newUserId, newUsername) => {
+    localStorage.setItem('spf_userId', newUserId);
+    localStorage.setItem('spf_user', newUsername);
+    setUserId(newUserId); setUsername(newUsername);
   };
 
-  const applyOrder = async (order) => {
+  const handleLogout = () => {
+    localStorage.removeItem('spf_userId'); localStorage.removeItem('spf_user');
+    setUserId(null); setUsername(null); setData(INITIAL); setPage('dashboard');
+  };
+
+  // Handle action sheet selections (mobile FAB)
+  const handleAction = (id) => {
+    if (id === 'logout') { handleLogout(); return; }
+    if (id === 'backup') { setShowBackup(true); return; }
+    setModal(id);
+  };
+
+  const applyOrder = useCallback(async (order) => {
     const isEdit = !!order._id;
+    setData(prev => {
+      const w={...prev.wallets};let orders=prev.orders;
+      if(isEdit){const existing=prev.orders.find(o=>o._id===order._id);if(existing){w.app-=existing.shipTotal-calcChenhLech(existing.subOrders)+(existing.tipApp||0);existing.subOrders.forEach(s=>applySubWallet(w,s,-1));orders=prev.orders.map(o=>o._id===order._id?order:o);}}
+      else{orders=[...prev.orders,order];}
+      w.app+=order.shipTotal-calcChenhLech(order.subOrders)+(order.tipApp||0);
+      order.subOrders.forEach(s=>applySubWallet(w,s,1));
+      return {...prev,wallets:w,orders};
+    });
     setSaving(true);
-    setData(prev => {
-      const w = {...prev.wallets};
-      if(isEdit){
-        const old = prev.orders.find(o=>o._id===order._id);
-        const old_cl = calcChenhLech(old.subOrders);
-        w.app -= (old.shipTotal - old_cl + old.tipApp);
-        old.subOrders.forEach(s => applySubWallet(w, s, -1));
-      }
-      const new_cl = calcChenhLech(order.subOrders);
-      w.app += (order.shipTotal - new_cl + order.tipApp);
-      order.subOrders.forEach(s => applySubWallet(w, s, 1));
-      
-      const newOrders = isEdit ? prev.orders.map(o=>o._id===order._id?order:o) : [...prev.orders, order];
-      api.saveWallets(userId, w);
-      return {...prev, wallets: w, orders: newOrders};
-    });
-    
-    if(isEdit) await api.updateOrder(userId, order);
-    else {
-      const id = await api.addOrder(userId, order);
-      setData(prev => ({...prev, orders: prev.orders.map(o=>o===order?{...o,_id:id}:o)}));
-    }
-    setSaving(false);
-  };
+    try {
+      if(isEdit){await api.updateOrder(userId,order);}
+      else{const newId=await api.addOrder(userId,order);setData(prev=>({...prev,orders:prev.orders.map(o=>o===order||(!o._id&&o.date===order.date&&o.shipTotal===order.shipTotal)?{...o,_id:newId}:o)}));}
+      setData(prev=>{api.saveWallets(userId,prev.wallets).catch(console.error);return prev;});
+    }catch(e){console.error('Save order error:',e);}finally{setSaving(false);}
+  }, [userId]);
 
-  const deleteOrder = async (id) => {
-    if(!confirm('Xoá đơn này?')) return;
-    setData(prev => {
-      const o = prev.orders.find(x=>x._id===id);
-      const w = {...prev.wallets};
-      const cl = calcChenhLech(o.subOrders);
-      w.app -= (o.shipTotal - cl + o.tipApp);
-      o.subOrders.forEach(s => applySubWallet(w, s, -1));
-      api.saveWallets(userId, w);
-      api.deleteOrder(userId, id);
-      return {...prev, wallets: w, orders: prev.orders.filter(x=>x._id!==id)};
-    });
-  };
+  const applyTransfer = useCallback(async (t) => {
+    setData(prev=>{const w={...prev.wallets};w[t.from]-=t.amount;w[t.to]+=t.amount;return{...prev,wallets:w,transfers:[...prev.transfers,t]};});
+    setSaving(true);
+    try{const newId=await api.addTransfer(userId,t);setData(prev=>({...prev,transfers:prev.transfers.map(x=>!x._id&&x.date===t.date&&x.amount===t.amount?{...x,_id:newId}:x)}));setData(prev=>{api.saveWallets(userId,prev.wallets).catch(console.error);return prev;});}
+    catch(e){console.error('Save transfer error:',e);}finally{setSaving(false);}
+  }, [userId]);
 
-  const applyTransfer = async (t) => {
-    const isEdit = !!t._id;
-    setData(prev => {
-      const w = {...prev.wallets};
-      if(isEdit){
-        const old = prev.transfers.find(x=>x._id===t._id);
-        w[old.from] += old.amount; w[old.to] -= old.amount;
-      }
-      w[t.from] -= t.amount; w[t.to] += t.amount;
-      const newList = isEdit ? prev.transfers.map(x=>x._id===t._id?t:x) : [...prev.transfers, t];
-      api.saveWallets(userId, w);
-      return {...prev, wallets: w, transfers: newList};
-    });
-    if(isEdit) await api.updateTransfer(userId, t);
-    else {
-      const id = await api.addTransfer(userId, t);
-      setData(prev => ({...prev, transfers: prev.transfers.map(x=>x===t?{...x,_id:id}:x)}));
-    }
-  };
+  const applyTipApp = useCallback(async (t) => {
+    setData(prev=>{const w={...prev.wallets};w.app+=t.amount;return{...prev,wallets:w,tipApp:[...prev.tipApp,t]};});
+    setSaving(true);
+    try{const newId=await api.addTip(userId,t);setData(prev=>({...prev,tipApp:prev.tipApp.map(x=>!x._id&&x.date===t.date&&x.amount===t.amount?{...x,_id:newId}:x)}));setData(prev=>{api.saveWallets(userId,prev.wallets).catch(console.error);return prev;});}
+    catch(e){console.error('Save tip error:',e);}finally{setSaving(false);}
+  }, [userId]);
 
-  const applyTip = async (t) => {
-    const isEdit = !!t._id;
-    setData(prev => {
-      const w = {...prev.wallets};
-      if(isEdit) w.app -= prev.tipApp.find(x=>x._id===t._id).amount;
-      w.app += t.amount;
-      const newList = isEdit ? prev.tipApp.map(x=>x._id===t._id?t:x) : [...prev.tipApp, t];
-      api.saveWallets(userId, w);
-      return {...prev, wallets: w, tipApp: newList};
-    });
-    if(isEdit) await api.updateTip(userId, t);
-    else {
-      const id = await api.addTip(userId, t);
-      setData(prev => ({...prev, tipApp: prev.tipApp.map(x=>x===t?{...x,_id:id}:x)}));
-    }
-  };
+  const deleteOrder = useCallback(async (id) => {
+    if(!confirm('Xoá đơn này? Số dư ví sẽ được hoàn lại.')) return;
+    setData(prev=>{const order=prev.orders.find(o=>o._id===id);if(!order)return prev;const w={...prev.wallets};w.app-=order.shipTotal-calcChenhLech(order.subOrders)+(order.tipApp||0);order.subOrders.forEach(s=>applySubWallet(w,s,-1));return{...prev,wallets:w,orders:prev.orders.filter(o=>o._id!==id)};});
+    setSaving(true);
+    try{await api.deleteOrder(userId,id);setData(prev=>{api.saveWallets(userId,prev.wallets).catch(console.error);return prev;});}
+    catch(e){console.error('Delete order error:',e);}finally{setSaving(false);}
+  }, [userId]);
 
-  const applyCash = async (tx) => {
-    const isEdit = !!tx._id;
-    setData(prev => {
-      const w = {...prev.wallets};
-      if(isEdit){
-        const old = prev.cashTx.find(x=>x._id===tx._id);
-        if(old.txType==='deposit') w[old.wallet]-=old.amount; else w[old.wallet]+=old.amount;
-      }
-      if(tx.txType==='deposit') w[tx.wallet]+=tx.amount; else w[tx.wallet]-=tx.amount;
-      const newList = isEdit ? prev.cashTx.map(x=>x._id===tx._id?tx:x) : [...(prev.cashTx||[]), tx];
-      api.saveWallets(userId, w);
-      return {...prev, wallets: w, cashTx: newList};
-    });
-    if(isEdit) await api.updateCash(userId, tx);
-    else {
-      const id = await api.addCash(userId, tx);
-      setData(prev => ({...prev, cashTx: prev.cashTx.map(x=>x===tx?{...x,_id:id}:x)}));
-    }
-  };
+  const deleteTransfer = useCallback(async (id) => {
+    if(!confirm('Xoá giao dịch chuyển tiền này?')) return;
+    setData(prev=>{const t=prev.transfers.find(x=>x._id===id);if(!t)return prev;const w={...prev.wallets};w[t.from]+=t.amount;w[t.to]-=t.amount;return{...prev,wallets:w,transfers:prev.transfers.filter(x=>x._id!==id)};});
+    setSaving(true);
+    try{await api.deleteTransfer(userId,id);setData(prev=>{api.saveWallets(userId,prev.wallets).catch(console.error);return prev;});}
+    catch(e){console.error('Delete transfer error:',e);}finally{setSaving(false);}
+  }, [userId]);
 
-  if (!userId) return <LoginScreen onLogin={(id, u)=>{ localStorage.setItem('spf_userId', id); localStorage.setItem('spf_user', u); setUserId(id); setUsername(u); }} />;
+  const applyCash = useCallback(async (tx) => {
+    setData(prev=>{const w={...prev.wallets};if(tx.txType==='deposit')w[tx.wallet]+=tx.amount;else w[tx.wallet]-=tx.amount;return{...prev,wallets:w,cashTx:[...(prev.cashTx||[]),tx]};});
+    setSaving(true);
+    try{const newId=await api.addCash(userId,tx);setData(prev=>({...prev,cashTx:(prev.cashTx||[]).map(x=>!x._id&&x.date===tx.date&&x.amount===tx.amount&&x.wallet===tx.wallet?{...x,_id:newId}:x)}));setData(prev=>{api.saveWallets(userId,prev.wallets).catch(console.error);return prev;});}
+    catch(e){console.error('Save cash error:',e);}finally{setSaving(false);}
+  }, [userId]);
+
+  const deleteCash = useCallback(async (id) => {
+    if(!confirm('Xoá giao dịch này? Số dư ví sẽ được hoàn lại.')) return;
+    setData(prev=>{const tx=(prev.cashTx||[]).find(x=>x._id===id);if(!tx)return prev;const w={...prev.wallets};if(tx.txType==='deposit')w[tx.wallet]-=tx.amount;else w[tx.wallet]+=tx.amount;return{...prev,wallets:w,cashTx:(prev.cashTx||[]).filter(x=>x._id!==id)};});
+    setSaving(true);
+    try{await api.deleteCash(userId,id);setData(prev=>{api.saveWallets(userId,prev.wallets).catch(console.error);return prev;});}
+    catch(e){console.error('Delete cash error:',e);}finally{setSaving(false);}
+  }, [userId]);
+
+  const editOrder = useCallback((order) => { setEditingOrder(order); setModal('order'); }, []);
+
+  if (!userId) return <LoginScreen onLogin={handleLogin} />;
+
+  if (loadingData) return (
+    <div style={{minHeight:'100vh',display:'flex',alignItems:'center',justifyContent:'center',flexDirection:'column',gap:12}}>
+      <div style={{fontSize:28}}>⏳</div>
+      <div style={{fontFamily:'Nunito',fontSize:16,color:'var(--muted)'}}>Đang tải dữ liệu...</div>
+    </div>
+  );
+
+  const pages = [
+    { id:'dashboard', label:'Dashboard', icon:'dashboard' },
+    { id:'chart', label:'Biểu đồ', icon:'chart' },
+    { id:'history', label:'Lịch sử', icon:'history' },
+  ];
 
   return (
-    <div style={{display:'flex', minHeight:'100vh'}}>
-      <aside className="pc-sidebar" style={{width:220, background:'var(--surface)', borderRight:'1px solid var(--border)', padding:'24px 16px', display:'flex', flexDirection:'column', position:'sticky', top:0, height:'100vh'}}>
+    <div style={{display:'flex',minHeight:'100vh'}}>
+      {/* ── PC Sidebar (hidden on mobile via CSS) ── */}
+      <aside className="pc-sidebar" style={{width:220,background:'var(--surface)',borderRight:'1px solid var(--border)',padding:'24px 16px',display:'flex',flexDirection:'column',position:'sticky',top:0,height:'100vh'}}>
         <div style={{marginBottom:28}}>
-          <div style={{fontFamily:'Nunito',fontWeight:800,fontSize:20,color:'var(--orange)'}}>ShipFlow</div>
-          <div style={{fontSize:11,color:'var(--blue)',marginTop:8}}>👤 {username} {saving && '⏳'}</div>
+          <div style={{fontFamily:'Nunito',fontWeight:800,fontSize:20,color:'var(--orange)',letterSpacing:'-0.02em'}}>ShipFlow</div>
+          <div style={{fontSize:11,color:'var(--muted)',marginTop:2}}>Shopee Food Tracker</div>
+          <div style={{marginTop:8,display:'flex',alignItems:'center',justifyContent:'space-between'}}>
+            <span style={{fontSize:11,color:'var(--blue)',fontWeight:600}}>👤 {username}</span>
+            <span style={{fontSize:10,color:saving?'var(--yellow)':'var(--green)'}}>{saving ? '⏳ Đang lưu...' : '✅ Đã lưu'}</span>
+          </div>
         </div>
         <nav style={{flex:1}}>
-          <button className={`nav-item ${page==='dashboard'?'active':''}`} onClick={()=>setPage('dashboard')}><Icon name="dashboard"/> Tổng quan</button>
-          <button className={`nav-item ${page==='history'?'active':''}`} onClick={()=>setPage('history')}><Icon name="history"/> Lịch sử</button>
+          {pages.map(p=>(
+            <button key={p.id} className={`nav-item ${page===p.id?'active':''}`} onClick={()=>setPage(p.id)}>
+              <Icon name={p.icon} size={16}/> {p.label}
+            </button>
+          ))}
         </nav>
-        <div className="flex flex-col gap-2 pt-4 border-t border-[#2A3040]">
-          <button className="btn btn-primary btn-sm" onClick={()=>setModal('order')}>+ Nhập đơn</button>
-          <button className="btn btn-ghost btn-sm" onClick={()=>setModal('transfer')}>💸 Chuyển tiền</button>
-          <button className="btn btn-ghost btn-sm" onClick={()=>setModal('tipapp')}>💳 Tip App</button>
-          <button className="btn btn-ghost btn-sm" onClick={()=>setModal('cash')}>💰 Nạp/Rút</button>
-          <button className="btn btn-ghost btn-sm" onClick={()=>setModal('wallet')}>⚙️ Cài đặt ví</button>
-          <button className="btn btn-ghost btn-sm text-red-400" onClick={()=>{localStorage.clear(); location.reload();}}>🚪 Đăng xuất</button>
+        <div style={{borderTop:'1px solid var(--border)',paddingTop:16,display:'flex',flexDirection:'column',gap:8}}>
+          <div className="section-title">Thao tác nhanh</div>
+          <button className="btn btn-primary btn-sm" onClick={()=>setModal('order')} style={{width:'100%'}}><Icon name="plus" size={13}/> Nhập đơn</button>
+          <button className="btn btn-ghost btn-sm" onClick={()=>setModal('transfer')} style={{width:'100%'}}><Icon name="transfer" size={13}/> Chuyển tiền</button>
+          <button className="btn btn-ghost btn-sm" onClick={()=>setModal('tipapp')} style={{width:'100%'}}><Icon name="tip" size={13}/> Tip App</button>
+          <button className="btn btn-ghost btn-sm" onClick={()=>setModal('cash')} style={{width:'100%',color:'var(--green)',borderColor:'#00E5A033'}}>💰 Nạp / Rút tiền</button>
+          <button className="btn btn-ghost btn-sm" onClick={()=>setModal('wallet')} style={{width:'100%'}}>⚙️ Số dư ban đầu</button>
+          <button className="btn btn-ghost btn-sm" onClick={()=>setShowBackup(true)} style={{width:'100%'}}>💾 Backup / Restore</button>
+          <button className="btn btn-ghost btn-sm" onClick={handleLogout} style={{width:'100%',color:'var(--red)',borderColor:'var(--red-dim)'}}>🚪 Đăng xuất</button>
         </div>
       </aside>
 
-      <main className="pc-main flex-1 p-8 max-w-[1100px] mx-auto w-full">
-        {page==='dashboard' ? <Dashboard data={data} /> : 
-         <HistoryPage data={data} 
-           onDeleteOrder={deleteOrder} onEditOrder={(o)=>{setEditingItem(o); setModal('order');}}
-           onDeleteTransfer={(id)=>{if(confirm('Xoá?')){const t=data.transfers.find(x=>x._id===id); const w={...data.wallets}; w[t.from]+=t.amount; w[t.to]-=t.amount; saveWallets(w); api.deleteTransfer(userId,id); setData(p=>({...p,transfers:p.transfers.filter(x=>x._id!==id)}));}}}
-           onEditTransfer={(t)=>{setEditingItem(t); setModal('transfer');}}
-           onDeleteTip={(id)=>{if(confirm('Xoá?')){const t=data.tipApp.find(x=>x._id===id); const w={...data.wallets}; w.app-=t.amount; saveWallets(w); api.deleteTip(userId,id); setData(p=>({...p,tipApp:p.tipApp.filter(x=>x._id!==id)}));}}}
-           onEditTip={(t)=>{setEditingItem(t); setModal('tipapp');}}
-           onDeleteCash={(id)=>{if(confirm('Xoá?')){const t=data.cashTx.find(x=>x._id===id); const w={...data.wallets}; if(t.txType==='deposit') w[t.wallet]-=t.amount; else w[t.wallet]+=t.amount; saveWallets(w); api.deleteCash(userId,id); setData(p=>({...p,cashTx:p.cashTx.filter(x=>x._id!==id)}));}}}
-           onEditCash={(t)=>{setEditingItem(t); setModal('cash');}}
-         />}
+      {/* ── Mobile Top Header ── */}
+      <header className="mobile-header">
+        <div className="mobile-header-brand">
+          <span className="brand-name">ShipFlow</span>
+        </div>
+        <div className="mobile-header-meta">
+          <span className="user-label">👤 {username}</span>
+          <span style={{color:'var(--border)'}}>·</span>
+          <span className={`save-status ${saving?'saving':''}`}>{saving ? '⏳ Đang lưu...' : '✅ Đã lưu'}</span>
+        </div>
+      </header>
+
+      {/* ── Main content ── */}
+      <main className="pc-main" style={{flex:1,padding:'32px 36px',maxWidth:1100,margin:'0 auto',width:'100%'}}>
+        {page==='dashboard' && <Dashboard data={data} />}
+        {page==='chart' && <ChartPage data={data} />}
+        {page==='history' && <HistoryPage data={data} onDeleteOrder={deleteOrder} onDeleteTransfer={deleteTransfer} onEditOrder={editOrder} onDeleteCash={deleteCash} />}
       </main>
 
-      {modal==='order' && <OrderModal initialData={editingItem} onClose={()=>{setModal(null); setEditingItem(null);}} onSave={applyOrder} isMobile={isMobile} />}
-      {modal==='transfer' && <TransferModal initialData={editingItem} onClose={()=>{setModal(null); setEditingItem(null);}} onSave={applyTransfer} />}
-      {modal==='tipapp' && <TipAppModal initialData={editingItem} onClose={()=>{setModal(null); setEditingItem(null);}} onSave={applyTip} />}
-      {modal==='cash' && <CashModal initialData={editingItem} onClose={()=>{setModal(null); setEditingItem(null);}} onSave={applyCash} />}
-      {modal==='wallet' && <WalletSetupModal wallets={data.wallets} onSave={saveWallets} onClose={()=>setModal(null)} />}
+      {/* ── Mobile Bottom Nav ── */}
+      <nav className="mobile-bottom-nav">
+        {pages.map((p, i) => {
+          // Insert FAB slot in center (after index 1)
+          const items = [];
+          if (i === 1) {
+            items.push(
+              <div key="fab-slot" className="nav-fab-slot">
+                <button className="mobile-fab" onClick={()=>setShowActionSheet(true)} aria-label="Thao tác nhanh">
+                  <Icon name="plus" size={22}/>
+                </button>
+              </div>
+            );
+          }
+          items.push(
+            <button key={p.id} className={`nav-tab ${page===p.id?'active':''}`} onClick={()=>setPage(p.id)}>
+              <Icon name={p.icon} size={20}/>
+              <span>{p.label}</span>
+            </button>
+          );
+          return items;
+        })}
+      </nav>
+
+      {/* ── Mobile Action Sheet ── */}
+      {showActionSheet && (
+        <MobileActionSheet onClose={()=>setShowActionSheet(false)} onAction={handleAction} />
+      )}
+
+      {/* ── Modals ── */}
+      {modal==='order' && <OrderModal onClose={()=>{setModal(null);setEditingOrder(null);}} onSave={applyOrder} initialData={editingOrder} isMobile={isMobile} />}
+      {modal==='transfer' && <TransferModal onClose={()=>setModal(null)} onSave={applyTransfer} />}
+      {modal==='tipapp' && <TipAppModal onClose={()=>setModal(null)} onSave={applyTipApp} />}
+      {modal==='cash' && <CashModal onClose={()=>setModal(null)} onSave={applyCash} />}
+      {modal==='wallet' && <WalletSetupModal wallets={data.wallets} onSave={w=>{setData(p=>({...p,wallets:w}));api.saveWallets(userId,w).catch(console.error);}} onClose={()=>setModal(null)} />}
+      {showBackup && <BackupModal data={data} onClose={()=>setShowBackup(false)} onRestore={async (newData)=>{setData(newData);setShowBackup(false);setSaving(true);try{await api.saveAll(userId,newData);}catch(e){console.error(e);}finally{setSaving(false);}}} />}
     </div>
   );
 };
