@@ -1,3 +1,4 @@
+// api/auth.js — Schema mới (userId làm FK)
 import { MongoClient } from 'mongodb';
 
 const uri = process.env.MONGODB_URI;
@@ -43,34 +44,44 @@ export default async function handler(req, res) {
     if (action === 'register') {
       if (existing) return res.status(409).json({ error: 'Username đã tồn tại' });
 
-      await users.insertOne({
+      // Tạo user mới, lấy _id vừa insert
+      const result = await users.insertOne({
         username: clean,
         createdAt: new Date(),
         lastLogin: new Date(),
       });
+      const userId = result.insertedId;
 
-      // Tạo document dữ liệu rỗng ban đầu cho user
-      const data = db.collection('shipflow_data');
-      await data.updateOne(
-        { username: clean },
-        {
-          $setOnInsert: {
-            username: clean,
-            wallets: { app: 0, cash: 0, mb: 0, momo: 0 },
-            orders: [],
-            transfers: [],
-            tipApp: [],
-            updatedAt: new Date(),
-          }
-        },
-        { upsert: true }
-      );
+      // Tạo wallet rỗng cho user, dùng userId làm FK
+      const wallets = db.collection('shipflow_wallets');
+      await wallets.insertOne({
+        userId,
+        app:  0,
+        cash: 0,
+        mb:   0,
+        momo: 0,
+        updatedAt: new Date(),
+      });
 
-      return res.status(201).json({ success: true, username: clean, message: 'Đăng ký thành công' });
+      return res.status(201).json({
+        success: true,
+        userId: userId.toString(),
+        username: clean,
+        message: 'Đăng ký thành công',
+      });
+
     } else {
+      // Login
       if (!existing) return res.status(404).json({ error: 'Username không tồn tại' });
+
       await users.updateOne({ username: clean }, { $set: { lastLogin: new Date() } });
-      return res.status(200).json({ success: true, username: clean, message: 'Đăng nhập thành công' });
+
+      return res.status(200).json({
+        success: true,
+        userId: existing._id.toString(), // trả về userId để frontend lưu
+        username: clean,
+        message: 'Đăng nhập thành công',
+      });
     }
   } catch (error) {
     console.error('Auth Error:', error);

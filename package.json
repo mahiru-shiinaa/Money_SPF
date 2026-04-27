@@ -4,6 +4,7 @@
   "type": "module",
   "description": "Quản lý dòng tiền Shopee Food",
   "dependencies": {
+    "dotenv": "^17.4.2",
     "mongodb": "^6.3.0"
   },
   "engines": {

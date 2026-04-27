@@ -88,7 +88,6 @@
     }
     .tab-btn:hover:not(.active) { background: var(--surface2); color: var(--text); }
 
-    /* FIX: ensure all inputs have consistent left padding across all browsers */
     input:not([type=number]):not([type=checkbox]):not([type=radio]):not([type=file]):not([type=range]):not(.no-pad-left) {
       padding-left: 14px !important;
     }
@@ -200,7 +199,6 @@
       margin-bottom: 10px;
     }
 
-    /* FIX: chip buttons now 44px tall, square-ish corners to match inputs */
     .chip {
       display: inline-flex; align-items: center; justify-content: center; gap: 6px;
       padding: 0 20px;
@@ -270,36 +268,114 @@ const INITIAL = {
   orders: [],
   transfers: [],
   tipApp: [],
+  cashTx: [],
 };
 
+// ── API (dùng userId thay username) ──────────────────────────────────────────
 const api = {
-  async loadData(username) {
-    const r = await fetch(`/api/data?username=${encodeURIComponent(username)}`);
+  async loadData(userId) {
+    const r = await fetch(`/api/data?userId=${encodeURIComponent(userId)}`);
     if (!r.ok) throw new Error('Không tải được dữ liệu');
     return r.json();
   },
-  async saveData(username, data) {
+
+  async saveWallets(userId, wallets) {
     await fetch('/api/data', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username, ...data })
+      body: JSON.stringify({ userId, action: 'saveWallets', data: { wallets } }),
     });
   },
+
+  async addOrder(userId, order) {
+    const r = await fetch('/api/data', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userId, action: 'addOrder', data: order }),
+    });
+    if (!r.ok) throw new Error('Không thêm được order');
+    return (await r.json())._id;
+  },
+
+  async updateOrder(userId, order) {
+    await fetch('/api/data', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userId, action: 'updateOrder', data: order }),
+    });
+  },
+
+  async deleteOrder(userId, orderId) {
+    await fetch('/api/data', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userId, action: 'deleteOrder', data: { _id: orderId } }),
+    });
+  },
+
+  async addTransfer(userId, transfer) {
+    const r = await fetch('/api/data', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userId, action: 'addTransfer', data: transfer }),
+    });
+    if (!r.ok) throw new Error('Không thêm được transfer');
+    return (await r.json())._id;
+  },
+
+  async deleteTransfer(userId, transferId) {
+    await fetch('/api/data', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userId, action: 'deleteTransfer', data: { _id: transferId } }),
+    });
+  },
+
+  async addTip(userId, tip) {
+    const r = await fetch('/api/data', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userId, action: 'addTip', data: tip }),
+    });
+    if (!r.ok) throw new Error('Không thêm được tip');
+    return (await r.json())._id;
+  },
+
+  async addCash(userId, tx) {
+    const r = await fetch('/api/data', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userId, action: 'addCash', data: tx }),
+    });
+    if (!r.ok) throw new Error('Không thêm được giao dịch');
+    return (await r.json())._id;
+  },
+
+  async deleteCash(userId, txId) {
+    await fetch('/api/data', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userId, action: 'deleteCash', data: { _id: txId } }),
+    });
+  },
+
+  async saveAll(userId, data) {
+    await fetch('/api/data', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userId, action: 'saveAll', data }),
+    });
+  },
+
   async auth(username, action) {
     const r = await fetch('/api/auth', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username, action })
+      body: JSON.stringify({ username, action }),
     });
     return { ok: r.ok, data: await r.json() };
-  }
+  },
 };
-
-// ORDER types
-// sub-order: { id, type:'1'|'2'|'3', payShop, payShopMethod:'cash'|'momo', collectCustomer, collectMethod:'cash'|'mb', refund, refundMethod:'cash'|'momo', tip }
-// order: { id, date, isBundle, shipTotal, shipMethod:'app', subOrders:[], note }
-
-// TRANSFER: { id, date, from:'app'|'momo'|'mb'|'cash', to, amount, note }
 
 // Icons (simple SVG inline)
 const Icon = ({ name, size=16 }) => {
@@ -348,12 +424,11 @@ const WalletCard = ({ label, value, color, icon, warnNegative }) => {
   );
 };
 
-// ── MoneyInput – tự format dấu chấm hàng nghìn ──────────────────────────────
+// ── MoneyInput ────────────────────────────────────────────────────────────────
 const MoneyInput = ({ value, onChange, placeholder, style, className }) => {
   const [display, setDisplay] = React.useState(value ? Number(value).toLocaleString('vi-VN') : '');
 
   React.useEffect(() => {
-    // Sync display when value changes from outside (e.g. type switch)
     if (!value && value !== 0) { setDisplay(''); return; }
     const num = Number(value);
     if (!isNaN(num)) setDisplay(num === 0 ? '' : num.toLocaleString('vi-VN'));
@@ -382,9 +457,6 @@ const MoneyInput = ({ value, onChange, placeholder, style, className }) => {
 // ── Sub Order Form ────────────────────────────────────────────────────────────
 const SubOrderForm = ({ index, data, onChange, onRemove, canRemove }) => {
   const type = data.type;
-
-  // Tip = Khách trả - Số tiền cần thu - Thối lại
-  // orderAmount = số tiền app yêu cầu thu (bằng tiền đơn với loại 2, bằng chênh lệch với loại 3)
   const needCollect = data.orderAmount || 0;
   const tipCalc = (data.collectCustomer||0) - needCollect - (data.refund||0);
 
@@ -410,7 +482,6 @@ const SubOrderForm = ({ index, data, onChange, onRemove, canRemove }) => {
         {type==='4' && '🔵 Trả quán, không thu khách — App hoàn lại tiền quán + ship'}
       </div>
 
-      {/* Loại 3 & 4: trả quán TRƯỚC */}
       {(type==='3'||type==='4') && (
         <div className="grid gap-3 mb-3" style={{gridTemplateColumns:'1fr 1fr'}}>
           <div>
@@ -428,10 +499,8 @@ const SubOrderForm = ({ index, data, onChange, onRemove, canRemove }) => {
         </div>
       )}
 
-      {/* Loại 2 & 3: thu khách */}
       {(type==='2'||type==='3') && (
         <div className="grid gap-3 mb-3" style={{gridTemplateColumns:'1fr 1fr'}}>
-          {/* Số tiền cần thu - full width */}
           <div style={{gridColumn:'1/-1', padding:'12px 14px', borderRadius:10,
             background:'#FF6B2B0A', border:'2px solid var(--orange)',
             boxShadow:'0 0 0 4px #FF6B2B08'}}>
@@ -449,7 +518,6 @@ const SubOrderForm = ({ index, data, onChange, onRemove, canRemove }) => {
             </div>
           </div>
 
-          {/* Checkbox quên thu */}
           <div style={{gridColumn:'1/-1'}}>
             <label
               style={{display:'flex',alignItems:'center',gap:8,cursor:'pointer',textTransform:'none',letterSpacing:'normal',fontSize:13,color:'var(--text)',fontWeight:600}}
@@ -472,7 +540,6 @@ const SubOrderForm = ({ index, data, onChange, onRemove, canRemove }) => {
             )}
           </div>
 
-          {/* Khách trả thực tế — ẩn khi quên thu */}
           {!data.forgotCollect && <div style={{gridColumn:'1/-1'}}>
             <label>Khách trả thực tế (đ)</label>
             <MoneyInput placeholder="Số tiền khách thực tế đưa cho bạn"
@@ -501,7 +568,6 @@ const SubOrderForm = ({ index, data, onChange, onRemove, canRemove }) => {
             </div>
           )}
 
-          {/* Tip preview — ẩn khi quên thu */}
           {!data.forgotCollect && (data.collectCustomer||0) > 0 && (data.orderAmount||0) > 0 && (
             <div style={{gridColumn:'1/-1', padding:'8px 12px', borderRadius:8, background:'var(--bg)',
               border:`1px solid ${tipCalc>0?'var(--yellow)':'var(--border)'}44`,
@@ -521,7 +587,6 @@ const SubOrderForm = ({ index, data, onChange, onRemove, canRemove }) => {
         </div>
       )}
 
-      {/* Loại 4: preview app hoàn lại */}
       {type==='4' && (data.payShop||0) > 0 && (
         <div className="mt-3 p-2 rounded-lg flex justify-between items-center" style={{background:'var(--bg)'}}>
           <span style={{fontSize:12,color:'var(--muted)'}}>App hoàn vào ví (chưa tính ship)</span>
@@ -546,7 +611,6 @@ const OrderModal = ({ onClose, onSave, initialData }) => {
   const updateSub = (i,v) => setSubOrders(p=>p.map((x,idx)=>idx===i?v:x));
   const removeSub = (i) => setSubOrders(p=>p.filter((_,idx)=>idx!==i));
 
-  // Preview calculations
   const ship = +shipTotal || 0;
   const totalChenhLech = subOrders.reduce((acc,s) => {
     if(s.type==='2') return acc + (s.orderAmount||0);
@@ -558,7 +622,11 @@ const OrderModal = ({ onClose, onSave, initialData }) => {
 
   const handleSave = () => {
     if(!ship) { alert('Nhập tiền ship đi bạn!'); return; }
-    const order = { id: initialData?.id || genId(), date, isBundle, shipTotal:ship, note, tipApp:+tipAppAmount||0, subOrders };
+    // Giữ _id cũ nếu đang edit, để API biết cần updateOrder
+    const order = {
+      ...(initialData?._id ? { _id: initialData._id } : {}),
+      date, isBundle, shipTotal:ship, note, tipApp:+tipAppAmount||0, subOrders
+    };
     onSave(order);
     onClose();
   };
@@ -573,7 +641,6 @@ const OrderModal = ({ onClose, onSave, initialData }) => {
           <button className="btn btn-ghost btn-sm" onClick={onClose}><Icon name="close" size={16}/></button>
         </div>
 
-        {/* Date + type */}
         <div className="grid gap-3 mb-4" style={{gridTemplateColumns:'1fr 1fr'}}>
           <div>
             <label>Ngày</label>
@@ -588,7 +655,6 @@ const OrderModal = ({ onClose, onSave, initialData }) => {
           </div>
         </div>
 
-        {/* Ship + tip app */}
         <div className="grid gap-3 mb-4" style={{gridTemplateColumns:'1fr 1fr'}}>
           <div>
             <label>Tiền ship {isBundle?'(cả chùm)':''}(đ) *</label>
@@ -600,7 +666,6 @@ const OrderModal = ({ onClose, onSave, initialData }) => {
           </div>
         </div>
 
-        {/* Sub orders */}
         <div className="section-title mb-2">Chi tiết {isBundle?'từng đơn trong chùm':'đơn'}</div>
         {subOrders.map((s,i)=>(
           <SubOrderForm key={s.id} index={i} data={s} onChange={v=>updateSub(i,v)} onRemove={()=>removeSub(i)} canRemove={subOrders.length>1} />
@@ -611,13 +676,11 @@ const OrderModal = ({ onClose, onSave, initialData }) => {
           </button>
         )}
 
-        {/* Note */}
         <div className="mb-4">
           <label>Ghi chú</label>
           <input placeholder="VD: khu vực xa, khách dễ tính..." value={note} onChange={e=>setNote(e.target.value)} />
         </div>
 
-        {/* Preview */}
         <div className="p-3 rounded-xl mb-5" style={{background:'var(--bg)',border:'1px solid var(--border)'}}>
           <div className="section-title mb-2">Xem trước tác động</div>
           <div className="grid gap-2">
@@ -661,7 +724,7 @@ const TransferModal = ({ onClose, onSave }) => {
   const handleSave = () => {
     if(!amount) { alert('Nhập số tiền!'); return; }
     if(from===to) { alert('Từ và đến phải khác nhau!'); return; }
-    onSave({ id:genId(), date, from, to, amount:+amount, note });
+    onSave({ date, from, to, amount:+amount, note });
     onClose();
   };
 
@@ -709,11 +772,11 @@ const TransferModal = ({ onClose, onSave }) => {
         {amount && from!==to && (
           <div className="p-3 rounded-xl mb-4" style={{background:'var(--bg)',border:'1px solid var(--border)'}}>
             <div className="flex justify-between text-sm">
-              <span style={{color:'var(--muted)'}}>{{app:'Ví App',momo:'Momo',mb:'MB Bank',cash:'Tiền mặt'}[from]}</span>
+              <span style={{color:'var(--muted)'}}>{walletNames[from]}</span>
               <span className="mono neg">-{fmtFull(+amount)}</span>
             </div>
             <div className="flex justify-between text-sm mt-1">
-              <span style={{color:'var(--muted)'}}>{{app:'Ví App',momo:'Momo',mb:'MB Bank',cash:'Tiền mặt'}[to]}</span>
+              <span style={{color:'var(--muted)'}}>{walletNames[to]}</span>
               <span className="mono pos">+{fmtFull(+amount)}</span>
             </div>
           </div>
@@ -733,7 +796,7 @@ const TipAppModal = ({ onClose, onSave }) => {
   const [amount, setAmount] = useState('');
   const handleSave = () => {
     if(!amount) return;
-    onSave({ id:genId(), date, amount:+amount });
+    onSave({ date, amount:+amount });
     onClose();
   };
   return (
@@ -757,6 +820,94 @@ const TipAppModal = ({ onClose, onSave }) => {
 };
 
 
+// ── Cash Modal (Nạp / Rút tiền) ───────────────────────────────────────────────
+const WALLET_OPTS = [
+  { value:'cash', label:'Tiền mặt' },
+  { value:'momo', label:'Momo' },
+  { value:'mb',   label:'MB Bank' },
+];
+
+const CashModal = ({ onClose, onSave }) => {
+  const [txType, setTxType] = React.useState('deposit');
+  const [date,   setDate]   = React.useState(today());
+  const [wallet, setWallet] = React.useState('cash');
+  const [amount, setAmount] = React.useState(0);
+  const [note,   setNote]   = React.useState('');
+
+  const isDeposit = txType === 'deposit';
+
+  const handleSave = () => {
+    if (!amount || amount <= 0) { alert('Nhập số tiền hợp lệ!'); return; }
+    onSave({ txType, date, wallet, amount, note });
+    onClose();
+  };
+
+  return (
+    <div className="modal-overlay">
+      <div className="modal fade-in" style={{maxWidth:420}}>
+        <div className="flex justify-between items-center mb-5">
+          <h2 style={{fontSize:20}}>💰 Nạp / Rút tiền</h2>
+          <button className="btn btn-ghost btn-sm" onClick={onClose}><Icon name="close" size={16}/></button>
+        </div>
+
+        {/* Toggle Nạp / Rút */}
+        <div style={{display:'flex',gap:4,marginBottom:20,background:'var(--bg)',padding:4,borderRadius:10}}>
+          {[['deposit','⬆️ Nạp tiền'],['withdraw','⬇️ Rút tiền']].map(([v,l])=>(
+            <button key={v}
+              className={`tab-btn ${txType===v?'active':''}`}
+              style={{
+                flex:1,
+                background: txType===v ? (v==='deposit'?'var(--green)':'var(--red)') : 'transparent',
+                color: txType===v ? 'white' : 'var(--muted)',
+              }}
+              onClick={()=>setTxType(v)}>{l}
+            </button>
+          ))}
+        </div>
+
+        <div className="grid gap-3 mb-4">
+          <div>
+            <label>Ngày</label>
+            <input type="date" value={date} onChange={e=>setDate(e.target.value)} />
+          </div>
+          <div>
+            <label>{isDeposit ? 'Nạp vào' : 'Rút từ'}</label>
+            <select value={wallet} onChange={e=>setWallet(e.target.value)}>
+              {WALLET_OPTS.map(o=><option key={o.value} value={o.value}>{o.label}</option>)}
+            </select>
+          </div>
+          <div>
+            <label>Số tiền (đ)</label>
+            <MoneyInput value={amount} onChange={v=>setAmount(v)} placeholder="VD: 500.000" />
+          </div>
+          <div>
+            <label>Ghi chú (tuỳ chọn)</label>
+            <input placeholder={isDeposit ? 'VD: Nạp lương...' : 'VD: Rút tiêu...'} value={note} onChange={e=>setNote(e.target.value)} />
+          </div>
+        </div>
+
+        {/* Preview */}
+        {amount > 0 && (
+          <div className="p-3 rounded-xl mb-4" style={{background:'var(--bg)',border:`1px solid ${isDeposit?'var(--green)':'var(--red)'}44`}}>
+            <div className="flex justify-between text-sm">
+              <span style={{color:'var(--muted)'}}>{WALLET_OPTS.find(o=>o.value===wallet)?.label}</span>
+              <span className="mono" style={{color:isDeposit?'var(--green)':'var(--red)',fontWeight:700}}>
+                {isDeposit ? '+' : '-'}{fmtFull(amount)}
+              </span>
+            </div>
+          </div>
+        )}
+
+        <div className="flex gap-3">
+          <button className="btn btn-ghost" style={{flex:1}} onClick={onClose}>Huỷ</button>
+          <button className="btn btn-primary" style={{flex:2,background:isDeposit?'var(--green)':'var(--red)'}} onClick={handleSave}>
+            {isDeposit ? '⬆️ Xác nhận nạp' : '⬇️ Xác nhận rút'}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 // ── Login Screen ──────────────────────────────────────────────────────────────
 const LoginScreen = ({ onLogin }) => {
@@ -772,7 +923,8 @@ const LoginScreen = ({ onLogin }) => {
     const { ok, data } = await api.auth(clean, mode);
     setLoading(false);
     if (!ok) { setError(data.error || 'Lỗi không xác định'); return; }
-    onLogin(clean.toLowerCase());
+    // Truyền cả userId và username lên App
+    onLogin(data.userId, data.username);
   };
 
   return (
@@ -828,7 +980,6 @@ const LoginScreen = ({ onLogin }) => {
 const Dashboard = ({ data }) => {
   const { wallets, orders, transfers, tipApp } = data;
 
-  // Compute totals
   const totalTipPhysical = orders.reduce((acc,o) =>
     acc + o.subOrders.reduce((a,s) => a + Math.max(0,(s.collectCustomer||0)-(s.orderAmount||0)-(s.refund||0)), 0), 0);
   const totalTipApp = tipApp.reduce((a,t)=>a+t.amount,0);
@@ -843,7 +994,6 @@ const Dashboard = ({ data }) => {
         <p style={{color:'var(--muted)',fontSize:13}}>Dòng tiền thực tế của bạn</p>
       </div>
 
-      {/* Wallets */}
       <div className="section-title">Số dư các ví</div>
       <div style={{display:'grid',gridTemplateColumns:'repeat(4,1fr)',gap:12,marginBottom:24}}>
         <WalletCard label="Ví App Shopee" value={wallets.app} color="orange" icon="wallet" warnNegative />
@@ -852,7 +1002,6 @@ const Dashboard = ({ data }) => {
         <WalletCard label="Momo" value={wallets.momo} color="yellow" icon="wallet" />
       </div>
 
-      {/* Alert banner khi ví app âm */}
       {wallets.app < 0 && (
         <div style={{
           marginBottom:20, padding:'12px 16px',
@@ -873,11 +1022,9 @@ const Dashboard = ({ data }) => {
         </div>
       )}
 
-      {/* Stats */}
       <div className="section-title">Thu nhập</div>
       <div style={{display:'grid',gridTemplateColumns:'repeat(4,1fr)',gap:12,marginBottom:24}}>
         <div className="stat-card green">
-          <div className="before-green" />
           <div className="section-title" style={{marginBottom:4}}>Tổng thu nhập</div>
           <div className="number-big pos">{fmtFull(totalIncome)}</div>
           <div style={{fontSize:11,color:'var(--muted)',marginTop:4}}>{totalOrders} đơn</div>
@@ -896,18 +1043,12 @@ const Dashboard = ({ data }) => {
         </div>
       </div>
 
-      {/* Recent orders */}
       <div className="section-title">Đơn gần đây</div>
       <div className="card">
         <table>
           <thead>
             <tr>
-              <th>Ngày</th>
-              <th>Loại</th>
-              <th>Ship</th>
-              <th>Tip vật lý</th>
-              <th>Ví App</th>
-              <th>Ghi chú</th>
+              <th>Ngày</th><th>Loại</th><th>Ship</th><th>Tip vật lý</th><th>Ví App</th><th>Ghi chú</th>
             </tr>
           </thead>
           <tbody>
@@ -923,7 +1064,7 @@ const Dashboard = ({ data }) => {
               },0);
               const appDelta = o.shipTotal - chenhLech + (o.tipApp||0);
               return (
-                <tr key={o.id}>
+                <tr key={o._id}>
                   <td className="mono" style={{fontSize:12}}>{o.date}</td>
                   <td><span className={`badge ${o.isBundle?'badge-blue':'badge-orange'}`}>{o.isBundle?'Ghép':'Lẻ'}</span></td>
                   <td className="mono pos">+{fmt(o.shipTotal)}</td>
@@ -1025,9 +1166,9 @@ const ChartPage = ({ data }) => {
 };
 
 // ── History Page ──────────────────────────────────────────────────────────────
-const HistoryPage = ({ data, onDeleteOrder, onDeleteTransfer, onEditOrder }) => {
+const HistoryPage = ({ data, onDeleteOrder, onDeleteTransfer, onEditOrder, onDeleteCash }) => {
   const [tab, setTab] = useState('orders');
-  const { orders, transfers, tipApp } = data;
+  const { orders, transfers, tipApp, cashTx = [] } = data;
 
   return (
     <div className="fade-in">
@@ -1037,6 +1178,7 @@ const HistoryPage = ({ data, onDeleteOrder, onDeleteTransfer, onEditOrder }) => 
           <button className={`tab-btn ${tab==='orders'?'active':''}`} onClick={()=>setTab('orders')}>Đơn hàng</button>
           <button className={`tab-btn ${tab==='transfers'?'active':''}`} onClick={()=>setTab('transfers')}>Chuyển tiền</button>
           <button className={`tab-btn ${tab==='tipapp'?'active':''}`} onClick={()=>setTab('tipapp')}>Tip App</button>
+          <button className={`tab-btn ${tab==='cashtx'?'active':''}`} onClick={()=>setTab('cashtx')}>💰 Nạp / Rút</button>
         </div>
       </div>
 
@@ -1067,7 +1209,7 @@ const HistoryPage = ({ data, onDeleteOrder, onDeleteTransfer, onEditOrder }) => 
                 },0);
                 const mbDelta = o.subOrders.reduce((a,s)=>a+(s.collectMethod==='mb'?(s.collectCustomer||0):0),0);
                 return (
-                  <tr key={o.id}>
+                  <tr key={o._id}>
                     <td className="mono" style={{fontSize:12}}>{o.date}</td>
                     <td><span className={`badge ${o.isBundle?'badge-blue':'badge-orange'}`}>{o.isBundle?`Ghép(${o.subOrders.length})`:'Lẻ'}</span></td>
                     <td className="mono pos">+{fmt(o.shipTotal)}</td>
@@ -1078,7 +1220,7 @@ const HistoryPage = ({ data, onDeleteOrder, onDeleteTransfer, onEditOrder }) => 
                     <td style={{color:'var(--muted)',fontSize:12}}>{o.note||'-'}</td>
                     <td style={{display:'flex',gap:4}}>
                       <button className="btn btn-sm btn-ghost" onClick={()=>onEditOrder(o)} style={{color:'var(--blue)',borderColor:'var(--blue-dim)'}}>✏️</button>
-                      <button className="btn btn-sm btn-danger" onClick={()=>onDeleteOrder(o.id)}><Icon name="trash" size={12}/></button>
+                      <button className="btn btn-sm btn-danger" onClick={()=>onDeleteOrder(o._id)}><Icon name="trash" size={12}/></button>
                     </td>
                   </tr>
                 );
@@ -1097,13 +1239,13 @@ const HistoryPage = ({ data, onDeleteOrder, onDeleteTransfer, onEditOrder }) => 
               {[...transfers].reverse().map(t=>{
                 const names={app:'Ví App',momo:'Momo',mb:'MB Bank',cash:'Tiền mặt'};
                 return (
-                  <tr key={t.id}>
+                  <tr key={t._id}>
                     <td className="mono" style={{fontSize:12}}>{t.date}</td>
                     <td><span className="badge badge-red">{names[t.from]}</span></td>
                     <td><span className="badge badge-green">{names[t.to]}</span></td>
                     <td className="mono">{fmtFull(t.amount)}</td>
                     <td style={{color:'var(--muted)',fontSize:12}}>{t.note||'-'}</td>
-                    <td><button className="btn btn-sm btn-danger" onClick={()=>onDeleteTransfer(t.id)}><Icon name="trash" size={12}/></button></td>
+                    <td><button className="btn btn-sm btn-danger" onClick={()=>onDeleteTransfer(t._id)}><Icon name="trash" size={12}/></button></td>
                   </tr>
                 );
               })}
@@ -1119,12 +1261,53 @@ const HistoryPage = ({ data, onDeleteOrder, onDeleteTransfer, onEditOrder }) => 
             <tbody>
               {tipApp.length===0 && <tr><td colSpan={3} style={{textAlign:'center',color:'var(--muted)',padding:32}}>Chưa có tip app</td></tr>}
               {[...tipApp].reverse().map(t=>(
-                <tr key={t.id}>
+                <tr key={t._id}>
                   <td className="mono" style={{fontSize:12}}>{t.date}</td>
                   <td className="mono" style={{color:'var(--green)'}}>+{fmtFull(t.amount)}</td>
                   <td></td>
                 </tr>
               ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+
+      {tab==='cashtx' && (
+        <div className="card">
+          <table>
+            <thead>
+              <tr>
+                <th>Ngày</th><th>Loại</th><th>Ví</th><th>Số tiền</th><th>Ghi chú</th><th></th>
+              </tr>
+            </thead>
+            <tbody>
+              {cashTx.length===0 && (
+                <tr><td colSpan={6} style={{textAlign:'center',color:'var(--muted)',padding:32}}>Chưa có giao dịch nạp/rút</td></tr>
+              )}
+              {[...cashTx].reverse().map(t => {
+                const walletLabel = {cash:'Tiền mặt',momo:'Momo',mb:'MB Bank'}[t.wallet] || t.wallet;
+                const isDeposit = t.txType === 'deposit';
+                return (
+                  <tr key={t._id}>
+                    <td className="mono" style={{fontSize:12}}>{t.date}</td>
+                    <td>
+                      <span className={`badge ${isDeposit?'badge-green':'badge-red'}`}>
+                        {isDeposit ? '⬆️ Nạp' : '⬇️ Rút'}
+                      </span>
+                    </td>
+                    <td style={{color:'var(--muted)',fontSize:13}}>{walletLabel}</td>
+                    <td className="mono" style={{color:isDeposit?'var(--green)':'var(--red)',fontWeight:600}}>
+                      {isDeposit?'+':'-'}{fmtFull(t.amount)}
+                    </td>
+                    <td style={{color:'var(--muted)',fontSize:12}}>{t.note||'-'}</td>
+                    <td>
+                      <button className="btn btn-sm btn-danger" onClick={()=>onDeleteCash(t._id)}>
+                        <Icon name="trash" size={12}/>
+                      </button>
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>
@@ -1158,16 +1341,14 @@ const WalletSetupModal = ({ wallets, onSave, onClose }) => {
   );
 };
 
-
 // ── Backup / Restore Modal ────────────────────────────────────────────────────
 const BackupModal = ({ data, onClose, onRestore }) => {
   const [tab, setTab] = useState('export');
   const [importText, setImportText] = useState('');
-  const [importMode, setImportMode] = useState('merge'); // 'merge' | 'overwrite'
-  const [importResult, setImportResult] = useState(null); // { ok, msg }
+  const [importMode, setImportMode] = useState('merge');
+  const [importResult, setImportResult] = useState(null);
   const [dragOver, setDragOver] = useState(false);
 
-  // ── Export ──
   const exportJSON = () => {
     const json = JSON.stringify(data, null, 2);
     const blob = new Blob([json], { type: 'application/json' });
@@ -1188,7 +1369,7 @@ const BackupModal = ({ data, onClose, onRestore }) => {
     data.orders.forEach(o => {
       o.subOrders.forEach((s, i) => {
         rows.push([
-          'ORDER', o.id, o.date, o.isBundle?1:0, o.shipTotal, o.tipApp||0, o.note||'',
+          'ORDER', o._id, o.date, o.isBundle?1:0, o.shipTotal, o.tipApp||0, o.note||'',
           i, s.type, s.payShop||0, s.payShopMethod||'cash',
           s.collectCustomer||0, s.collectMethod||'cash', s.refund||0, s.refundMethod||'cash'
         ]);
@@ -1197,12 +1378,12 @@ const BackupModal = ({ data, onClose, onRestore }) => {
     rows.push(['---']);
     rows.push(['TYPE','id','date','from','to','amount','note']);
     data.transfers.forEach(t => {
-      rows.push(['TRANSFER', t.id, t.date, t.from, t.to, t.amount, t.note||'']);
+      rows.push(['TRANSFER', t._id, t.date, t.from, t.to, t.amount, t.note||'']);
     });
     rows.push(['---']);
     rows.push(['TYPE','id','date','amount']);
     data.tipApp.forEach(t => {
-      rows.push(['TIPAPP', t.id, t.date, t.amount]);
+      rows.push(['TIPAPP', t._id, t.date, t.amount]);
     });
     rows.push(['---']);
     rows.push(['TYPE','app','cash','mb','momo']);
@@ -1218,18 +1399,15 @@ const BackupModal = ({ data, onClose, onRestore }) => {
     URL.revokeObjectURL(url);
   };
 
-  // ── Import ──
   const parseAndImport = (text) => {
     setImportResult(null);
     try {
-      // Try JSON first
       let parsed = null;
       const trimmed = text.trim();
       if (trimmed.startsWith('{')) {
         parsed = JSON.parse(trimmed);
         if (!parsed.wallets || !parsed.orders) throw new Error('File JSON không đúng định dạng ShipFlow');
       } else {
-        // Parse CSV
         const lines = trimmed.split('\n').map(l => l.trim()).filter(Boolean);
         const orders = [];
         const transfers = [];
@@ -1244,16 +1422,16 @@ const BackupModal = ({ data, onClose, onRestore }) => {
           if (type === 'ORDER') {
             const [,id,date,isBundle,shipTotal,tipAppAmt,note,subIdx,subType,payShop,payShopMethod,collectCustomer,collectMethod,refund,refundMethod] = cols;
             if (!orderMap[id]) {
-              orderMap[id] = { id, date, isBundle:isBundle==='1', shipTotal:+shipTotal, tipApp:+tipAppAmt, note, subOrders:[] };
+              orderMap[id] = { date, isBundle:isBundle==='1', shipTotal:+shipTotal, tipApp:+tipAppAmt, note, subOrders:[] };
               orders.push(orderMap[id]);
             }
-            orderMap[id].subOrders.push({ id: genId(), type:subType, payShop:+payShop, payShopMethod, collectCustomer:+collectCustomer, collectMethod, refund:+refund, refundMethod });
+            orderMap[id].subOrders.push({ type:subType, payShop:+payShop, payShopMethod, collectCustomer:+collectCustomer, collectMethod, refund:+refund, refundMethod });
           } else if (type === 'TRANSFER') {
             const [,id,date,from,to,amount,note] = cols;
-            transfers.push({ id, date, from, to, amount:+amount, note });
+            transfers.push({ date, from, to, amount:+amount, note });
           } else if (type === 'TIPAPP') {
             const [,id,date,amount] = cols;
-            tipApp.push({ id, date, amount:+amount });
+            tipApp.push({ date, amount:+amount });
           } else if (type === 'WALLETS') {
             wallets = { app:+cols[1], cash:+cols[2], mb:+cols[3], momo:+cols[4] };
           }
@@ -1261,18 +1439,17 @@ const BackupModal = ({ data, onClose, onRestore }) => {
         parsed = { orders, transfers, tipApp, wallets: wallets || { app:0, cash:0, mb:0, momo:0 } };
       }
 
-      // Merge or overwrite
       if (importMode === 'overwrite') {
         onRestore(parsed);
         setImportResult({ ok:true, msg:`✅ Ghi đè thành công! ${parsed.orders.length} đơn, ${parsed.transfers.length} chuyển tiền, ${parsed.tipApp.length} tip app.` });
       } else {
-        // Merge: keep existing, add only new IDs — use data prop directly (no function updater)
-        const existOrderIds = new Set(data.orders.map(o=>o.id));
-        const existTransIds = new Set(data.transfers.map(t=>t.id));
-        const existTipIds   = new Set(data.tipApp.map(t=>t.id));
-        const newOrders = parsed.orders.filter(o=>!existOrderIds.has(o.id));
-        const newTrans  = parsed.transfers.filter(t=>!existTransIds.has(t.id));
-        const newTip    = parsed.tipApp.filter(t=>!existTipIds.has(t.id));
+        // Merge: dùng _id nếu có, không thì bỏ qua dedup (record mới sẽ được thêm)
+        const existOrderIds = new Set(data.orders.map(o=>o._id).filter(Boolean));
+        const existTransIds = new Set(data.transfers.map(t=>t._id).filter(Boolean));
+        const existTipIds   = new Set(data.tipApp.map(t=>t._id).filter(Boolean));
+        const newOrders = parsed.orders.filter(o=>!o._id || !existOrderIds.has(o._id));
+        const newTrans  = parsed.transfers.filter(t=>!t._id || !existTransIds.has(t._id));
+        const newTip    = parsed.tipApp.filter(t=>!t._id || !existTipIds.has(t._id));
 
         const w = {...data.wallets};
         newOrders.forEach(order => {
@@ -1300,7 +1477,7 @@ const BackupModal = ({ data, onClose, onRestore }) => {
           transfers: [...data.transfers, ...newTrans],
           tipApp:    [...data.tipApp,    ...newTip],
         };
-        setImportResult({ ok:true, msg:`✅ Gộp thành công! Thêm ${newOrders.length} đơn mới, ${newTrans.length} chuyển tiền mới, ${newTip.length} tip mới. (${parsed.orders.length-newOrders.length} đơn trùng bỏ qua)` });
+        setImportResult({ ok:true, msg:`✅ Gộp thành công! Thêm ${newOrders.length} đơn mới, ${newTrans.length} chuyển tiền mới, ${newTip.length} tip mới.` });
         onRestore(merged);
       }
     } catch(e) {
@@ -1356,7 +1533,6 @@ const BackupModal = ({ data, onClose, onRestore }) => {
 
         {tab==='import' && (
           <div>
-            {/* Import mode */}
             <div className="mb-4">
               <div className="section-title mb-2">Chế độ nhập</div>
               <div className="flex gap-2">
@@ -1374,7 +1550,6 @@ const BackupModal = ({ data, onClose, onRestore }) => {
               </p>
             </div>
 
-            {/* Drop zone */}
             <div
               onDragOver={e=>{e.preventDefault();setDragOver(true)}}
               onDragLeave={()=>setDragOver(false)}
@@ -1394,7 +1569,6 @@ const BackupModal = ({ data, onClose, onRestore }) => {
                 onChange={e=>{ if(e.target.files[0]) handleFile(e.target.files[0]); }} />
             </div>
 
-            {/* Text area paste */}
             <div className="mb-3">
               <label>Hoặc dán nội dung file vào đây</label>
               <textarea
@@ -1440,11 +1614,10 @@ const BackupModal = ({ data, onClose, onRestore }) => {
   );
 };
 
-// ── Pure wallet-delta helpers (module level, no hooks) ───────────────────────
+// ── Pure wallet-delta helpers ─────────────────────────────────────────────────
 const calcChenhLech = (subOrders) => subOrders.reduce((a,s)=>{
-  // forgotCollect: không thu được khách → app trừ thêm orderAmount vào ví (không có tiền vào cash/mb)
   if(s.forgotCollect) {
-    if(s.type==='2') return a+(s.orderAmount||0); // app đã cộng ship rồi trừ orderAmount → net = ship - orderAmount
+    if(s.type==='2') return a+(s.orderAmount||0);
     if(s.type==='3') return a+(s.orderAmount||0)-(s.payShop||0);
     return a;
   }
@@ -1455,7 +1628,6 @@ const calcChenhLech = (subOrders) => subOrders.reduce((a,s)=>{
 },0);
 
 const applySubWallet = (w, s, sign=1) => {
-  // Nếu quên thu khách: không có tiền vào cash/mb, không có thối lại
   if(!s.forgotCollect) {
     if(s.collectMethod==='cash') w.cash += sign*(s.collectCustomer||0);
     if(s.collectMethod==='mb')   w.mb   += sign*(s.collectCustomer||0);
@@ -1469,7 +1641,9 @@ const applySubWallet = (w, s, sign=1) => {
 
 // ── App ───────────────────────────────────────────────────────────────────────
 const App = () => {
-  const [username, setUsername] = useState(() => localStorage.getItem('spf_user') || null);
+  // Lưu cả userId (dùng cho API) và username (chỉ để hiển thị)
+  const [userId,   setUserId]   = useState(() => localStorage.getItem('spf_userId') || null);
+  const [username, setUsername] = useState(() => localStorage.getItem('spf_user')   || null);
   const [page, setPage] = useState('dashboard');
   const [modal, setModal] = useState(null);
   const [editingOrder, setEditingOrder] = useState(null);
@@ -1477,54 +1651,46 @@ const App = () => {
   const [data, setData] = useState(INITIAL);
   const [saving, setSaving] = useState(false);
   const [loadingData, setLoadingData] = useState(false);
-  const saveTimer = React.useRef(null);
 
-  // Load data when user logs in
+  // Load data khi login
   useEffect(() => {
-    if (!username) return;
+    if (!userId) return;
     setLoadingData(true);
-    api.loadData(username)
+    api.loadData(userId)
       .then(d => setData(d))
       .catch(e => console.error('Load error:', e))
       .finally(() => setLoadingData(false));
-  }, [username]);
+  }, [userId]);
 
-  // Debounced auto-save to MongoDB (1.5s after last change)
-  useEffect(() => {
-    if (!username) return;
-    if (saveTimer.current) clearTimeout(saveTimer.current);
-    setSaving(true);
-    saveTimer.current = setTimeout(() => {
-      api.saveData(username, data)
-        .catch(e => console.error('Save error:', e))
-        .finally(() => setSaving(false));
-    }, 1500);
-    return () => clearTimeout(saveTimer.current);
-  }, [data, username]);
-
-  const handleLogin = (uname) => {
-    localStorage.setItem('spf_user', uname);
-    setUsername(uname);
+  const handleLogin = (newUserId, newUsername) => {
+    localStorage.setItem('spf_userId', newUserId);
+    localStorage.setItem('spf_user', newUsername);
+    setUserId(newUserId);
+    setUsername(newUsername);
   };
 
   const handleLogout = () => {
+    localStorage.removeItem('spf_userId');
     localStorage.removeItem('spf_user');
+    setUserId(null);
     setUsername(null);
     setData(INITIAL);
     setPage('dashboard');
   };
 
-  // Apply order to wallets (handles both new and edit)
-  const applyOrder = useCallback((order) => {
+  // applyOrder: thêm mới hoặc edit
+  const applyOrder = useCallback(async (order) => {
+    const isEdit = !!order._id;
     setData(prev => {
       const w = {...prev.wallets};
       let orders = prev.orders;
-      // If editing: find old order, reverse its effect, replace it
-      const existing = prev.orders.find(o => o.id === order.id);
-      if (existing) {
-        w.app -= existing.shipTotal - calcChenhLech(existing.subOrders) + (existing.tipApp||0);
-        existing.subOrders.forEach(s => applySubWallet(w, s, -1));
-        orders = prev.orders.map(o => o.id === order.id ? order : o);
+      if (isEdit) {
+        const existing = prev.orders.find(o => o._id === order._id);
+        if (existing) {
+          w.app -= existing.shipTotal - calcChenhLech(existing.subOrders) + (existing.tipApp||0);
+          existing.subOrders.forEach(s => applySubWallet(w, s, -1));
+          orders = prev.orders.map(o => o._id === order._id ? order : o);
+        }
       } else {
         orders = [...prev.orders, order];
       }
@@ -1532,57 +1698,174 @@ const App = () => {
       order.subOrders.forEach(s => applySubWallet(w, s, 1));
       return { ...prev, wallets: w, orders };
     });
-  }, []);
 
-  const applyTransfer = useCallback((t) => {
+    // Sync lên DB
+    setSaving(true);
+    try {
+      if (isEdit) {
+        await api.updateOrder(userId, order);
+      } else {
+        const newId = await api.addOrder(userId, order);
+        // Gán _id trả về từ MongoDB vào order trong state
+        setData(prev => ({
+          ...prev,
+          orders: prev.orders.map(o =>
+            o === order || (!o._id && o.date === order.date && o.shipTotal === order.shipTotal)
+              ? { ...o, _id: newId }
+              : o
+          ),
+        }));
+      }
+      // Sync ví sau khi order xong
+      setData(prev => {
+        api.saveWallets(userId, prev.wallets).catch(console.error);
+        return prev;
+      });
+    } catch(e) {
+      console.error('Save order error:', e);
+    } finally {
+      setSaving(false);
+    }
+  }, [userId]);
+
+  const applyTransfer = useCallback(async (t) => {
     setData(prev => {
       const w = {...prev.wallets};
       w[t.from] -= t.amount;
       w[t.to] += t.amount;
       return { ...prev, wallets: w, transfers: [...prev.transfers, t] };
     });
-  }, []);
 
-  const applyTipApp = useCallback((t) => {
+    setSaving(true);
+    try {
+      const newId = await api.addTransfer(userId, t);
+      setData(prev => ({
+        ...prev,
+        transfers: prev.transfers.map(x =>
+          !x._id && x.date === t.date && x.amount === t.amount ? { ...x, _id: newId } : x
+        ),
+      }));
+      setData(prev => { api.saveWallets(userId, prev.wallets).catch(console.error); return prev; });
+    } catch(e) {
+      console.error('Save transfer error:', e);
+    } finally {
+      setSaving(false);
+    }
+  }, [userId]);
+
+  const applyTipApp = useCallback(async (t) => {
     setData(prev => {
       const w = {...prev.wallets};
       w.app += t.amount;
       return { ...prev, wallets: w, tipApp: [...prev.tipApp, t] };
     });
-  }, []);
 
-  const deleteOrder = useCallback((id) => {
+    setSaving(true);
+    try {
+      const newId = await api.addTip(userId, t);
+      setData(prev => ({
+        ...prev,
+        tipApp: prev.tipApp.map(x =>
+          !x._id && x.date === t.date && x.amount === t.amount ? { ...x, _id: newId } : x
+        ),
+      }));
+      setData(prev => { api.saveWallets(userId, prev.wallets).catch(console.error); return prev; });
+    } catch(e) {
+      console.error('Save tip error:', e);
+    } finally {
+      setSaving(false);
+    }
+  }, [userId]);
+
+  const deleteOrder = useCallback(async (id) => {
     if(!confirm('Xoá đơn này? Số dư ví sẽ được hoàn lại.')) return;
     setData(prev => {
-      const order = prev.orders.find(o=>o.id===id);
+      const order = prev.orders.find(o=>o._id===id);
       if(!order) return prev;
       const w = {...prev.wallets};
       w.app -= order.shipTotal - calcChenhLech(order.subOrders) + (order.tipApp||0);
       order.subOrders.forEach(s => applySubWallet(w, s, -1));
-      return { ...prev, wallets: w, orders: prev.orders.filter(o=>o.id!==id) };
+      return { ...prev, wallets: w, orders: prev.orders.filter(o=>o._id!==id) };
     });
-  }, []);
 
-  const deleteTransfer = useCallback((id) => {
+    setSaving(true);
+    try {
+      await api.deleteOrder(userId, id);
+      setData(prev => { api.saveWallets(userId, prev.wallets).catch(console.error); return prev; });
+    } catch(e) {
+      console.error('Delete order error:', e);
+    } finally {
+      setSaving(false);
+    }
+  }, [userId]);
+
+  const deleteTransfer = useCallback(async (id) => {
     if(!confirm('Xoá giao dịch chuyển tiền này?')) return;
     setData(prev => {
-      const t = prev.transfers.find(x=>x.id===id);
+      const t = prev.transfers.find(x=>x._id===id);
       if(!t) return prev;
       const w = {...prev.wallets};
       w[t.from] += t.amount;
       w[t.to] -= t.amount;
-      return { ...prev, wallets: w, transfers: prev.transfers.filter(x=>x.id!==id) };
+      return { ...prev, wallets: w, transfers: prev.transfers.filter(x=>x._id!==id) };
     });
-  }, []);
+
+    setSaving(true);
+    try {
+      await api.deleteTransfer(userId, id);
+      setData(prev => { api.saveWallets(userId, prev.wallets).catch(console.error); return prev; });
+    } catch(e) {
+      console.error('Delete transfer error:', e);
+    } finally {
+      setSaving(false);
+    }
+  }, [userId]);
+
+  const applyCash = useCallback(async (tx) => {
+    setData(prev => {
+      const w = {...prev.wallets};
+      if (tx.txType === 'deposit') w[tx.wallet] += tx.amount;
+      else w[tx.wallet] -= tx.amount;
+      return { ...prev, wallets: w, cashTx: [...(prev.cashTx||[]), tx] };
+    });
+    setSaving(true);
+    try {
+      const newId = await api.addCash(userId, tx);
+      setData(prev => ({
+        ...prev,
+        cashTx: (prev.cashTx||[]).map(x =>
+          !x._id && x.date===tx.date && x.amount===tx.amount && x.wallet===tx.wallet ? {...x,_id:newId} : x
+        ),
+      }));
+      setData(prev => { api.saveWallets(userId, prev.wallets).catch(console.error); return prev; });
+    } catch(e) { console.error('Save cash error:', e); }
+    finally { setSaving(false); }
+  }, [userId]);
+
+  const deleteCash = useCallback(async (id) => {
+    if(!confirm('Xoá giao dịch này? Số dư ví sẽ được hoàn lại.')) return;
+    setData(prev => {
+      const tx = (prev.cashTx||[]).find(x=>x._id===id);
+      if(!tx) return prev;
+      const w = {...prev.wallets};
+      if (tx.txType === 'deposit') w[tx.wallet] -= tx.amount;
+      else w[tx.wallet] += tx.amount;
+      return { ...prev, wallets: w, cashTx: (prev.cashTx||[]).filter(x=>x._id!==id) };
+    });
+    setSaving(true);
+    try {
+      await api.deleteCash(userId, id);
+      setData(prev => { api.saveWallets(userId, prev.wallets).catch(console.error); return prev; });
+    } catch(e) { console.error('Delete cash error:', e); }
+    finally { setSaving(false); }
+  }, [userId]);
 
   const editOrder = useCallback((order) => {
-    // Chỉ mở modal, KHÔNG xóa đơn hay đổi ví trước — chờ user bấm "Cập nhật"
     setEditingOrder(order);
     setModal('order');
   }, []);
 
-  // Conditional renders AFTER all hooks
-  if (!username) return <LoginScreen onLogin={handleLogin} />;
+  if (!userId) return <LoginScreen onLogin={handleLogin} />;
 
   if (loadingData) return (
     <div style={{minHeight:'100vh',display:'flex',alignItems:'center',justifyContent:'center',flexDirection:'column',gap:12}}>
@@ -1631,6 +1914,9 @@ const App = () => {
           <button className="btn btn-ghost btn-sm" onClick={()=>setModal('tipapp')} style={{width:'100%'}}>
             <Icon name="tip" size={13}/> Tip App
           </button>
+          <button className="btn btn-ghost btn-sm" onClick={()=>setModal('cash')} style={{width:'100%',color:'var(--green)',borderColor:'#00E5A033'}}>
+            💰 Nạp / Rút tiền
+          </button>
           <button className="btn btn-ghost btn-sm" onClick={()=>setModal('wallet')} style={{width:'100%'}}>
             ⚙️ Số dư ban đầu
           </button>
@@ -1647,17 +1933,23 @@ const App = () => {
       <main style={{flex:1,padding:'32px 36px',maxWidth:1100,margin:'0 auto',width:'100%'}}>
         {page==='dashboard' && <Dashboard data={data} />}
         {page==='chart' && <ChartPage data={data} />}
-        {page==='history' && <HistoryPage data={data} onDeleteOrder={deleteOrder} onDeleteTransfer={deleteTransfer} onEditOrder={editOrder} />}
+        {page==='history' && <HistoryPage data={data} onDeleteOrder={deleteOrder} onDeleteTransfer={deleteTransfer} onEditOrder={editOrder} onDeleteCash={deleteCash} />}
       </main>
 
       {/* Modals */}
       {modal==='order' && <OrderModal onClose={()=>{setModal(null);setEditingOrder(null);}} onSave={applyOrder} initialData={editingOrder} />}
       {modal==='transfer' && <TransferModal onClose={()=>setModal(null)} onSave={applyTransfer} />}
       {modal==='tipapp' && <TipAppModal onClose={()=>setModal(null)} onSave={applyTipApp} />}
-      {modal==='wallet' && <WalletSetupModal wallets={data.wallets} onSave={w=>setData(p=>({...p,wallets:w}))} onClose={()=>setModal(null)} />}
-      {showBackup && <BackupModal data={data} onClose={()=>setShowBackup(false)} onRestore={(newData)=>{
+      {modal==='cash' && <CashModal onClose={()=>setModal(null)} onSave={applyCash} />}
+      {modal==='wallet' && <WalletSetupModal wallets={data.wallets} onSave={w=>{
+        setData(p=>({...p,wallets:w}));
+        api.saveWallets(userId, w).catch(console.error);
+      }} onClose={()=>setModal(null)} />}
+      {showBackup && <BackupModal data={data} onClose={()=>setShowBackup(false)} onRestore={async (newData)=>{
         setData(newData);
         setShowBackup(false);
+        setSaving(true);
+        try { await api.saveAll(userId, newData); } catch(e) { console.error(e); } finally { setSaving(false); }
       }} />}
     </div>
   );
