@@ -368,6 +368,14 @@ const fmtFull = (n) => new Intl.NumberFormat('vi-VN').format(n) + 'đ';
 const today = () => new Date().toISOString().split('T')[0];
 const genId = () => Date.now().toString(36) + Math.random().toString(36).slice(2,5);
 
+// HÀM SẮP XẾP CHUẨN: Mới nhất lên đầu. Nếu cùng ngày thì cái tạo sau (nằm cuối mảng) lên đầu.
+const getSortedListDesc = (arr) => {
+  return arr.map((item, idx) => ({ item, idx })).sort((a, b) => {
+    if (a.item.date !== b.item.date) return a.item.date > b.item.date ? -1 : 1;
+    return b.idx - a.idx;
+  }).map(x => x.item);
+};
+
 const INITIAL = {
   wallets: { app: 0, momo: 0, mb: 0, cash: 0 },
   orders: [], transfers: [], tipApp: [], cashTx: [],
@@ -836,13 +844,8 @@ const BackupModal = ({ data, onClose, onRestore }) => {
     try {
       let parsed = JSON.parse(text.trim());
       if (!parsed.wallets || !parsed.orders) throw new Error('File JSON không đúng định dạng');
-      if(importMode==='overwrite'){
-        onRestore(parsed);
-        setImportResult({ok:true,msg:`✅ Ghi đè thành công!`});
-      }else{
-        // ... (Logic merge rút gọn) ...
-        onRestore(parsed); // Tạm dùng ghi đè cho json đơn giản
-      }
+      onRestore(parsed);
+      setImportResult({ok:true,msg:`✅ Ghi đè thành công!`});
     } catch(e){setImportResult({ok:false,msg:'❌ Lỗi: '+e.message});}
   };
 
@@ -957,13 +960,16 @@ const MobileActionSheet = ({ onClose, onAction }) => {
   );
 };
 
+// ── Dashboard ─────────────────────────────────────────────────────────────────
 const Dashboard = ({ data }) => {
-  const { wallets, orders, transfers, tipApp } = data;
+  const { wallets, orders, tipApp } = data;
   const totalTipPhysical = orders.reduce((acc,o) => acc + o.subOrders.reduce((a,s) => a + Math.max(0,(s.collectCustomer||0)-(s.orderAmount||0)-(s.refund||0)), 0), 0);
   const totalTipApp = tipApp.reduce((a,t)=>a+t.amount,0);
   const totalShip = orders.reduce((a,o)=>a+o.shipTotal,0);
   const totalIncome = totalShip + totalTipPhysical + totalTipApp;
   const totalOrders = orders.length;
+
+  const sortedOrders = useMemo(() => getSortedListDesc(orders), [orders]);
 
   return (
     <div className="fade-in">
@@ -983,10 +989,55 @@ const Dashboard = ({ data }) => {
         <div className="stat-card yellow"><div className="section-title" style={{marginBottom:4}}>Tip vật lý</div><div className="number-big" style={{color:'var(--yellow)'}}>{fmtFull(totalTipPhysical)}</div></div>
         <div className="stat-card purple"><div className="section-title" style={{marginBottom:4}}>Tip App</div><div className="number-big" style={{color:'var(--purple)'}}>{fmtFull(totalTipApp)}</div></div>
       </div>
+      
+      <div className="section-title">Đơn gần đây</div>
+      {/* PC Table */}
+      <div className="card history-table-wrap">
+        <table>
+          <thead><tr><th>Ngày</th><th>Loại</th><th>Ship</th><th>Tip vật lý</th><th>Ví App</th><th>Ghi chú</th></tr></thead>
+          <tbody>
+            {sortedOrders.length === 0 && (<tr><td colSpan={6} style={{textAlign:'center',color:'var(--muted)',padding:32}}>Chưa có đơn nào. Nhấn "Nhập đơn" để bắt đầu!</td></tr>)}
+            {sortedOrders.slice(0, 15).map(o=>{
+              const tipPhy=o.subOrders.reduce((a,s)=>a+Math.max(0,(s.collectCustomer||0)-(s.orderAmount||0)-(s.refund||0)),0);
+              const chenhLech=o.subOrders.reduce((a,s)=>{if(s.type==='2')return a+(s.orderAmount||0);if(s.type==='3')return a+(s.orderAmount||0)-(s.payShop||0);return a;},0);
+              const appDelta=o.shipTotal-chenhLech+(o.tipApp||0);
+              return (<tr key={o._id}><td className="mono" style={{fontSize:12}}>{o.date}</td><td><span className={`badge ${o.isBundle?'badge-blue':'badge-orange'}`}>{o.isBundle?'Ghép':'Lẻ'}</span></td><td className="mono pos">+{fmt(o.shipTotal)}</td><td className="mono" style={{color:'var(--yellow)'}}>{tipPhy>0?'+'+fmt(tipPhy):'-'}</td><td className="mono" style={{color:appDelta>=0?'var(--green)':'var(--red)'}}>{appDelta>=0?'+':''}{fmt(appDelta)}</td><td style={{color:'var(--muted)',fontSize:12}}>{o.note||'-'}</td></tr>);
+            })}
+          </tbody>
+        </table>
+      </div>
+      {/* Mobile Cards */}
+      <div className="history-cards-wrap">
+        {sortedOrders.length === 0 && (<div style={{textAlign:'center',color:'var(--muted)',padding:'24px 0',fontSize:13}}>Chưa có đơn nào. Nhấn "+" để bắt đầu!</div>)}
+        {sortedOrders.slice(0, 15).map(o=>{
+          const tipPhy=o.subOrders.reduce((a,s)=>a+Math.max(0,(s.collectCustomer||0)-(s.orderAmount||0)-(s.refund||0)),0);
+          const chenhLech=o.subOrders.reduce((a,s)=>{if(s.type==='2')return a+(s.orderAmount||0);if(s.type==='3')return a+(s.orderAmount||0)-(s.payShop||0);return a;},0);
+          const appDelta=o.shipTotal-chenhLech+(o.tipApp||0);
+          return (
+            <div key={o._id} className="m-order-card">
+              <div className="m-order-card-row">
+                <span style={{fontSize:12,color:'var(--muted)',fontWeight:600}}>{o.date}</span>
+                <span className={`badge ${o.isBundle?'badge-blue':'badge-orange'}`}>{o.isBundle?'Ghép':'Lẻ'}</span>
+              </div>
+              <div className="m-order-card-row">
+                <span style={{fontSize:12,color:'var(--muted)'}}>Công ship</span>
+                <span className="mono pos" style={{fontWeight:700}}>+{fmtFull(o.shipTotal)}</span>
+              </div>
+              {tipPhy > 0 && (<div className="m-order-card-row"><span style={{fontSize:12,color:'var(--muted)'}}>Tip vật lý</span><span className="mono" style={{color:'var(--yellow)',fontWeight:700}}>+{fmtFull(tipPhy)}</span></div>)}
+              <div className="m-order-card-row">
+                <span style={{fontSize:12,color:'var(--muted)'}}>Ví App Δ</span>
+                <span className="mono" style={{color:appDelta>=0?'var(--green)':'var(--red)',fontWeight:700}}>{appDelta>=0?'+':''}{fmtFull(appDelta)}</span>
+              </div>
+              {o.note && (<div style={{fontSize:11,color:'var(--muted)',marginTop:4,borderTop:'1px solid var(--border)',paddingTop:6}}>📝 {o.note}</div>)}
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
 };
 
+// ── ChartPage ────────────────────────────────────────────────────────────────
 const ChartPage = ({ data }) => {
   const [period, setPeriod] = useState('day');
   const { orders } = data;
@@ -1022,7 +1073,7 @@ const ChartPage = ({ data }) => {
   );
 };
 
-// ── Lịch sử Phân trang ────────────────────────────────────────────────────────
+// ── HistoryPage ────────────────────────────────────────────────────────
 const HistoryPage = ({ data, onDeleteOrder, onDeleteTransfer, onDeleteTip, onDeleteCash, onEditOrder, onEditTransfer, onEditTip, onEditCash }) => {
   const [tab, setTab] = useState('orders');
   const [currentPage, setCurrentPage] = useState(1);
@@ -1031,13 +1082,15 @@ const HistoryPage = ({ data, onDeleteOrder, onDeleteTransfer, onDeleteTip, onDel
 
   const handleTabChange = (t) => { setTab(t); setCurrentPage(1); };
 
-  let list = [];
-  if(tab === 'orders') list = orders;
-  if(tab === 'transfers') list = transfers;
-  if(tab === 'tipapp') list = tipApp;
-  if(tab === 'cashtx') list = cashTx;
+  const sortedList = useMemo(() => {
+    let list = [];
+    if(tab === 'orders') list = orders;
+    if(tab === 'transfers') list = transfers;
+    if(tab === 'tipapp') list = tipApp;
+    if(tab === 'cashtx') list = cashTx;
+    return getSortedListDesc(list);
+  }, [tab, orders, transfers, tipApp, cashTx]);
 
-  const sortedList = [...list].reverse();
   const totalPages = Math.ceil(sortedList.length / itemsPerPage) || 1;
   const paginatedList = sortedList.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
