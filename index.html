@@ -659,6 +659,7 @@ const Icon = ({ name, size=16 }) => {
     wallet: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20 7H4a2 2 0 00-2 2v10a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2z"/><path d="M16 14a1 1 0 100-2 1 1 0 000 2z" fill="currentColor"/><path d="M16 7V5a2 2 0 00-2-2H6a2 2 0 00-2 2v2"/></svg>,
     close: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>,
     history: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>,
+    logout: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>,
   };
   return icons[name] || null;
 };
@@ -713,21 +714,41 @@ const SubOrderForm = ({ index, data, onChange, onRemove, canRemove, isMobile }) 
 
   return (
     <div className="order-sub-card fade-in">
-      <div className="flex items-center justify-between mb-3">
-        <span style={{fontFamily:'Nunito',fontWeight:700,fontSize:13}}>Đơn #{index+1}</span>
-        <div style={{display:'flex',gap:6,alignItems:'center'}}>
-          {canRemove && <button className="btn btn-sm btn-danger" onClick={onRemove}><Icon name="trash" size={13}/></button>}
+      
+      {/* Container bọc ngoài: 
+          - PC: Dùng flex để dàn ngang tất cả trên 1 dòng.
+          - Mobile: Bỏ trống (mặc định là block) để tách thành 2 dòng trên/dưới. 
+      */}
+      <div className={isMobile ? "" : "flex items-center justify-between mb-3"}>
+        
+        {/* KHỐI 1: Tên đơn (Kèm nút xóa nếu đang ở Mobile) */}
+        <div className="flex items-center justify-between" style={{ marginBottom: isMobile ? '12px' : '0' }}>
+          <span style={{fontFamily:'Nunito',fontWeight:700,fontSize:16,color:'var(--orange)'}}>Đơn #{index+1}</span>
+          
+          {/* Render thùng rác ở đây NẾU LÀ MOBILE */}
+          {isMobile && canRemove && (
+            <button className="btn btn-sm btn-danger" onClick={onRemove}>
+              <Icon name="trash" size={13}/>
+            </button>
+          )}
         </div>
-      </div>
 
-      {/* Chip row: 2×2 on mobile, inline on PC */}
-      <div className={isMobile ? "type-chip-row mb-3" : "flex gap-2 items-center flex-wrap mb-3"}>
-        {['1','2','3','4'].map(t => (
-          <button key={t} className={`chip ${data.type===t?'active':''}`}
-            onClick={()=>onChange({...data,type:t,payShop:0,orderAmount:0,collectCustomer:0,refund:0})}>
-            Loại {t}
-          </button>
-        ))}
+        {/* KHỐI 2: Cụm chọn Loại đơn (Kèm nút xóa nếu đang ở PC) */}
+        <div className={isMobile ? "type-chip-row mb-3" : "flex gap-2 items-center flex-wrap"}>
+          {['1','2','3','4'].map(t => (
+            <button key={t} className={`chip ${data.type===t?'active':''}`}
+              onClick={()=>onChange({...data,type:t,payShop:0,orderAmount:0,collectCustomer:0,refund:0})}>
+              Loại {t}
+            </button>
+          ))}
+          
+          {/* Render thùng rác ở đây NẾU LÀ PC */}
+          {!isMobile && canRemove && (
+            <button className="btn btn-sm btn-danger" onClick={onRemove}>
+              <Icon name="trash" size={13}/>
+            </button>
+          )}
+        </div>
       </div>
 
       <div className="text-xs mb-3 p-2 rounded-lg" style={{color:'var(--muted)',background:'var(--bg)'}}>
@@ -1810,26 +1831,36 @@ const App = () => {
 
       {/* ── Mobile Bottom Nav ── */}
       <nav className="mobile-bottom-nav">
-        {pages.map((p, i) => {
-          // Insert FAB slot in center (after index 1)
-          const items = [];
-          if (i === 1) {
-            items.push(
-              <div key="fab-slot" className="nav-fab-slot">
-                <button className="mobile-fab" onClick={()=>setShowActionSheet(true)} aria-label="Thao tác nhanh">
-                  <Icon name="plus" size={22}/>
-                </button>
-              </div>
-            );
-          }
-          items.push(
-            <button key={p.id} className={`nav-tab ${page===p.id?'active':''}`} onClick={()=>setPage(p.id)}>
-              <Icon name={p.icon} size={20}/>
-              <span>{p.label}</span>
-            </button>
-          );
-          return items;
-        })}
+        {/* 1. Dashboard */}
+        <button className={`nav-tab ${page==='dashboard'?'active':''}`} onClick={()=>setPage('dashboard')}>
+          <Icon name="dashboard" size={20}/>
+          <span>Tổng quan</span>
+        </button>
+        
+        {/* 2. Chart */}
+        <button className={`nav-tab ${page==='chart'?'active':''}`} onClick={()=>setPage('chart')}>
+          <Icon name="chart" size={20}/>
+          <span>Biểu đồ</span>
+        </button>
+
+        {/* 3. Action Menu (FAB) */}
+        <div className="nav-fab-slot">
+          <button className="mobile-fab" onClick={()=>setShowActionSheet(true)} aria-label="Thao tác nhanh">
+            <Icon name="plus" size={22}/>
+          </button>
+        </div>
+
+        {/* 4. History */}
+        <button className={`nav-tab ${page==='history'?'active':''}`} onClick={()=>setPage('history')}>
+          <Icon name="history" size={20}/>
+          <span>Lịch sử</span>
+        </button>
+
+        {/* 5. Logout */}
+        <button className="nav-tab" onClick={handleLogout} style={{color: 'var(--red)'}}>
+          <Icon name="logout" size={20}/>
+          <span>Đăng xuất</span>
+        </button>
       </nav>
 
       {/* ── Mobile Action Sheet ── */}
