@@ -713,21 +713,41 @@ const SubOrderForm = ({ index, data, onChange, onRemove, canRemove, isMobile }) 
 
   return (
     <div className="order-sub-card fade-in">
-      <div className="flex items-center justify-between mb-3">
-        <span style={{fontFamily:'Nunito',fontWeight:700,fontSize:13}}>Đơn #{index+1}</span>
-        <div style={{display:'flex',gap:6,alignItems:'center'}}>
-          {canRemove && <button className="btn btn-sm btn-danger" onClick={onRemove}><Icon name="trash" size={13}/></button>}
+      
+      {/* Container bọc ngoài: 
+          - PC: Dùng flex để dàn ngang tất cả trên 1 dòng.
+          - Mobile: Bỏ trống (mặc định là block) để tách thành 2 dòng trên/dưới. 
+      */}
+      <div className={isMobile ? "" : "flex items-center justify-between mb-3"}>
+        
+        {/* KHỐI 1: Tên đơn (Kèm nút xóa nếu đang ở Mobile) */}
+        <div className="flex items-center justify-between" style={{ marginBottom: isMobile ? '12px' : '0' }}>
+          <span style={{fontFamily:'Nunito',fontWeight:700,fontSize:13}}>Đơn #{index+1}</span>
+          
+          {/* Render thùng rác ở đây NẾU LÀ MOBILE */}
+          {isMobile && canRemove && (
+            <button className="btn btn-sm btn-danger" onClick={onRemove}>
+              <Icon name="trash" size={13}/>
+            </button>
+          )}
         </div>
-      </div>
 
-      {/* Chip row: 2×2 on mobile, inline on PC */}
-      <div className={isMobile ? "type-chip-row mb-3" : "flex gap-2 items-center flex-wrap mb-3"}>
-        {['1','2','3','4'].map(t => (
-          <button key={t} className={`chip ${data.type===t?'active':''}`}
-            onClick={()=>onChange({...data,type:t,payShop:0,orderAmount:0,collectCustomer:0,refund:0})}>
-            Loại {t}
-          </button>
-        ))}
+        {/* KHỐI 2: Cụm chọn Loại đơn (Kèm nút xóa nếu đang ở PC) */}
+        <div className={isMobile ? "type-chip-row mb-3" : "flex gap-2 items-center flex-wrap"}>
+          {['1','2','3','4'].map(t => (
+            <button key={t} className={`chip ${data.type===t?'active':''}`}
+              onClick={()=>onChange({...data,type:t,payShop:0,orderAmount:0,collectCustomer:0,refund:0})}>
+              Loại {t}
+            </button>
+          ))}
+          
+          {/* Render thùng rác ở đây NẾU LÀ PC */}
+          {!isMobile && canRemove && (
+            <button className="btn btn-sm btn-danger" onClick={onRemove}>
+              <Icon name="trash" size={13}/>
+            </button>
+          )}
+        </div>
       </div>
 
       <div className="text-xs mb-3 p-2 rounded-lg" style={{color:'var(--muted)',background:'var(--bg)'}}>
@@ -1810,26 +1830,36 @@ const App = () => {
 
       {/* ── Mobile Bottom Nav ── */}
       <nav className="mobile-bottom-nav">
-        {pages.map((p, i) => {
-          // Insert FAB slot in center (after index 1)
-          const items = [];
-          if (i === 1) {
-            items.push(
-              <div key="fab-slot" className="nav-fab-slot">
-                <button className="mobile-fab" onClick={()=>setShowActionSheet(true)} aria-label="Thao tác nhanh">
-                  <Icon name="plus" size={22}/>
-                </button>
-              </div>
-            );
-          }
-          items.push(
-            <button key={p.id} className={`nav-tab ${page===p.id?'active':''}`} onClick={()=>setPage(p.id)}>
-              <Icon name={p.icon} size={20}/>
-              <span>{p.label}</span>
-            </button>
-          );
-          return items;
-        })}
+        {/* 1. Dashboard */}
+        <button className={`nav-tab ${page==='dashboard'?'active':''}`} onClick={()=>setPage('dashboard')}>
+          <Icon name="dashboard" size={20}/>
+          <span>Tổng quan</span>
+        </button>
+        
+        {/* 2. Chart */}
+        <button className={`nav-tab ${page==='chart'?'active':''}`} onClick={()=>setPage('chart')}>
+          <Icon name="chart" size={20}/>
+          <span>Biểu đồ</span>
+        </button>
+
+        {/* 3. Action Menu (FAB) */}
+        <div className="nav-fab-slot">
+          <button className="mobile-fab" onClick={()=>setShowActionSheet(true)} aria-label="Thao tác nhanh">
+            <Icon name="plus" size={22}/>
+          </button>
+        </div>
+
+        {/* 4. History */}
+        <button className={`nav-tab ${page==='history'?'active':''}`} onClick={()=>setPage('history')}>
+          <Icon name="history" size={20}/>
+          <span>Lịch sử</span>
+        </button>
+
+        {/* 5. Logout */}
+        <button className="nav-tab" onClick={handleLogout} style={{color: 'var(--red)'}}>
+          <span style={{fontSize: 18, marginBottom: 2}}>🚪</span>
+          <span>Đăng xuất</span>
+        </button>
       </nav>
 
       {/* ── Mobile Action Sheet ── */}
