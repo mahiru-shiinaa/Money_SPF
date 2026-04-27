@@ -659,6 +659,7 @@ const Icon = ({ name, size=16 }) => {
     wallet: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20 7H4a2 2 0 00-2 2v10a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2z"/><path d="M16 14a1 1 0 100-2 1 1 0 000 2z" fill="currentColor"/><path d="M16 7V5a2 2 0 00-2-2H6a2 2 0 00-2 2v2"/></svg>,
     close: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>,
     history: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>,
+    logout: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>,
   };
   return icons[name] || null;
 };
@@ -722,7 +723,7 @@ const SubOrderForm = ({ index, data, onChange, onRemove, canRemove, isMobile }) 
         
         {/* KHỐI 1: Tên đơn (Kèm nút xóa nếu đang ở Mobile) */}
         <div className="flex items-center justify-between" style={{ marginBottom: isMobile ? '12px' : '0' }}>
-          <span style={{fontFamily:'Nunito',fontWeight:700,fontSize:13}}>Đơn #{index+1}</span>
+          <span style={{fontFamily:'Nunito',fontWeight:700,fontSize:16,color:'var(--orange)'}}>Đơn #{index+1}</span>
           
           {/* Render thùng rác ở đây NẾU LÀ MOBILE */}
           {isMobile && canRemove && (
@@ -1857,7 +1858,7 @@ const App = () => {
 
         {/* 5. Logout */}
         <button className="nav-tab" onClick={handleLogout} style={{color: 'var(--red)'}}>
-          <span style={{fontSize: 18, marginBottom: 2}}>🚪</span>
+          <Icon name="logout" size={20}/>
           <span>Đăng xuất</span>
         </button>
       </nav>
