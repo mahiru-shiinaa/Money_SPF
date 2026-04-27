@@ -610,6 +610,9 @@ const api = {
     if(!r.ok) throw new Error('Không thêm được transfer');
     return (await r.json())._id;
   },
+  async updateTransfer(userId, transfer) {
+    await fetch('/api/data', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({userId,action:'updateTransfer',data:transfer}) });
+  },
   async deleteTransfer(userId, transferId) {
     await fetch('/api/data', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({userId,action:'deleteTransfer',data:{_id:transferId}}) });
   },
@@ -618,10 +621,19 @@ const api = {
     if(!r.ok) throw new Error('Không thêm được tip');
     return (await r.json())._id;
   },
+  async updateTip(userId, tip) {
+    await fetch('/api/data', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({userId,action:'updateTip',data:tip}) });
+  },
+  async deleteTip(userId, tipId) {
+    await fetch('/api/data', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({userId,action:'deleteTip',data:{_id:tipId}}) });
+  },
   async addCash(userId, tx) {
     const r = await fetch('/api/data', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({userId,action:'addCash',data:tx}) });
     if(!r.ok) throw new Error('Không thêm được giao dịch');
     return (await r.json())._id;
+  },
+  async updateCash(userId, tx) {
+    await fetch('/api/data', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({userId,action:'updateCash',data:tx}) });
   },
   async deleteCash(userId, txId) {
     await fetch('/api/data', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({userId,action:'deleteCash',data:{_id:txId}}) });
@@ -1072,6 +1084,138 @@ const CashModal = ({ onClose, onSave }) => {
   );
 };
 
+// ── Transfer Edit Modal ───────────────────────────────────────────────────────
+const TransferEditModal = ({ onClose, onSave, initialData }) => {
+  const [date, setDate] = useState(initialData?.date || today());
+  const [from, setFrom] = useState(initialData?.from || 'momo');
+  const [to, setTo] = useState(initialData?.to || 'app');
+  const [amount, setAmount] = useState(initialData?.amount || '');
+  const [note, setNote] = useState(initialData?.note || '');
+  const walletNames = { app:'Ví App', momo:'Momo', mb:'MB Bank', cash:'Tiền mặt' };
+  const handleSave = () => {
+    if(!amount) { alert('Nhập số tiền!'); return; }
+    if(from===to) { alert('Từ và đến phải khác nhau!'); return; }
+    onSave({ ...initialData, date, from, to, amount:+amount, note }); onClose();
+  };
+  return (
+    <div className="modal-overlay">
+      <div className="modal fade-in" style={{maxWidth:400}}>
+        <div className="flex justify-between items-center mb-6">
+          <h2 style={{fontSize:20}}><Icon name="transfer" size={18}/>&nbsp; Sửa chuyển tiền</h2>
+          <button className="btn btn-ghost btn-sm" onClick={onClose}><Icon name="close" size={16}/></button>
+        </div>
+        <div className="grid gap-3 mb-4">
+          <div><label>Ngày</label><input type="date" value={date} onChange={e=>setDate(e.target.value)} /></div>
+          <div className="grid gap-3" style={{gridTemplateColumns:'1fr 1fr'}}>
+            <div><label>Từ</label>
+              <select value={from} onChange={e=>setFrom(e.target.value)}>
+                <option value="app">Ví App</option><option value="momo">Momo</option><option value="mb">MB Bank</option><option value="cash">Tiền mặt</option>
+              </select>
+            </div>
+            <div><label>Đến</label>
+              <select value={to} onChange={e=>setTo(e.target.value)}>
+                <option value="app">Ví App</option><option value="momo">Momo</option><option value="mb">MB Bank</option><option value="cash">Tiền mặt</option>
+              </select>
+            </div>
+          </div>
+          <div><label>Số tiền (đ)</label><MoneyInput value={+amount||0} onChange={v=>setAmount(v)} placeholder="VD: 200.000" /></div>
+          <div><label>Ghi chú</label><input placeholder="VD: Nạp tiền vào ví app" value={note} onChange={e=>setNote(e.target.value)} /></div>
+        </div>
+        {amount && from!==to && (
+          <div className="p-3 rounded-xl mb-4" style={{background:'var(--bg)',border:'1px solid var(--border)'}}>
+            <div className="flex justify-between text-sm"><span style={{color:'var(--muted)'}}>{walletNames[from]}</span><span className="mono neg">-{fmtFull(+amount)}</span></div>
+            <div className="flex justify-between text-sm mt-1"><span style={{color:'var(--muted)'}}>{walletNames[to]}</span><span className="mono pos">+{fmtFull(+amount)}</span></div>
+          </div>
+        )}
+        <div className="flex gap-3">
+          <button className="btn btn-ghost" style={{flex:1}} onClick={onClose}>Huỷ</button>
+          <button className="btn btn-primary" style={{flex:2}} onClick={handleSave}>Cập nhật</button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// ── TipApp Edit Modal ─────────────────────────────────────────────────────────
+const TipAppEditModal = ({ onClose, onSave, initialData }) => {
+  const [date, setDate] = useState(initialData?.date || today());
+  const [amount, setAmount] = useState(initialData?.amount || '');
+  const handleSave = () => { if(!amount) return; onSave({ ...initialData, date, amount:+amount }); onClose(); };
+  return (
+    <div className="modal-overlay">
+      <div className="modal fade-in" style={{maxWidth:360}}>
+        <div className="flex justify-between items-center mb-6">
+          <h2 style={{fontSize:20}}><Icon name="tip" size={18}/>&nbsp; Sửa Tip App</h2>
+          <button className="btn btn-ghost btn-sm" onClick={onClose}><Icon name="close" size={16}/></button>
+        </div>
+        <div className="grid gap-3 mb-4">
+          <div><label>Ngày</label><input type="date" value={date} onChange={e=>setDate(e.target.value)} /></div>
+          <div><label>Số tiền tip app (đ)</label><MoneyInput value={+amount||0} onChange={v=>setAmount(v)} placeholder="VD: 15.000" /></div>
+        </div>
+        <div className="flex gap-3">
+          <button className="btn btn-ghost" style={{flex:1}} onClick={onClose}>Huỷ</button>
+          <button className="btn btn-primary" style={{flex:2}} onClick={handleSave}>Cập nhật</button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// ── Cash Edit Modal ───────────────────────────────────────────────────────────
+const CashEditModal = ({ onClose, onSave, initialData }) => {
+  const [txType, setTxType] = React.useState(initialData?.txType || 'deposit');
+  const [date,   setDate]   = React.useState(initialData?.date || today());
+  const [wallet, setWallet] = React.useState(initialData?.wallet || 'cash');
+  const [amount, setAmount] = React.useState(initialData?.amount || 0);
+  const [note,   setNote]   = React.useState(initialData?.note || '');
+  const isDeposit = txType === 'deposit';
+  const handleSave = () => {
+    if (!amount || amount <= 0) { alert('Nhập số tiền hợp lệ!'); return; }
+    onSave({ ...initialData, txType, date, wallet, amount, note }); onClose();
+  };
+  return (
+    <div className="modal-overlay">
+      <div className="modal fade-in" style={{maxWidth:420}}>
+        <div className="flex justify-between items-center mb-5">
+          <h2 style={{fontSize:20}}>💰 Sửa Nạp / Rút tiền</h2>
+          <button className="btn btn-ghost btn-sm" onClick={onClose}><Icon name="close" size={16}/></button>
+        </div>
+        <div style={{display:'flex',gap:4,marginBottom:20,background:'var(--bg)',padding:4,borderRadius:10}}>
+          {[['deposit','⬆️ Nạp tiền'],['withdraw','⬇️ Rút tiền']].map(([v,l])=>(
+            <button key={v} className={`tab-btn ${txType===v?'active':''}`}
+              style={{flex:1,background:txType===v?(v==='deposit'?'var(--green)':'var(--red)'):'transparent',color:txType===v?'white':'var(--muted)'}}
+              onClick={()=>setTxType(v)}>{l}</button>
+          ))}
+        </div>
+        <div className="grid gap-3 mb-4">
+          <div><label>Ngày</label><input type="date" value={date} onChange={e=>setDate(e.target.value)} /></div>
+          <div><label>{isDeposit ? 'Nạp vào' : 'Rút từ'}</label>
+            <select value={wallet} onChange={e=>setWallet(e.target.value)}>
+              {WALLET_OPTS.map(o=><option key={o.value} value={o.value}>{o.label}</option>)}
+            </select>
+          </div>
+          <div><label>Số tiền (đ)</label><MoneyInput value={amount} onChange={v=>setAmount(v)} placeholder="VD: 500.000" /></div>
+          <div><label>Ghi chú (tuỳ chọn)</label><input placeholder={isDeposit ? 'VD: Nạp lương...' : 'VD: Rút tiêu...'} value={note} onChange={e=>setNote(e.target.value)} /></div>
+        </div>
+        {amount > 0 && (
+          <div className="p-3 rounded-xl mb-4" style={{background:'var(--bg)',border:`1px solid ${isDeposit?'var(--green)':'var(--red)'}44`}}>
+            <div className="flex justify-between text-sm">
+              <span style={{color:'var(--muted)'}}>{WALLET_OPTS.find(o=>o.value===wallet)?.label}</span>
+              <span className="mono" style={{color:isDeposit?'var(--green)':'var(--red)',fontWeight:700}}>{isDeposit?'+':'-'}{fmtFull(amount)}</span>
+            </div>
+          </div>
+        )}
+        <div className="flex gap-3">
+          <button className="btn btn-ghost" style={{flex:1}} onClick={onClose}>Huỷ</button>
+          <button className="btn btn-primary" style={{flex:2,background:isDeposit?'var(--green)':'var(--red)'}} onClick={handleSave}>
+            Cập nhật
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 // ── Wallet Setup Modal ────────────────────────────────────────────────────────
 const WalletSetupModal = ({ wallets, onSave, onClose }) => {
   const [vals, setVals] = useState({...wallets});
@@ -1313,6 +1457,23 @@ const MobileActionSheet = ({ onClose, onAction }) => {
   );
 };
 
+// ── Pagination Component ─────────────────────────────────────────────────────
+const Pagination = ({ total, page, perPage, onPage }) => {
+  const totalPages = Math.ceil(total / perPage);
+  if (totalPages <= 1) return null;
+  const pages = [];
+  for (let i = 1; i <= totalPages; i++) pages.push(i);
+  return (
+    <div style={{display:'flex',alignItems:'center',justifyContent:'center',gap:6,padding:'16px 0',flexWrap:'wrap'}}>
+      <button className="btn btn-ghost btn-sm" onClick={()=>onPage(page-1)} disabled={page===1} style={{padding:'6px 10px'}}>‹</button>
+      {pages.map(p=>(
+        <button key={p} className={`btn btn-sm ${p===page?'btn-primary':'btn-ghost'}`} onClick={()=>onPage(p)} style={{padding:'6px 10px',minWidth:34}}>{p}</button>
+      ))}
+      <button className="btn btn-ghost btn-sm" onClick={()=>onPage(page+1)} disabled={page===totalPages} style={{padding:'6px 10px'}}>›</button>
+    </div>
+  );
+};
+
 // ── Dashboard ─────────────────────────────────────────────────────────────────
 const Dashboard = ({ data }) => {
   const { wallets, orders, transfers, tipApp } = data;
@@ -1356,48 +1517,60 @@ const Dashboard = ({ data }) => {
       </div>
 
       <div className="section-title">Đơn gần đây</div>
-      {/* PC table */}
-      <div className="card history-table-wrap">
-        <table>
-          <thead><tr><th>Ngày</th><th>Loại</th><th>Ship</th><th>Tip vật lý</th><th>Ví App</th><th>Ghi chú</th></tr></thead>
-          <tbody>
-            {orders.length === 0 && (<tr><td colSpan={6} style={{textAlign:'center',color:'var(--muted)',padding:32}}>Chưa có đơn nào. Nhấn "Nhập đơn" để bắt đầu!</td></tr>)}
-            {[...orders].reverse().slice(0,15).map(o=>{
-              const tipPhy=o.subOrders.reduce((a,s)=>a+Math.max(0,(s.collectCustomer||0)-(s.orderAmount||0)-(s.refund||0)),0);
-              const chenhLech=o.subOrders.reduce((a,s)=>{if(s.type==='2')return a+(s.orderAmount||0);if(s.type==='3')return a+(s.orderAmount||0)-(s.payShop||0);return a;},0);
-              const appDelta=o.shipTotal-chenhLech+(o.tipApp||0);
-              return (<tr key={o._id}><td className="mono" style={{fontSize:12}}>{o.date}</td><td><span className={`badge ${o.isBundle?'badge-blue':'badge-orange'}`}>{o.isBundle?'Ghép':'Lẻ'}</span></td><td className="mono pos">+{fmt(o.shipTotal)}</td><td className="mono" style={{color:'var(--yellow)'}}>{tipPhy>0?'+'+fmt(tipPhy):'-'}</td><td className="mono" style={{color:appDelta>=0?'var(--green)':'var(--red)'}}>{appDelta>=0?'+':''}{fmt(appDelta)}</td><td style={{color:'var(--muted)',fontSize:12}}>{o.note||'-'}</td></tr>);
-            })}
-          </tbody>
-        </table>
-      </div>
-      {/* Mobile cards */}
-      <div className="history-cards-wrap">
-        {orders.length === 0 && (<div style={{textAlign:'center',color:'var(--muted)',padding:'24px 0',fontSize:13}}>Chưa có đơn nào. Nhấn "+" để bắt đầu!</div>)}
-        {[...orders].reverse().slice(0,15).map(o=>{
-          const tipPhy=o.subOrders.reduce((a,s)=>a+Math.max(0,(s.collectCustomer||0)-(s.orderAmount||0)-(s.refund||0)),0);
-          const chenhLech=o.subOrders.reduce((a,s)=>{if(s.type==='2')return a+(s.orderAmount||0);if(s.type==='3')return a+(s.orderAmount||0)-(s.payShop||0);return a;},0);
-          const appDelta=o.shipTotal-chenhLech+(o.tipApp||0);
-          return (
-            <div key={o._id} className="m-order-card">
-              <div className="m-order-card-row">
-                <span style={{fontSize:12,color:'var(--muted)',fontWeight:600}}>{o.date}</span>
-                <span className={`badge ${o.isBundle?'badge-blue':'badge-orange'}`}>{o.isBundle?'Ghép':'Lẻ'}</span>
-              </div>
-              <div className="m-order-card-row">
-                <span style={{fontSize:12,color:'var(--muted)'}}>Công ship</span>
-                <span className="mono pos" style={{fontWeight:700}}>+{fmtFull(o.shipTotal)}</span>
-              </div>
-              {tipPhy > 0 && (<div className="m-order-card-row"><span style={{fontSize:12,color:'var(--muted)'}}>Tip vật lý</span><span className="mono" style={{color:'var(--yellow)',fontWeight:700}}>+{fmtFull(tipPhy)}</span></div>)}
-              <div className="m-order-card-row">
-                <span style={{fontSize:12,color:'var(--muted)'}}>Ví App Δ</span>
-                <span className="mono" style={{color:appDelta>=0?'var(--green)':'var(--red)',fontWeight:700}}>{appDelta>=0?'+':''}{fmtFull(appDelta)}</span>
-              </div>
-              {o.note && (<div style={{fontSize:11,color:'var(--muted)',marginTop:4,borderTop:'1px solid var(--border)',paddingTop:6}}>📝 {o.note}</div>)}
+      {(() => {
+        const [dashPage, setDashPage] = React.useState(1);
+        const PER = 12;
+        const sorted = [...orders].sort((a,b)=>b.date.localeCompare(a.date));
+        const paged = sorted.slice((dashPage-1)*PER, dashPage*PER);
+        return (
+          <>
+            {/* PC table */}
+            <div className="card history-table-wrap">
+              <table>
+                <thead><tr><th>Ngày</th><th>Loại</th><th>Ship</th><th>Tip vật lý</th><th>Ví App</th><th>Ghi chú</th></tr></thead>
+                <tbody>
+                  {orders.length === 0 && (<tr><td colSpan={6} style={{textAlign:'center',color:'var(--muted)',padding:32}}>Chưa có đơn nào. Nhấn "Nhập đơn" để bắt đầu!</td></tr>)}
+                  {paged.map(o=>{
+                    const tipPhy=o.subOrders.reduce((a,s)=>a+Math.max(0,(s.collectCustomer||0)-(s.orderAmount||0)-(s.refund||0)),0);
+                    const chenhLech=o.subOrders.reduce((a,s)=>{if(s.type==='2')return a+(s.orderAmount||0);if(s.type==='3')return a+(s.orderAmount||0)-(s.payShop||0);return a;},0);
+                    const appDelta=o.shipTotal-chenhLech+(o.tipApp||0);
+                    return (<tr key={o._id}><td className="mono" style={{fontSize:12}}>{o.date}</td><td><span className={`badge ${o.isBundle?'badge-blue':'badge-orange'}`}>{o.isBundle?'Ghép':'Lẻ'}</span></td><td className="mono pos">+{fmt(o.shipTotal)}</td><td className="mono" style={{color:'var(--yellow)'}}>{tipPhy>0?'+'+fmt(tipPhy):'-'}</td><td className="mono" style={{color:appDelta>=0?'var(--green)':'var(--red)'}}>{appDelta>=0?'+':''}{fmt(appDelta)}</td><td style={{color:'var(--muted)',fontSize:12}}>{o.note||'-'}</td></tr>);
+                  })}
+                </tbody>
+              </table>
+              <Pagination total={orders.length} page={dashPage} perPage={PER} onPage={setDashPage} />
             </div>
-          );
-        })}
-      </div>
+            {/* Mobile cards */}
+            <div className="history-cards-wrap">
+              {orders.length === 0 && (<div style={{textAlign:'center',color:'var(--muted)',padding:'24px 0',fontSize:13}}>Chưa có đơn nào. Nhấn "+" để bắt đầu!</div>)}
+              {paged.map(o=>{
+                const tipPhy=o.subOrders.reduce((a,s)=>a+Math.max(0,(s.collectCustomer||0)-(s.orderAmount||0)-(s.refund||0)),0);
+                const chenhLech=o.subOrders.reduce((a,s)=>{if(s.type==='2')return a+(s.orderAmount||0);if(s.type==='3')return a+(s.orderAmount||0)-(s.payShop||0);return a;},0);
+                const appDelta=o.shipTotal-chenhLech+(o.tipApp||0);
+                return (
+                  <div key={o._id} className="m-order-card">
+                    <div className="m-order-card-row">
+                      <span style={{fontSize:12,color:'var(--muted)',fontWeight:600}}>{o.date}</span>
+                      <span className={`badge ${o.isBundle?'badge-blue':'badge-orange'}`}>{o.isBundle?'Ghép':'Lẻ'}</span>
+                    </div>
+                    <div className="m-order-card-row">
+                      <span style={{fontSize:12,color:'var(--muted)'}}>Công ship</span>
+                      <span className="mono pos" style={{fontWeight:700}}>+{fmtFull(o.shipTotal)}</span>
+                    </div>
+                    {tipPhy > 0 && (<div className="m-order-card-row"><span style={{fontSize:12,color:'var(--muted)'}}>Tip vật lý</span><span className="mono" style={{color:'var(--yellow)',fontWeight:700}}>+{fmtFull(tipPhy)}</span></div>)}
+                    <div className="m-order-card-row">
+                      <span style={{fontSize:12,color:'var(--muted)'}}>Ví App Δ</span>
+                      <span className="mono" style={{color:appDelta>=0?'var(--green)':'var(--red)',fontWeight:700}}>{appDelta>=0?'+':''}{fmtFull(appDelta)}</span>
+                    </div>
+                    {o.note && (<div style={{fontSize:11,color:'var(--muted)',marginTop:4,borderTop:'1px solid var(--border)',paddingTop:6}}>📝 {o.note}</div>)}
+                  </div>
+                );
+              })}
+              <Pagination total={orders.length} page={dashPage} perPage={PER} onPage={setDashPage} />
+            </div>
+          </>
+        );
+      })()}
     </div>
   );
 };
@@ -1472,8 +1645,13 @@ const ChartPage = ({ data }) => {
 };
 
 // ── History Page ──────────────────────────────────────────────────────────────
-const HistoryPage = ({ data, onDeleteOrder, onDeleteTransfer, onEditOrder, onDeleteCash }) => {
+const HistoryPage = ({ data, onDeleteOrder, onDeleteTransfer, onEditOrder, onDeleteCash, onEditTransfer, onEditTip, onDeleteTip, onEditCash }) => {
   const [tab, setTab] = useState('orders');
+  const [pgOrders, setPgOrders] = useState(1);
+  const [pgTransfers, setPgTransfers] = useState(1);
+  const [pgTip, setPgTip] = useState(1);
+  const [pgCash, setPgCash] = useState(1);
+  const PER = 12;
   const { orders, transfers, tipApp, cashTx = [] } = data;
 
   return (
@@ -1494,10 +1672,10 @@ const HistoryPage = ({ data, onDeleteOrder, onDeleteTransfer, onEditOrder, onDel
           {/* PC table */}
           <div className="card history-table-wrap">
             <table>
-              <thead><tr><th>Ngày</th><th>Loại</th><th>Ship</th><th>Tip vật lý</th><th>Ví App Δ</th><th>Cash Δ</th><th>MB Δ</th><th>Ghi chú</th><th></th></tr></thead>
+              <thead><tr><th>Ngày</th><th>Loại</th><th>Ship</th><th>Tip vật lý</th><th>Ví App Δ</th><th>Cash Δ</th><th>MB Δ</th><th>Ghi chú</th><th>Hành động</th></tr></thead>
               <tbody>
                 {orders.length===0 && <tr><td colSpan={9} style={{textAlign:'center',color:'var(--muted)',padding:32}}>Chưa có đơn nào</td></tr>}
-                {[...orders].reverse().map(o=>{
+                {[...orders].sort((a,b)=>b.date.localeCompare(a.date)).slice((pgOrders-1)*PER,pgOrders*PER).map(o=>{
                   const tipPhy=o.subOrders.reduce((a,s)=>a+Math.max(0,(s.collectCustomer||0)-(s.orderAmount||0)-(s.refund||0)),0);
                   const chenhLech=o.subOrders.reduce((a,s)=>{if(s.type==='2')return a+(s.orderAmount||0);if(s.type==='3')return a+(s.orderAmount||0)-(s.payShop||0);return a;},0);
                   const appDelta=o.shipTotal-chenhLech+(o.tipApp||0);
@@ -1507,11 +1685,12 @@ const HistoryPage = ({ data, onDeleteOrder, onDeleteTransfer, onEditOrder, onDel
                 })}
               </tbody>
             </table>
+            <Pagination total={orders.length} page={pgOrders} perPage={PER} onPage={setPgOrders} />
           </div>
           {/* Mobile cards */}
           <div className="history-cards-wrap">
             {orders.length===0 && (<div style={{textAlign:'center',color:'var(--muted)',padding:'24px 0',fontSize:13}}>Chưa có đơn nào</div>)}
-            {[...orders].reverse().map(o=>{
+            {[...orders].sort((a,b)=>b.date.localeCompare(a.date)).slice((pgOrders-1)*PER,pgOrders*PER).map(o=>{
               const tipPhy=o.subOrders.reduce((a,s)=>a+Math.max(0,(s.collectCustomer||0)-(s.orderAmount||0)-(s.refund||0)),0);
               const chenhLech=o.subOrders.reduce((a,s)=>{if(s.type==='2')return a+(s.orderAmount||0);if(s.type==='3')return a+(s.orderAmount||0)-(s.payShop||0);return a;},0);
               const appDelta=o.shipTotal-chenhLech+(o.tipApp||0);
@@ -1534,6 +1713,7 @@ const HistoryPage = ({ data, onDeleteOrder, onDeleteTransfer, onEditOrder, onDel
                 </div>
               );
             })}
+            <Pagination total={orders.length} page={pgOrders} perPage={PER} onPage={setPgOrders} />
           </div>
         </>
       )}
@@ -1542,25 +1722,29 @@ const HistoryPage = ({ data, onDeleteOrder, onDeleteTransfer, onEditOrder, onDel
         <>
           <div className="card history-table-wrap">
             <table>
-              <thead><tr><th>Ngày</th><th>Từ</th><th>Đến</th><th>Số tiền</th><th>Ghi chú</th><th></th></tr></thead>
+              <thead><tr><th>Ngày</th><th>Từ</th><th>Đến</th><th>Số tiền</th><th>Ghi chú</th><th>Hành động</th></tr></thead>
               <tbody>
                 {transfers.length===0 && <tr><td colSpan={6} style={{textAlign:'center',color:'var(--muted)',padding:32}}>Chưa có giao dịch chuyển tiền</td></tr>}
-                {[...transfers].reverse().map(t=>{
+                {[...transfers].sort((a,b)=>b.date.localeCompare(a.date)).slice((pgTransfers-1)*PER,pgTransfers*PER).map(t=>{
                   const names={app:'Ví App',momo:'Momo',mb:'MB Bank',cash:'Tiền mặt'};
-                  return (<tr key={t._id}><td className="mono" style={{fontSize:12}}>{t.date}</td><td><span className="badge badge-red">{names[t.from]}</span></td><td><span className="badge badge-green">{names[t.to]}</span></td><td className="mono">{fmtFull(t.amount)}</td><td style={{color:'var(--muted)',fontSize:12}}>{t.note||'-'}</td><td><button className="btn btn-sm btn-danger" onClick={()=>onDeleteTransfer(t._id)}><Icon name="trash" size={12}/></button></td></tr>);
+                  return (<tr key={t._id}><td className="mono" style={{fontSize:12}}>{t.date}</td><td><span className="badge badge-red">{names[t.from]}</span></td><td><span className="badge badge-green">{names[t.to]}</span></td><td className="mono">{fmtFull(t.amount)}</td><td style={{color:'var(--muted)',fontSize:12}}>{t.note||'-'}</td><td style={{display:'flex',gap:4}}><button className="btn btn-sm btn-ghost" onClick={()=>onEditTransfer(t)} style={{color:'var(--blue)',borderColor:'var(--blue-dim)'}}>✏️</button><button className="btn btn-sm btn-danger" onClick={()=>onDeleteTransfer(t._id)}><Icon name="trash" size={12}/></button></td></tr>);
                 })}
               </tbody>
             </table>
+            <Pagination total={transfers.length} page={pgTransfers} perPage={PER} onPage={setPgTransfers} />
           </div>
           <div className="history-cards-wrap">
             {transfers.length===0 && (<div style={{textAlign:'center',color:'var(--muted)',padding:'24px 0',fontSize:13}}>Chưa có giao dịch chuyển tiền</div>)}
-            {[...transfers].reverse().map(t=>{
+            {[...transfers].sort((a,b)=>b.date.localeCompare(a.date)).slice((pgTransfers-1)*PER,pgTransfers*PER).map(t=>{
               const names={app:'Ví App',momo:'Momo',mb:'MB Bank',cash:'Tiền mặt'};
               return (
                 <div key={t._id} className="m-transfer-card">
                   <div className="m-order-card-row">
                     <span style={{fontSize:12,color:'var(--muted)',fontWeight:600}}>{t.date}</span>
-                    <button className="btn btn-sm btn-danger" onClick={()=>onDeleteTransfer(t._id)} style={{padding:'4px 8px'}}><Icon name="trash" size={12}/></button>
+                    <div style={{display:'flex',gap:6}}>
+                      <button className="btn btn-sm btn-ghost" onClick={()=>onEditTransfer(t)} style={{color:'var(--blue)',borderColor:'var(--blue-dim)',padding:'4px 8px'}}>✏️</button>
+                      <button className="btn btn-sm btn-danger" onClick={()=>onDeleteTransfer(t._id)} style={{padding:'4px 8px'}}><Icon name="trash" size={12}/></button>
+                    </div>
                   </div>
                   <div className="m-order-card-row">
                     <span style={{display:'flex',alignItems:'center',gap:6}}>
@@ -1574,6 +1758,7 @@ const HistoryPage = ({ data, onDeleteOrder, onDeleteTransfer, onEditOrder, onDel
                 </div>
               );
             })}
+            <Pagination total={transfers.length} page={pgTransfers} perPage={PER} onPage={setPgTransfers} />
           </div>
         </>
       )}
@@ -1581,21 +1766,29 @@ const HistoryPage = ({ data, onDeleteOrder, onDeleteTransfer, onEditOrder, onDel
       {tab==='tipapp' && (
         <>
           <div className="card history-table-wrap">
-            <table><thead><tr><th>Ngày</th><th>Tip App</th><th></th></tr></thead>
+            <table><thead><tr><th>Ngày</th><th>Tip App</th><th>Hành động</th></tr></thead>
               <tbody>
                 {tipApp.length===0 && <tr><td colSpan={3} style={{textAlign:'center',color:'var(--muted)',padding:32}}>Chưa có tip app</td></tr>}
-                {[...tipApp].reverse().map(t=>(<tr key={t._id}><td className="mono" style={{fontSize:12}}>{t.date}</td><td className="mono" style={{color:'var(--green)'}}>+{fmtFull(t.amount)}</td><td></td></tr>))}
+                {[...tipApp].sort((a,b)=>b.date.localeCompare(a.date)).slice((pgTip-1)*PER,pgTip*PER).map(t=>(<tr key={t._id}><td className="mono" style={{fontSize:12}}>{t.date}</td><td className="mono" style={{color:'var(--green)'}}>+{fmtFull(t.amount)}</td><td style={{display:'flex',gap:4}}><button className="btn btn-sm btn-ghost" onClick={()=>onEditTip(t)} style={{color:'var(--blue)',borderColor:'var(--blue-dim)'}}>✏️</button><button className="btn btn-sm btn-danger" onClick={()=>onDeleteTip(t._id)}><Icon name="trash" size={12}/></button></td></tr>))}
               </tbody>
             </table>
+            <Pagination total={tipApp.length} page={pgTip} perPage={PER} onPage={setPgTip} />
           </div>
           <div className="history-cards-wrap">
             {tipApp.length===0 && (<div style={{textAlign:'center',color:'var(--muted)',padding:'24px 0',fontSize:13}}>Chưa có tip app</div>)}
-            {[...tipApp].reverse().map(t=>(
+            {[...tipApp].sort((a,b)=>b.date.localeCompare(a.date)).slice((pgTip-1)*PER,pgTip*PER).map(t=>(
               <div key={t._id} className="m-tip-card">
-                <span style={{fontSize:12,color:'var(--muted)',fontWeight:600}}>{t.date}</span>
-                <span className="mono" style={{color:'var(--green)',fontWeight:700}}>+{fmtFull(t.amount)}</span>
+                <div style={{display:'flex',flexDirection:'column',gap:2}}>
+                  <span style={{fontSize:12,color:'var(--muted)',fontWeight:600}}>{t.date}</span>
+                  <span className="mono" style={{color:'var(--green)',fontWeight:700}}>+{fmtFull(t.amount)}</span>
+                </div>
+                <div style={{display:'flex',gap:6}}>
+                  <button className="btn btn-sm btn-ghost" onClick={()=>onEditTip(t)} style={{color:'var(--blue)',borderColor:'var(--blue-dim)',padding:'4px 8px'}}>✏️</button>
+                  <button className="btn btn-sm btn-danger" onClick={()=>onDeleteTip(t._id)} style={{padding:'4px 8px'}}><Icon name="trash" size={12}/></button>
+                </div>
               </div>
             ))}
+            <Pagination total={tipApp.length} page={pgTip} perPage={PER} onPage={setPgTip} />
           </div>
         </>
       )}
@@ -1603,17 +1796,18 @@ const HistoryPage = ({ data, onDeleteOrder, onDeleteTransfer, onEditOrder, onDel
       {tab==='cashtx' && (
         <>
           <div className="card history-table-wrap">
-            <table><thead><tr><th>Ngày</th><th>Loại</th><th>Ví</th><th>Số tiền</th><th>Ghi chú</th><th></th></tr></thead>
+            <table><thead><tr><th>Ngày</th><th>Loại</th><th>Ví</th><th>Số tiền</th><th>Ghi chú</th><th>Hành động</th></tr></thead>
               <tbody>
                 {cashTx.length===0 && (<tr><td colSpan={6} style={{textAlign:'center',color:'var(--muted)',padding:32}}>Chưa có giao dịch nạp/rút</td></tr>)}
-                {[...cashTx].reverse().map(t=>{const walletLabel={cash:'Tiền mặt',momo:'Momo',mb:'MB Bank'}[t.wallet]||t.wallet;const isDeposit=t.txType==='deposit';return(<tr key={t._id}><td className="mono" style={{fontSize:12}}>{t.date}</td><td><span className={`badge ${isDeposit?'badge-green':'badge-red'}`}>{isDeposit?'⬆️ Nạp':'⬇️ Rút'}</span></td><td style={{color:'var(--muted)',fontSize:13}}>{walletLabel}</td><td className="mono" style={{color:isDeposit?'var(--green)':'var(--red)',fontWeight:600}}>{isDeposit?'+':'-'}{fmtFull(t.amount)}</td><td style={{color:'var(--muted)',fontSize:12}}>{t.note||'-'}</td><td><button className="btn btn-sm btn-danger" onClick={()=>onDeleteCash(t._id)}><Icon name="trash" size={12}/></button></td></tr>);
+                {[...cashTx].sort((a,b)=>b.date.localeCompare(a.date)).slice((pgCash-1)*PER,pgCash*PER).map(t=>{const walletLabel={cash:'Tiền mặt',momo:'Momo',mb:'MB Bank'}[t.wallet]||t.wallet;const isDeposit=t.txType==='deposit';return(<tr key={t._id}><td className="mono" style={{fontSize:12}}>{t.date}</td><td><span className={`badge ${isDeposit?'badge-green':'badge-red'}`}>{isDeposit?'⬆️ Nạp':'⬇️ Rút'}</span></td><td style={{color:'var(--muted)',fontSize:13}}>{walletLabel}</td><td className="mono" style={{color:isDeposit?'var(--green)':'var(--red)',fontWeight:600}}>{isDeposit?'+':'-'}{fmtFull(t.amount)}</td><td style={{color:'var(--muted)',fontSize:12}}>{t.note||'-'}</td><td style={{display:'flex',gap:4}}><button className="btn btn-sm btn-ghost" onClick={()=>onEditCash(t)} style={{color:'var(--blue)',borderColor:'var(--blue-dim)'}}>✏️</button><button className="btn btn-sm btn-danger" onClick={()=>onDeleteCash(t._id)}><Icon name="trash" size={12}/></button></td></tr>);
                 })}
               </tbody>
             </table>
+            <Pagination total={cashTx.length} page={pgCash} perPage={PER} onPage={setPgCash} />
           </div>
           <div className="history-cards-wrap">
             {cashTx.length===0 && (<div style={{textAlign:'center',color:'var(--muted)',padding:'24px 0',fontSize:13}}>Chưa có giao dịch nạp/rút</div>)}
-            {[...cashTx].reverse().map(t=>{
+            {[...cashTx].sort((a,b)=>b.date.localeCompare(a.date)).slice((pgCash-1)*PER,pgCash*PER).map(t=>{
               const walletLabel={cash:'Tiền mặt',momo:'Momo',mb:'MB Bank'}[t.wallet]||t.wallet;
               const isDeposit=t.txType==='deposit';
               return (
@@ -1623,7 +1817,10 @@ const HistoryPage = ({ data, onDeleteOrder, onDeleteTransfer, onEditOrder, onDel
                       <span className={`badge ${isDeposit?'badge-green':'badge-red'}`}>{isDeposit?'⬆️ Nạp':'⬇️ Rút'}</span>
                       <span style={{fontSize:12,color:'var(--muted)'}}>{walletLabel}</span>
                     </div>
-                    <button className="btn btn-sm btn-danger" onClick={()=>onDeleteCash(t._id)} style={{padding:'4px 8px'}}><Icon name="trash" size={12}/></button>
+                    <div style={{display:'flex',gap:6}}>
+                      <button className="btn btn-sm btn-ghost" onClick={()=>onEditCash(t)} style={{color:'var(--blue)',borderColor:'var(--blue-dim)',padding:'4px 8px'}}>✏️</button>
+                      <button className="btn btn-sm btn-danger" onClick={()=>onDeleteCash(t._id)} style={{padding:'4px 8px'}}><Icon name="trash" size={12}/></button>
+                    </div>
                   </div>
                   <div className="m-order-card-row">
                     <span style={{fontSize:12,color:'var(--muted)',fontWeight:600}}>{t.date}</span>
@@ -1633,6 +1830,7 @@ const HistoryPage = ({ data, onDeleteOrder, onDeleteTransfer, onEditOrder, onDel
                 </div>
               );
             })}
+            <Pagination total={cashTx.length} page={pgCash} perPage={PER} onPage={setPgCash} />
           </div>
         </>
       )}
@@ -1668,7 +1866,13 @@ const App = () => {
   const [page, setPage] = useState('dashboard');
   const [modal, setModal] = useState(null);
   const [editingOrder, setEditingOrder] = useState(null);
+  const [editingTransfer, setEditingTransfer] = useState(null);
+  const [editingTip, setEditingTip] = useState(null);
+  const [editingCash, setEditingCash] = useState(null);
   const [showBackup, setShowBackup] = useState(false);
+  const [showEditTransfer, setShowEditTransfer] = useState(false);
+  const [showEditTip, setShowEditTip] = useState(false);
+  const [showEditCash, setShowEditCash] = useState(false);
   const [showActionSheet, setShowActionSheet] = useState(false);
   const [data, setData] = useState(INITIAL);
   const [saving, setSaving] = useState(false);
@@ -1764,6 +1968,66 @@ const App = () => {
 
   const editOrder = useCallback((order) => { setEditingOrder(order); setModal('order'); }, []);
 
+  const editTransfer = useCallback((transfer) => { setEditingTransfer(transfer); setShowEditTransfer(true); }, []);
+  const updateTransfer = useCallback(async (updated) => {
+    setData(prev => {
+      const old = prev.transfers.find(t => t._id === updated._id);
+      if (!old) return prev;
+      const w = { ...prev.wallets };
+      // Revert old
+      w[old.from] += old.amount; w[old.to] -= old.amount;
+      // Apply new
+      w[updated.from] -= updated.amount; w[updated.to] += updated.amount;
+      return { ...prev, wallets: w, transfers: prev.transfers.map(t => t._id === updated._id ? updated : t) };
+    });
+    setSaving(true);
+    try { await api.updateTransfer(userId, updated); setData(prev => { api.saveWallets(userId, prev.wallets).catch(console.error); return prev; }); }
+    catch(e) { console.error('Update transfer error:', e); } finally { setSaving(false); }
+  }, [userId]);
+
+  const deleteTip = useCallback(async (id) => {
+    if (!confirm('Xoá tip app này? Số dư ví sẽ được hoàn lại.')) return;
+    setData(prev => {
+      const tip = prev.tipApp.find(t => t._id === id); if (!tip) return prev;
+      const w = { ...prev.wallets }; w.app -= tip.amount;
+      return { ...prev, wallets: w, tipApp: prev.tipApp.filter(t => t._id !== id) };
+    });
+    setSaving(true);
+    try { await api.deleteTip(userId, id); setData(prev => { api.saveWallets(userId, prev.wallets).catch(console.error); return prev; }); }
+    catch(e) { console.error('Delete tip error:', e); } finally { setSaving(false); }
+  }, [userId]);
+
+  const editTip = useCallback((tip) => { setEditingTip(tip); setShowEditTip(true); }, []);
+  const updateTip = useCallback(async (updated) => {
+    setData(prev => {
+      const old = prev.tipApp.find(t => t._id === updated._id);
+      if (!old) return prev;
+      const w = { ...prev.wallets };
+      w.app -= old.amount; w.app += updated.amount;
+      return { ...prev, wallets: w, tipApp: prev.tipApp.map(t => t._id === updated._id ? updated : t) };
+    });
+    setSaving(true);
+    try { await api.updateTip(userId, updated); setData(prev => { api.saveWallets(userId, prev.wallets).catch(console.error); return prev; }); }
+    catch(e) { console.error('Update tip error:', e); } finally { setSaving(false); }
+  }, [userId]);
+
+  const editCash = useCallback((tx) => { setEditingCash(tx); setShowEditCash(true); }, []);
+  const updateCash = useCallback(async (updated) => {
+    setData(prev => {
+      const old = (prev.cashTx || []).find(t => t._id === updated._id);
+      if (!old) return prev;
+      const w = { ...prev.wallets };
+      // Revert old effect
+      if (old.txType === 'deposit') w[old.wallet] -= old.amount; else w[old.wallet] += old.amount;
+      // Apply new effect
+      if (updated.txType === 'deposit') w[updated.wallet] += updated.amount; else w[updated.wallet] -= updated.amount;
+      return { ...prev, wallets: w, cashTx: (prev.cashTx || []).map(t => t._id === updated._id ? updated : t) };
+    });
+    setSaving(true);
+    try { await api.updateCash(userId, updated); setData(prev => { api.saveWallets(userId, prev.wallets).catch(console.error); return prev; }); }
+    catch(e) { console.error('Update cash error:', e); } finally { setSaving(false); }
+  }, [userId]);
+
   if (!userId) return <LoginScreen onLogin={handleLogin} />;
 
   if (loadingData) return (
@@ -1826,7 +2090,7 @@ const App = () => {
       <main className="pc-main" style={{flex:1,padding:'32px 36px',maxWidth:1100,margin:'0 auto',width:'100%'}}>
         {page==='dashboard' && <Dashboard data={data} />}
         {page==='chart' && <ChartPage data={data} />}
-        {page==='history' && <HistoryPage data={data} onDeleteOrder={deleteOrder} onDeleteTransfer={deleteTransfer} onEditOrder={editOrder} onDeleteCash={deleteCash} />}
+        {page==='history' && <HistoryPage data={data} onDeleteOrder={deleteOrder} onDeleteTransfer={deleteTransfer} onEditOrder={editOrder} onDeleteCash={deleteCash} onEditTransfer={editTransfer} onEditTip={editTip} onDeleteTip={deleteTip} onEditCash={editCash} />}
       </main>
 
       {/* ── Mobile Bottom Nav ── */}
@@ -1875,6 +2139,9 @@ const App = () => {
       {modal==='cash' && <CashModal onClose={()=>setModal(null)} onSave={applyCash} />}
       {modal==='wallet' && <WalletSetupModal wallets={data.wallets} onSave={w=>{setData(p=>({...p,wallets:w}));api.saveWallets(userId,w).catch(console.error);}} onClose={()=>setModal(null)} />}
       {showBackup && <BackupModal data={data} onClose={()=>setShowBackup(false)} onRestore={async (newData)=>{setData(newData);setShowBackup(false);setSaving(true);try{await api.saveAll(userId,newData);}catch(e){console.error(e);}finally{setSaving(false);}}} />}
+      {showEditTransfer && editingTransfer && <TransferEditModal onClose={()=>{setShowEditTransfer(false);setEditingTransfer(null);}} onSave={updateTransfer} initialData={editingTransfer} />}
+      {showEditTip && editingTip && <TipAppEditModal onClose={()=>{setShowEditTip(false);setEditingTip(null);}} onSave={updateTip} initialData={editingTip} />}
+      {showEditCash && editingCash && <CashEditModal onClose={()=>{setShowEditCash(false);setEditingCash(null);}} onSave={updateCash} initialData={editingCash} />}
     </div>
   );
 };

@@ -28,7 +28,6 @@ export default async function handler(req, res) {
 
   if (req.method === 'OPTIONS') return res.status(200).end();
 
-  // userId luôn đến từ frontend sau khi login/register
   const rawUserId = req.method === 'GET'
     ? req.query.userId
     : req.body?.userId;
@@ -43,7 +42,6 @@ export default async function handler(req, res) {
     const transfersCol = db.collection('shipflow_transfers');
     const tipAppCol    = db.collection('shipflow_tipapp');
 
-    // ── GET: tải toàn bộ dữ liệu ──────────────────────────────────────────────
     if (req.method === 'GET') {
       const cashTxCol = db.collection('shipflow_cashtx');
       const [walletDoc, orders, transfers, tipApp, cashTx] = await Promise.all([
@@ -54,7 +52,6 @@ export default async function handler(req, res) {
         cashTxCol.find({ userId }).sort({ date: -1 }).toArray(),
       ]);
 
-      // Normalize: bỏ userId khỏi từng record trả về, trả _id dạng string
       const stripUserId = ({ userId: _u, ...rest }) => ({
         ...rest,
         _id: rest._id?.toString(),
@@ -71,14 +68,8 @@ export default async function handler(req, res) {
       });
     }
 
-    // ── POST: lưu / cập nhật ──────────────────────────────────────────────────
     if (req.method === 'POST') {
       const { action, data } = req.body;
-
-      // action: 'saveWallets' | 'addOrder' | 'updateOrder' | 'deleteOrder'
-      //       | 'addTransfer' | 'deleteTransfer'
-      //       | 'addTip' | 'deleteTip'
-      //       | 'saveAll'  ← dùng cho lúc sync toàn bộ (fallback)
 
       if (action === 'saveWallets') {
         await walletsCol.updateOne(
@@ -90,7 +81,7 @@ export default async function handler(req, res) {
       }
 
       if (action === 'addOrder') {
-        const { _id, ...orderData } = data; // bỏ _id cũ nếu có, MongoDB tự sinh
+        const { _id, ...orderData } = data;
         const result = await ordersCol.insertOne({ userId, ...orderData });
         return res.status(200).json({ success: true, _id: result.insertedId.toString() });
       }
@@ -115,6 +106,15 @@ export default async function handler(req, res) {
         return res.status(200).json({ success: true, _id: result.insertedId.toString() });
       }
 
+      if (action === 'updateTransfer') {
+        const { _id, ...tData } = data;
+        await transfersCol.updateOne(
+          { _id: new ObjectId(_id), userId },
+          { $set: tData }
+        );
+        return res.status(200).json({ success: true });
+      }
+
       if (action === 'deleteTransfer') {
         await transfersCol.deleteOne({ _id: new ObjectId(data._id), userId });
         return res.status(200).json({ success: true });
@@ -124,6 +124,15 @@ export default async function handler(req, res) {
         const { _id, ...tipData } = data;
         const result = await tipAppCol.insertOne({ userId, ...tipData });
         return res.status(200).json({ success: true, _id: result.insertedId.toString() });
+      }
+
+      if (action === 'updateTip') {
+        const { _id, ...tipData } = data;
+        await tipAppCol.updateOne(
+          { _id: new ObjectId(_id), userId },
+          { $set: tipData }
+        );
+        return res.status(200).json({ success: true });
       }
 
       if (action === 'deleteTip') {
@@ -138,15 +147,25 @@ export default async function handler(req, res) {
         return res.status(200).json({ success: true, _id: result.insertedId.toString() });
       }
 
+      if (action === 'updateCash') {
+        const cashTxCol = db.collection('shipflow_cashtx');
+        const { _id, ...txData } = data;
+        await cashTxCol.updateOne(
+          { _id: new ObjectId(_id), userId },
+          { $set: txData }
+        );
+        return res.status(200).json({ success: true });
+      }
+
       if (action === 'deleteCash') {
         const cashTxCol = db.collection('shipflow_cashtx');
         await cashTxCol.deleteOne({ _id: new ObjectId(data._id), userId });
         return res.status(200).json({ success: true });
       }
 
-      // saveAll — ghi đè toàn bộ (dùng khi import backup JSON)
       if (action === 'saveAll') {
-        const { wallets, orders = [], transfers = [], tipApp = [] } = data;
+        const cashTxCol = db.collection('shipflow_cashtx');
+        const { wallets, orders = [], transfers = [], tipApp = [], cashTx = [] } = data;
 
         const stripAndTag = (arr) =>
           arr.map(({ _id, id, userId: _u, ...rest }) => ({ userId, ...rest }));
@@ -157,15 +176,10 @@ export default async function handler(req, res) {
             { $set: { userId, ...wallets, updatedAt: new Date() } },
             { upsert: true }
           ),
-          orders.length > 0
-            ? ordersCol.insertMany(stripAndTag(orders))
-            : Promise.resolve(),
-          transfers.length > 0
-            ? transfersCol.insertMany(stripAndTag(transfers))
-            : Promise.resolve(),
-          tipApp.length > 0
-            ? tipAppCol.insertMany(stripAndTag(tipApp))
-            : Promise.resolve(),
+          orders.length > 0 ? ordersCol.insertMany(stripAndTag(orders)) : Promise.resolve(),
+          transfers.length > 0 ? transfersCol.insertMany(stripAndTag(transfers)) : Promise.resolve(),
+          tipApp.length > 0 ? tipAppCol.insertMany(stripAndTag(tipApp)) : Promise.resolve(),
+          cashTx.length > 0 ? cashTxCol.insertMany(stripAndTag(cashTx)) : Promise.resolve(),
         ]);
 
         return res.status(200).json({ success: true });
