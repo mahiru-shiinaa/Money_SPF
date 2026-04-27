@@ -108,9 +108,9 @@
     }
     textarea { height: auto; min-height: 44px; }
     input[type="number"] {
-      appearance: textfield;
-      -moz-appearance: textfield;
-    }
+  appearance: textfield;        /* chuẩn */
+  -moz-appearance: textfield;   /* Firefox */
+}
     .money-input { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; color: var(--text); padding: 11px 14px; font-family: 'Nunito', sans-serif; font-size: 14px; width: 100%; height: 44px; outline: none; transition: border-color 0.2s; box-sizing: border-box; }
     .money-input:focus { border-color: var(--orange); }
     input[type=number]::-webkit-inner-spin-button { opacity: 0.4; }
@@ -248,223 +248,6 @@
       font-size: 22px;
       font-weight: 500;
     }
-
-    /* ── MOBILE STYLES ─────────────────────────────────────────────────── */
-    @media (max-width: 768px) {
-      /* Layout: sidebar becomes bottom nav */
-      .desktop-sidebar { display: none !important; }
-      .mobile-bottomnav { display: flex !important; }
-      .mobile-topbar { display: flex !important; }
-      .main-content {
-        padding: 16px 14px 90px !important;
-        margin: 0 !important;
-        max-width: 100% !important;
-      }
-
-      /* Wallet cards: 2 columns on mobile */
-      .wallet-grid {
-        grid-template-columns: 1fr 1fr !important;
-        gap: 10px !important;
-      }
-      .stat-card {
-        padding: 14px 14px !important;
-      }
-      .number-big {
-        font-size: 16px !important;
-      }
-
-      /* Income stats: 2x2 grid */
-      .income-grid {
-        grid-template-columns: 1fr 1fr !important;
-        gap: 10px !important;
-      }
-
-      /* Chart period selector */
-      .chart-header {
-        flex-direction: column !important;
-        gap: 12px !important;
-        align-items: flex-start !important;
-      }
-      .chart-tabs {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 4px;
-      }
-
-      /* Modal: full-screen bottom sheet on mobile */
-      .modal-overlay {
-        align-items: flex-end !important;
-        padding: 0 !important;
-      }
-      .modal {
-        border-radius: 20px 20px 0 0 !important;
-        max-width: 100% !important;
-        max-height: 92vh !important;
-        padding: 20px 16px 32px !important;
-      }
-
-      /* Drag handle for modal */
-      .modal::before {
-        content: '';
-        display: block;
-        width: 40px;
-        height: 4px;
-        background: var(--border);
-        border-radius: 2px;
-        margin: 0 auto 16px;
-      }
-
-      /* Sub order type chips: 2x2 grid */
-      .sub-type-chips {
-        display: grid !important;
-        grid-template-columns: 1fr 1fr !important;
-        gap: 6px !important;
-      }
-      .sub-type-chips .chip {
-        padding: 0 8px !important;
-        height: 40px !important;
-        font-size: 12px !important;
-        justify-content: center !important;
-      }
-
-      /* Order form grid: 1 col */
-      .order-form-grid {
-        grid-template-columns: 1fr !important;
-      }
-
-      /* History table: card style on mobile */
-      .mobile-hide-col { display: none !important; }
-      .mobile-card-row {
-        display: block !important;
-      }
-      .desktop-table { display: none !important; }
-      .mobile-list { display: block !important; }
-
-      /* Quick actions FAB */
-      .mobile-fab { display: flex !important; }
-
-      /* History tabs: scrollable */
-      .history-tabs {
-        flex-wrap: nowrap !important;
-        overflow-x: auto !important;
-        -webkit-overflow-scrolling: touch !important;
-        padding-bottom: 4px !important;
-        gap: 6px !important;
-      }
-      .history-tabs .tab-btn {
-        white-space: nowrap !important;
-        flex-shrink: 0 !important;
-        padding: 8px 14px !important;
-      }
-
-      /* Transfer modal grid */
-      .transfer-grid {
-        grid-template-columns: 1fr 1fr !important;
-      }
-
-      /* Dashboard title */
-      .dashboard-header h2 { font-size: 20px !important; }
-
-      /* Section title spacing */
-      .section-title { margin-bottom: 8px !important; }
-
-      /* Tap targets */
-      .btn { min-height: 44px; }
-      .btn-sm { min-height: 36px; }
-      input, select { height: 48px !important; font-size: 16px !important; } /* 16px prevents iOS zoom */
-      .money-input { height: 48px !important; font-size: 16px !important; }
-
-      /* Preview box in order modal */
-      .preview-box {
-        font-size: 12px !important;
-      }
-
-      /* Wallet setup modal */
-      .wallet-setup-modal {
-        max-width: 100% !important;
-      }
-
-      /* Cash modal */
-      .cash-modal {
-        max-width: 100% !important;
-      }
-
-      /* Tip modal */
-      .tip-modal {
-        max-width: 100% !important;
-      }
-
-      /* Transfer modal */
-      .transfer-modal {
-        max-width: 100% !important;
-      }
-
-      /* Backup modal */
-      .backup-modal {
-        max-width: 100% !important;
-      }
-
-      /* Login card */
-      .login-card {
-        border-radius: 20px 20px 0 0 !important;
-        position: fixed !important;
-        bottom: 0 !important;
-        left: 0 !important;
-        right: 0 !important;
-        max-width: 100% !important;
-        padding: 28px 20px 40px !important;
-      }
-      .login-wrapper {
-        align-items: flex-end !important;
-        padding: 0 !important;
-        background: var(--bg) !important;
-      }
-      .login-logo {
-        position: fixed !important;
-        top: 30% !important;
-        left: 50% !important;
-        transform: translateX(-50%) !important;
-      }
-    }
-
-    /* Desktop: hide mobile-only elements */
-    .mobile-bottomnav { display: none; }
-    .mobile-topbar { display: none; }
-    .mobile-fab { display: none; }
-    .mobile-list { display: none; }
-    .desktop-table { display: block; }
-
-    /* ── MOBILE BOTTOM NAV ─────────────────────────────────────────────── */
-    .mobile-bottomnav {
-      position: fixed;
-      bottom: 0; left: 0; right: 0;
-      background: var(--surface);
-      border-top: 1px solid var(--border);
-      z-index: 50;
-      padding: 8px 0 env(safe-area-inset-bottom, 8px);
-      align-items: stretch;
-    }
-
-    /* ── MOBILE TOP BAR ────────────────────────────────────────────────── */
-    .mobile-topbar {
-      position: sticky;
-      top: 0;
-      z-index: 40;
-      background: var(--surface);
-      border-bottom: 1px solid var(--border);
-      padding: 12px 16px;
-      align-items: center;
-      justify-content: space-between;
-    }
-
-    /* ── MOBILE CARD LIST (History) ────────────────────────────────────── */
-    .mobile-order-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 14px;
-      margin-bottom: 10px;
-    }
   </style>
 </head>
 <body>
@@ -483,9 +266,6 @@ const fmtFull = (n) => new Intl.NumberFormat('vi-VN').format(n) + 'đ';
 const today = () => new Date().toISOString().split('T')[0];
 const genId = () => Date.now().toString(36) + Math.random().toString(36).slice(2,5);
 
-// Detect mobile
-const isMobile = () => window.innerWidth <= 768;
-
 const INITIAL = {
   wallets: { app: 0, momo: 0, mb: 0, cash: 0 },
   orders: [],
@@ -494,58 +274,113 @@ const INITIAL = {
   cashTx: [],
 };
 
-// ── API ───────────────────────────────────────────────────────────────────────
+// ── API (dùng userId thay username) ──────────────────────────────────────────
 const api = {
   async loadData(userId) {
     const r = await fetch(`/api/data?userId=${encodeURIComponent(userId)}`);
     if (!r.ok) throw new Error('Không tải được dữ liệu');
     return r.json();
   },
+
   async saveWallets(userId, wallets) {
-    await fetch('/api/data', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ userId, action: 'saveWallets', data: { wallets } }) });
+    await fetch('/api/data', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userId, action: 'saveWallets', data: { wallets } }),
+    });
   },
+
   async addOrder(userId, order) {
-    const r = await fetch('/api/data', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ userId, action: 'addOrder', data: order }) });
+    const r = await fetch('/api/data', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userId, action: 'addOrder', data: order }),
+    });
     if (!r.ok) throw new Error('Không thêm được order');
     return (await r.json())._id;
   },
+
   async updateOrder(userId, order) {
-    await fetch('/api/data', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ userId, action: 'updateOrder', data: order }) });
+    await fetch('/api/data', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userId, action: 'updateOrder', data: order }),
+    });
   },
+
   async deleteOrder(userId, orderId) {
-    await fetch('/api/data', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ userId, action: 'deleteOrder', data: { _id: orderId } }) });
+    await fetch('/api/data', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userId, action: 'deleteOrder', data: { _id: orderId } }),
+    });
   },
+
   async addTransfer(userId, transfer) {
-    const r = await fetch('/api/data', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ userId, action: 'addTransfer', data: transfer }) });
+    const r = await fetch('/api/data', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userId, action: 'addTransfer', data: transfer }),
+    });
     if (!r.ok) throw new Error('Không thêm được transfer');
     return (await r.json())._id;
   },
+
   async deleteTransfer(userId, transferId) {
-    await fetch('/api/data', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ userId, action: 'deleteTransfer', data: { _id: transferId } }) });
+    await fetch('/api/data', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userId, action: 'deleteTransfer', data: { _id: transferId } }),
+    });
   },
+
   async addTip(userId, tip) {
-    const r = await fetch('/api/data', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ userId, action: 'addTip', data: tip }) });
+    const r = await fetch('/api/data', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userId, action: 'addTip', data: tip }),
+    });
     if (!r.ok) throw new Error('Không thêm được tip');
     return (await r.json())._id;
   },
+
   async addCash(userId, tx) {
-    const r = await fetch('/api/data', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ userId, action: 'addCash', data: tx }) });
+    const r = await fetch('/api/data', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userId, action: 'addCash', data: tx }),
+    });
     if (!r.ok) throw new Error('Không thêm được giao dịch');
     return (await r.json())._id;
   },
+
   async deleteCash(userId, txId) {
-    await fetch('/api/data', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ userId, action: 'deleteCash', data: { _id: txId } }) });
+    await fetch('/api/data', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userId, action: 'deleteCash', data: { _id: txId } }),
+    });
   },
+
   async saveAll(userId, data) {
-    await fetch('/api/data', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ userId, action: 'saveAll', data }) });
+    await fetch('/api/data', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userId, action: 'saveAll', data }),
+    });
   },
+
   async auth(username, action) {
-    const r = await fetch('/api/auth', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ username, action }) });
+    const r = await fetch('/api/auth', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username, action }),
+    });
     return { ok: r.ok, data: await r.json() };
   },
 };
 
-// Icons
+// Icons (simple SVG inline)
 const Icon = ({ name, size=16 }) => {
   const icons = {
     dashboard: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>,
@@ -558,13 +393,11 @@ const Icon = ({ name, size=16 }) => {
     wallet: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20 7H4a2 2 0 00-2 2v10a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2z"/><path d="M16 14a1 1 0 100-2 1 1 0 000 2z" fill="currentColor"/><path d="M16 7V5a2 2 0 00-2-2H6a2 2 0 00-2 2v2"/></svg>,
     close: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>,
     ship: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M5 17H3a2 2 0 01-2-2V5a2 2 0 012-2h11a2 2 0 012 2v3"/><rect x="9" y="11" width="14" height="10" rx="2"/><circle cx="12" cy="21" r="1"/><circle cx="20" cy="21" r="1"/></svg>,
-    menu: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>,
-    cash: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="3"/><path d="M6 12h.01M18 12h.01"/></svg>,
   };
   return icons[name] || null;
 };
 
-// ── WalletCard ────────────────────────────────────────────────────────────────
+// ── Wallet Card ───────────────────────────────────────────────────────────────
 const WalletCard = ({ label, value, color, icon, warnNegative }) => {
   const isNeg = warnNegative && value < 0;
   return (
@@ -573,17 +406,21 @@ const WalletCard = ({ label, value, color, icon, warnNegative }) => {
       animation:'pulse-red 1.8s ease-in-out infinite'
     } : {}}>
       <div className="flex items-center justify-between mb-2">
-        <span className="section-title" style={{marginBottom:0,fontSize:10}}>{label}</span>
+        <span className="section-title" style={{marginBottom:0}}>{label}</span>
         <span style={{color: isNeg ? 'var(--red)' : `var(--${color})`}}>
-          {isNeg ? '⚠️' : <Icon name={icon} size={16}/>}
+          {isNeg ? '⚠️' : <Icon name={icon} size={18}/>}
         </span>
       </div>
       <div className="number-big" style={{color: isNeg ? 'var(--red)' : 'var(--text)'}}>
         {fmtFull(value)}
       </div>
       {isNeg && (
-        <div style={{marginTop:6,fontSize:10,color:'var(--red)',background:'var(--red-dim)',borderRadius:6,padding:'3px 7px',fontWeight:600}}>
-          Cần nạp tiền!
+        <div style={{
+          marginTop:8, fontSize:11, color:'var(--red)',
+          background:'var(--red-dim)', borderRadius:6,
+          padding:'4px 8px', fontWeight:600
+        }}>
+          Cần nạp tiền vào ví app!
         </div>
       )}
     </div>
@@ -628,25 +465,20 @@ const SubOrderForm = ({ index, data, onChange, onRemove, canRemove }) => {
 
   return (
     <div className="order-sub-card fade-in">
-      <div className="flex items-center justify-between mb-3" style={{flexWrap:'wrap',gap:8}}>
+      <div className="flex items-center justify-between mb-3">
         <span style={{fontFamily:'Nunito',fontWeight:700,fontSize:13}}>Đơn #{index+1}</span>
-        <div style={{display:'flex',gap:6,alignItems:'center'}}>
+        <div className="flex gap-2 items-center flex-wrap">
+          {['1','2','3','4'].map(t => (
+            <button key={t} className={`chip ${data.type===t?'active':''}`}
+              onClick={()=>onChange({...data,type:t,payShop:0,orderAmount:0,collectCustomer:0,refund:0})}>
+              Loại {t}
+            </button>
+          ))}
           {canRemove && <button className="btn btn-sm btn-danger" onClick={onRemove}><Icon name="trash" size={13}/></button>}
         </div>
       </div>
 
-      {/* Type selector: 2x2 grid on mobile */}
-      <div className="sub-type-chips" style={{display:'flex',gap:6,marginBottom:10,flexWrap:'wrap'}}>
-        {['1','2','3','4'].map(t => (
-          <button key={t} className={`chip ${data.type===t?'active':''}`}
-            style={{flex:'1 1 calc(50% - 6px)',minWidth:0,height:40,fontSize:12,padding:'0 4px'}}
-            onClick={()=>onChange({...data,type:t,payShop:0,orderAmount:0,collectCustomer:0,refund:0})}>
-            Loại {t}
-          </button>
-        ))}
-      </div>
-
-      <div className="text-xs mb-3 p-2 rounded-lg" style={{color:'var(--muted)',background:'var(--bg)',fontSize:11,lineHeight:1.4}}>
+      <div className="text-xs mb-3 p-2 rounded-lg" style={{color:'var(--muted)',background:'var(--bg)'}}>
         {type==='1' && '🟢 Không trả quán, không thu khách — App cộng ship'}
         {type==='2' && '🟡 Không trả quán, thu tiền khách — App cộng ship rồi trừ thu khách'}
         {type==='3' && '🔴 Trả quán + thu khách — App trừ chênh lệch (số cần thu - trả quán)'}
@@ -660,19 +492,21 @@ const SubOrderForm = ({ index, data, onChange, onRemove, canRemove }) => {
             <MoneyInput value={data.payShop||0} onChange={v=>onChange({...data,payShop:v})} />
           </div>
           <div>
-            <label>Hình thức trả</label>
+            <label>Hình thức trả quán</label>
             <select value={data.payShopMethod||'cash'} onChange={e=>onChange({...data,payShopMethod:e.target.value})}>
               <option value="cash">Tiền mặt</option>
               <option value="momo">Momo</option>
-              <option value="mb">MB Bank</option>
+              <option value="mb">CK MB Bank</option>
             </select>
           </div>
         </div>
       )}
 
       {(type==='2'||type==='3') && (
-        <div className="grid gap-3 mb-3" style={{gridTemplateColumns:'1fr'}}>
-          <div style={{padding:'12px 14px',borderRadius:10,background:'#FF6B2B0A',border:'2px solid var(--orange)',boxShadow:'0 0 0 4px #FF6B2B08'}}>
+        <div className="grid gap-3 mb-3" style={{gridTemplateColumns:'1fr 1fr'}}>
+          <div style={{gridColumn:'1/-1', padding:'12px 14px', borderRadius:10,
+            background:'#FF6B2B0A', border:'2px solid var(--orange)',
+            boxShadow:'0 0 0 4px #FF6B2B08'}}>
             <div style={{fontSize:11,color:'#FF6B2B99',fontWeight:700,textTransform:'uppercase',letterSpacing:'0.05em',marginBottom:6}}>
               Số tiền cần thu (đ) <span style={{color:'var(--orange)'}}>*</span>
             </div>
@@ -680,20 +514,20 @@ const SubOrderForm = ({ index, data, onChange, onRemove, canRemove }) => {
               value={data.orderAmount||0}
               onChange={v=>onChange({...data,orderAmount:v})}
               placeholder="Nhập số tiền app yêu cầu thu"
-              style={{border:'none',background:'transparent',padding:'2px 0',paddingLeft:0,height:'auto',fontSize:18,fontWeight:700,color:'var(--orange)',width:'100%'}}
+              style={{border:'none',background:'transparent',padding:'2px 0',paddingLeft:0,height:'auto',fontSize:16,fontWeight:700,color:'var(--orange)',width:'100%'}}
               className="no-pad-left" />
             <div style={{fontSize:11,color:'var(--muted)',marginTop:4}}>
               {type==='2' ? 'Bằng giá trị đơn hàng (app hiển thị)' : 'Bằng chênh lệch thu khách - trả quán (app hiển thị)'}
             </div>
           </div>
 
-          <div>
+          <div style={{gridColumn:'1/-1'}}>
             <label
               style={{display:'flex',alignItems:'center',gap:8,cursor:'pointer',textTransform:'none',letterSpacing:'normal',fontSize:13,color:'var(--text)',fontWeight:600}}
               onClick={()=>onChange({...data,forgotCollect:!data.forgotCollect,collectCustomer:0,refund:0})}
             >
               <span style={{
-                width:20,height:20,borderRadius:5,border:`2px solid ${data.forgotCollect?'var(--red)':'var(--border)'}`,
+                width:18,height:18,borderRadius:5,border:`2px solid ${data.forgotCollect?'var(--red)':'var(--border)'}`,
                 background:data.forgotCollect?'var(--red-dim)':'transparent',
                 display:'inline-flex',alignItems:'center',justifyContent:'center',flexShrink:0,transition:'all 0.15s'
               }}>
@@ -704,38 +538,31 @@ const SubOrderForm = ({ index, data, onChange, onRemove, canRemove }) => {
             </label>
             {data.forgotCollect && (
               <div style={{marginTop:8,padding:'8px 12px',borderRadius:8,background:'var(--red-dim)',border:'1px solid #FF4D6A33',fontSize:12,color:'var(--red)',lineHeight:1.5}}>
-                ⚠️ App sẽ trừ <strong>{fmtFull(data.orderAmount||0)}</strong> vào ví app vì không thu được khách.
+                ⚠️ App sẽ trừ <strong>{fmtFull(data.orderAmount||0)}</strong> vào ví app của bạn vì không thu được khách.
               </div>
             )}
           </div>
 
-          {!data.forgotCollect && (
-            <div>
-              <label>Khách trả thực tế (đ)</label>
-              <MoneyInput placeholder="Số tiền khách thực tế đưa cho bạn"
-                value={data.collectCustomer||0}
-                onChange={v=>onChange({...data,collectCustomer:v})} />
-            </div>
-          )}
+          {!data.forgotCollect && <div style={{gridColumn:'1/-1'}}>
+            <label>Khách trả thực tế (đ)</label>
+            <MoneyInput placeholder="Số tiền khách thực tế đưa cho bạn"
+              value={data.collectCustomer||0}
+              onChange={v=>onChange({...data,collectCustomer:v})} />
+          </div>}
 
-          {!data.forgotCollect && (
-            <div className="grid gap-3" style={{gridTemplateColumns:'1fr 1fr'}}>
-              <div>
-                <label>Hình thức thu</label>
-                <select value={data.collectMethod||'cash'} onChange={e=>onChange({...data,collectMethod:e.target.value})}>
-                  <option value="cash">Tiền mặt</option>
-                  <option value="mb">CK MB Bank</option>
-                </select>
-              </div>
-              <div>
-                <label>Thối lại (đ)</label>
-                <MoneyInput value={data.refund||0} onChange={v=>onChange({...data,refund:v})} />
-              </div>
-            </div>
-          )}
-
+          {!data.forgotCollect && <div>
+            <label>Hình thức thu</label>
+            <select value={data.collectMethod||'cash'} onChange={e=>onChange({...data,collectMethod:e.target.value})}>
+              <option value="cash">Tiền mặt</option>
+              <option value="mb">CK MB Bank</option>
+            </select>
+          </div>}
+          {!data.forgotCollect && <div>
+            <label>Thối lại (đ)</label>
+            <MoneyInput value={data.refund||0} onChange={v=>onChange({...data,refund:v})} />
+          </div>}
           {!data.forgotCollect && (data.refund||0) > 0 && (
-            <div>
+            <div style={{gridColumn:'1/-1'}}>
               <label>Hình thức thối</label>
               <select value={data.refundMethod||'cash'} onChange={e=>onChange({...data,refundMethod:e.target.value})}>
                 <option value="cash">Tiền mặt</option>
@@ -745,11 +572,14 @@ const SubOrderForm = ({ index, data, onChange, onRemove, canRemove }) => {
           )}
 
           {!data.forgotCollect && (data.collectCustomer||0) > 0 && (data.orderAmount||0) > 0 && (
-            <div style={{padding:'8px 12px',borderRadius:8,background:'var(--bg)',
+            <div style={{gridColumn:'1/-1', padding:'8px 12px', borderRadius:8, background:'var(--bg)',
               border:`1px solid ${tipCalc>0?'var(--yellow)':'var(--border)'}44`,
-              display:'flex',justifyContent:'space-between',alignItems:'center'}}>
+              display:'flex', justifyContent:'space-between', alignItems:'center'}}>
               <div>
-                <span style={{fontSize:11,color:'var(--muted)'}}>Tip vật lý</span>
+                <span style={{fontSize:12,color:'var(--muted)'}}>Tip vật lý = </span>
+                <span style={{fontSize:11,color:'var(--muted)'}}>
+                  {fmtFull(data.collectCustomer||0)} - {fmtFull(data.orderAmount||0)} - {fmtFull(data.refund||0)}
+                </span>
               </div>
               <span className="mono" style={{fontSize:14,fontWeight:700,
                 color: tipCalc>0?'var(--yellow)':tipCalc<0?'var(--red)':'var(--muted)'}}>
@@ -762,7 +592,7 @@ const SubOrderForm = ({ index, data, onChange, onRemove, canRemove }) => {
 
       {type==='4' && (data.payShop||0) > 0 && (
         <div className="mt-3 p-2 rounded-lg flex justify-between items-center" style={{background:'var(--bg)'}}>
-          <span style={{fontSize:12,color:'var(--muted)'}}>App hoàn vào ví</span>
+          <span style={{fontSize:12,color:'var(--muted)'}}>App hoàn vào ví (chưa tính ship)</span>
           <span className="mono" style={{fontSize:13,color:'var(--blue)'}}>+{fmtFull(data.payShop||0)}</span>
         </div>
       )}
@@ -795,6 +625,7 @@ const OrderModal = ({ onClose, onSave, initialData }) => {
 
   const handleSave = () => {
     if(!ship) { alert('Nhập tiền ship đi bạn!'); return; }
+    // Giữ _id cũ nếu đang edit, để API biết cần updateOrder
     const order = {
       ...(initialData?._id ? { _id: initialData._id } : {}),
       date, isBundle, shipTotal:ship, note, tipApp:+tipAppAmount||0, subOrders
@@ -806,14 +637,13 @@ const OrderModal = ({ onClose, onSave, initialData }) => {
   return (
     <div className="modal-overlay">
       <div className="modal fade-in">
-        <div className="flex justify-between items-center mb-5">
-          <h2 style={{fontSize:18}}>
+        <div className="flex justify-between items-center mb-6">
+          <h2 style={{fontSize:20}}>
             <Icon name="order" size={18}/>&nbsp; {isEdit ? 'Sửa đơn' : 'Nhập đơn mới'}
           </h2>
           <button className="btn btn-ghost btn-sm" onClick={onClose}><Icon name="close" size={16}/></button>
         </div>
 
-        {/* Date + Bundle toggle */}
         <div className="grid gap-3 mb-4" style={{gridTemplateColumns:'1fr 1fr'}}>
           <div>
             <label>Ngày</label>
@@ -822,13 +652,12 @@ const OrderModal = ({ onClose, onSave, initialData }) => {
           <div>
             <label>Loại đơn</label>
             <div className="flex gap-2 mt-1">
-              <button className={`chip ${!isBundle?'active':''}`} style={{flex:1,height:48,fontSize:13}} onClick={()=>{setIsBundle(false);setSubOrders(s=>s.slice(0,1))}}>Lẻ</button>
-              <button className={`chip ${isBundle?'active':''}`} style={{flex:1,height:48,fontSize:13}} onClick={()=>setIsBundle(true)}>Ghép</button>
+              <button className={`chip ${!isBundle?'active':''}`} style={{flex:1}} onClick={()=>{setIsBundle(false);setSubOrders(s=>s.slice(0,1))}}>Đơn lẻ</button>
+              <button className={`chip ${isBundle?'active':''}`} style={{flex:1}} onClick={()=>setIsBundle(true)}>Đơn ghép</button>
             </div>
           </div>
         </div>
 
-        {/* Ship + Tip */}
         <div className="grid gap-3 mb-4" style={{gridTemplateColumns:'1fr 1fr'}}>
           <div>
             <label>Tiền ship {isBundle?'(cả chùm)':''}(đ) *</label>
@@ -840,12 +669,12 @@ const OrderModal = ({ onClose, onSave, initialData }) => {
           </div>
         </div>
 
-        <div className="section-title mb-2">Chi tiết {isBundle?'từng đơn':'đơn'}</div>
+        <div className="section-title mb-2">Chi tiết {isBundle?'từng đơn trong chùm':'đơn'}</div>
         {subOrders.map((s,i)=>(
           <SubOrderForm key={s.id} index={i} data={s} onChange={v=>updateSub(i,v)} onRemove={()=>removeSub(i)} canRemove={subOrders.length>1} />
         ))}
         {isBundle && (
-          <button className="btn btn-ghost btn-sm mb-4" onClick={addSub} style={{width:'100%',minHeight:44}}>
+          <button className="btn btn-ghost btn-sm mb-4" onClick={addSub} style={{width:'100%'}}>
             <Icon name="plus" size={14}/> Thêm đơn con
           </button>
         )}
@@ -855,8 +684,7 @@ const OrderModal = ({ onClose, onSave, initialData }) => {
           <input placeholder="VD: khu vực xa, khách dễ tính..." value={note} onChange={e=>setNote(e.target.value)} />
         </div>
 
-        {/* Preview */}
-        <div className="preview-box p-3 rounded-xl mb-5" style={{background:'var(--bg)',border:'1px solid var(--border)'}}>
+        <div className="p-3 rounded-xl mb-5" style={{background:'var(--bg)',border:'1px solid var(--border)'}}>
           <div className="section-title mb-2">Xem trước tác động</div>
           <div className="grid gap-2">
             <div className="flex justify-between"><span style={{fontSize:13,color:'var(--muted)'}}>Ví App thay đổi</span><span className="mono" style={{fontSize:13,color:appDelta>=0?'var(--green)':'var(--red)'}}>{appDelta>=0?'+':''}{fmtFull(appDelta)}</span></div>
@@ -867,10 +695,10 @@ const OrderModal = ({ onClose, onSave, initialData }) => {
               const momoDelta = -(s.payShopMethod==='momo'?(s.payShop||0):0) - (s.refundMethod==='momo'?(s.refund||0):0);
               return (
                 <React.Fragment key={i}>
-                  {cashDelta!==0 && <div className="flex justify-between"><span style={{fontSize:12,color:'var(--muted)'}}>Tiền mặt {isBundle?`(đơn #${i+1})`:''}</span><span className="mono" style={{fontSize:12,color:cashDelta>0?'var(--green)':'var(--red)'}}>{cashDelta>0?'+':''}{fmtFull(cashDelta)}</span></div>}
-                  {mbDelta!==0 && <div className="flex justify-between"><span style={{fontSize:12,color:'var(--muted)'}}>MB Bank {isBundle?`(đơn #${i+1})`:''}</span><span className="mono" style={{fontSize:12,color:mbDelta>0?'var(--green)':'var(--red)'}}>{mbDelta>0?'+':''}{fmtFull(mbDelta)}</span></div>}
-                  {momoDelta!==0 && <div className="flex justify-between"><span style={{fontSize:12,color:'var(--muted)'}}>Momo {isBundle?`(đơn #${i+1})`:''}</span><span className="mono" style={{fontSize:12,color:'var(--red)'}}>{fmtFull(momoDelta)}</span></div>}
-                  {tipPhy>0 && <div className="flex justify-between"><span style={{fontSize:12,color:'var(--muted)'}}>Tip vật lý {isBundle?`(đơn #${i+1})`:''}</span><span className="mono" style={{fontSize:12,color:'var(--yellow)'}}>+{fmtFull(tipPhy)}</span></div>}
+                  {cashDelta!==0 && <div className="flex justify-between"><span style={{fontSize:13,color:'var(--muted)'}}>Tiền mặt {isBundle?`(đơn #${i+1})`:''}</span><span className="mono" style={{fontSize:13,color:cashDelta>0?'var(--green)':'var(--red)'}}>{cashDelta>0?'+':''}{fmtFull(cashDelta)}</span></div>}
+                  {mbDelta!==0 && <div className="flex justify-between"><span style={{fontSize:13,color:'var(--muted)'}}>MB Bank {isBundle?`(đơn #${i+1})`:''}</span><span className="mono" style={{fontSize:13,color:mbDelta>0?'var(--green)':'var(--red)'}}>{mbDelta>0?'+':''}{fmtFull(mbDelta)}</span></div>}
+                  {momoDelta!==0 && <div className="flex justify-between"><span style={{fontSize:13,color:'var(--muted)'}}>Momo {isBundle?`(đơn #${i+1})`:''}</span><span className="mono" style={{fontSize:13,color:'var(--red)'}}>{fmtFull(momoDelta)}</span></div>}
+                  {tipPhy>0 && <div className="flex justify-between"><span style={{fontSize:13,color:'var(--muted)'}}>Tip vật lý {isBundle?`(đơn #${i+1})`:''}</span><span className="mono" style={{fontSize:13,color:'var(--yellow)'}}>+{fmtFull(tipPhy)}</span></div>}
                 </React.Fragment>
               );
             })}
@@ -879,7 +707,7 @@ const OrderModal = ({ onClose, onSave, initialData }) => {
 
         <div className="flex gap-3">
           <button className="btn btn-ghost" style={{flex:1}} onClick={onClose}>Huỷ</button>
-          <button className="btn btn-primary" style={{flex:2,minHeight:48}} onClick={handleSave}>{isEdit ? 'Cập nhật đơn' : 'Lưu đơn'}</button>
+          <button className="btn btn-primary" style={{flex:2}} onClick={handleSave}>{isEdit ? 'Cập nhật đơn' : 'Lưu đơn'}</button>
         </div>
       </div>
     </div>
@@ -893,6 +721,7 @@ const TransferModal = ({ onClose, onSave }) => {
   const [to, setTo] = useState('app');
   const [amount, setAmount] = useState('');
   const [note, setNote] = useState('');
+
   const walletNames = { app:'Ví App', momo:'Momo', mb:'MB Bank', cash:'Tiền mặt' };
 
   const handleSave = () => {
@@ -904,9 +733,9 @@ const TransferModal = ({ onClose, onSave }) => {
 
   return (
     <div className="modal-overlay">
-      <div className="modal transfer-modal fade-in" style={{maxWidth:400}}>
+      <div className="modal fade-in" style={{maxWidth:400}}>
         <div className="flex justify-between items-center mb-6">
-          <h2 style={{fontSize:18}}><Icon name="transfer" size={18}/>&nbsp; Chuyển tiền nội bộ</h2>
+          <h2 style={{fontSize:20}}><Icon name="transfer" size={18}/>&nbsp; Chuyển tiền nội bộ</h2>
           <button className="btn btn-ghost btn-sm" onClick={onClose}><Icon name="close" size={16}/></button>
         </div>
         <div className="grid gap-3 mb-4">
@@ -914,7 +743,7 @@ const TransferModal = ({ onClose, onSave }) => {
             <label>Ngày</label>
             <input type="date" value={date} onChange={e=>setDate(e.target.value)} />
           </div>
-          <div className="transfer-grid grid gap-3" style={{gridTemplateColumns:'1fr 1fr'}}>
+          <div className="grid gap-3" style={{gridTemplateColumns:'1fr 1fr'}}>
             <div>
               <label>Từ</label>
               <select value={from} onChange={e=>setFrom(e.target.value)}>
@@ -957,7 +786,7 @@ const TransferModal = ({ onClose, onSave }) => {
         )}
         <div className="flex gap-3">
           <button className="btn btn-ghost" style={{flex:1}} onClick={onClose}>Huỷ</button>
-          <button className="btn btn-primary" style={{flex:2,minHeight:48}} onClick={handleSave}>Xác nhận</button>
+          <button className="btn btn-primary" style={{flex:2}} onClick={handleSave}>Xác nhận</button>
         </div>
       </div>
     </div>
@@ -975,9 +804,9 @@ const TipAppModal = ({ onClose, onSave }) => {
   };
   return (
     <div className="modal-overlay">
-      <div className="modal tip-modal fade-in" style={{maxWidth:360}}>
+      <div className="modal fade-in" style={{maxWidth:360}}>
         <div className="flex justify-between items-center mb-6">
-          <h2 style={{fontSize:18}}><Icon name="tip" size={18}/>&nbsp; Tip App</h2>
+          <h2 style={{fontSize:20}}><Icon name="tip" size={18}/>&nbsp; Tip App</h2>
           <button className="btn btn-ghost btn-sm" onClick={onClose}><Icon name="close" size={16}/></button>
         </div>
         <div className="grid gap-3 mb-4">
@@ -986,14 +815,15 @@ const TipAppModal = ({ onClose, onSave }) => {
         </div>
         <div className="flex gap-3">
           <button className="btn btn-ghost" style={{flex:1}} onClick={onClose}>Huỷ</button>
-          <button className="btn btn-primary" style={{flex:2,minHeight:48}} onClick={handleSave}>Lưu</button>
+          <button className="btn btn-primary" style={{flex:2}} onClick={handleSave}>Lưu</button>
         </div>
       </div>
     </div>
   );
 };
 
-// ── Cash Modal ────────────────────────────────────────────────────────────────
+
+// ── Cash Modal (Nạp / Rút tiền) ───────────────────────────────────────────────
 const WALLET_OPTS = [
   { value:'cash', label:'Tiền mặt' },
   { value:'momo', label:'Momo' },
@@ -1006,6 +836,7 @@ const CashModal = ({ onClose, onSave }) => {
   const [wallet, setWallet] = React.useState('cash');
   const [amount, setAmount] = React.useState(0);
   const [note,   setNote]   = React.useState('');
+
   const isDeposit = txType === 'deposit';
 
   const handleSave = () => {
@@ -1016,19 +847,27 @@ const CashModal = ({ onClose, onSave }) => {
 
   return (
     <div className="modal-overlay">
-      <div className="modal cash-modal fade-in" style={{maxWidth:420}}>
+      <div className="modal fade-in" style={{maxWidth:420}}>
         <div className="flex justify-between items-center mb-5">
-          <h2 style={{fontSize:18}}>💰 Nạp / Rút tiền</h2>
+          <h2 style={{fontSize:20}}>💰 Nạp / Rút tiền</h2>
           <button className="btn btn-ghost btn-sm" onClick={onClose}><Icon name="close" size={16}/></button>
         </div>
+
+        {/* Toggle Nạp / Rút */}
         <div style={{display:'flex',gap:4,marginBottom:20,background:'var(--bg)',padding:4,borderRadius:10}}>
           {[['deposit','⬆️ Nạp tiền'],['withdraw','⬇️ Rút tiền']].map(([v,l])=>(
-            <button key={v} className={`tab-btn ${txType===v?'active':''}`}
-              style={{flex:1,background: txType===v ? (v==='deposit'?'var(--green)':'var(--red)') : 'transparent',color: txType===v ? 'white' : 'var(--muted)',minHeight:44}}
+            <button key={v}
+              className={`tab-btn ${txType===v?'active':''}`}
+              style={{
+                flex:1,
+                background: txType===v ? (v==='deposit'?'var(--green)':'var(--red)') : 'transparent',
+                color: txType===v ? 'white' : 'var(--muted)',
+              }}
               onClick={()=>setTxType(v)}>{l}
             </button>
           ))}
         </div>
+
         <div className="grid gap-3 mb-4">
           <div>
             <label>Ngày</label>
@@ -1049,6 +888,8 @@ const CashModal = ({ onClose, onSave }) => {
             <input placeholder={isDeposit ? 'VD: Nạp lương...' : 'VD: Rút tiêu...'} value={note} onChange={e=>setNote(e.target.value)} />
           </div>
         </div>
+
+        {/* Preview */}
         {amount > 0 && (
           <div className="p-3 rounded-xl mb-4" style={{background:'var(--bg)',border:`1px solid ${isDeposit?'var(--green)':'var(--red)'}44`}}>
             <div className="flex justify-between text-sm">
@@ -1059,45 +900,11 @@ const CashModal = ({ onClose, onSave }) => {
             </div>
           </div>
         )}
+
         <div className="flex gap-3">
           <button className="btn btn-ghost" style={{flex:1}} onClick={onClose}>Huỷ</button>
-          <button className="btn btn-primary" style={{flex:2,minHeight:48,background:isDeposit?'var(--green)':'var(--red)'}} onClick={handleSave}>
+          <button className="btn btn-primary" style={{flex:2,background:isDeposit?'var(--green)':'var(--red)'}} onClick={handleSave}>
             {isDeposit ? '⬆️ Xác nhận nạp' : '⬇️ Xác nhận rút'}
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-// ── Mobile Quick Actions Sheet ────────────────────────────────────────────────
-const MobileActionsSheet = ({ onClose, onAction }) => {
-  const actions = [
-    { id:'order', icon:'🥡', label:'Nhập đơn mới', color:'var(--orange)' },
-    { id:'transfer', icon:'💸', label:'Chuyển tiền nội bộ', color:'var(--blue)' },
-    { id:'tipapp', icon:'💳', label:'Ghi nhận Tip App', color:'var(--purple)' },
-    { id:'cash', icon:'💰', label:'Nạp / Rút tiền', color:'var(--green)' },
-    { id:'wallet', icon:'⚙️', label:'Cài số dư ban đầu', color:'var(--muted)' },
-    { id:'backup', icon:'💾', label:'Backup / Restore', color:'var(--muted)' },
-  ];
-  return (
-    <div className="modal-overlay" onClick={onClose}>
-      <div style={{position:'fixed',bottom:0,left:0,right:0,background:'var(--surface)',borderRadius:'20px 20px 0 0',border:'1px solid var(--border)',padding:'8px 0 32px',zIndex:200}} onClick={e=>e.stopPropagation()}>
-        <div style={{width:40,height:4,background:'var(--border)',borderRadius:2,margin:'8px auto 16px'}}/>
-        <div style={{padding:'0 8px'}}>
-          {actions.map(a=>(
-            <button key={a.id}
-              onClick={()=>{onAction(a.id);onClose();}}
-              style={{width:'100%',display:'flex',alignItems:'center',gap:14,padding:'14px 16px',borderRadius:12,border:'none',background:'transparent',color:'var(--text)',fontFamily:'Nunito',fontWeight:600,fontSize:15,cursor:'pointer',textAlign:'left',marginBottom:2,transition:'background 0.15s'}}
-              onMouseOver={e=>e.currentTarget.style.background='var(--surface2)'}
-              onMouseOut={e=>e.currentTarget.style.background='transparent'}
-            >
-              <span style={{fontSize:22,width:32,textAlign:'center'}}>{a.icon}</span>
-              <span>{a.label}</span>
-            </button>
-          ))}
-          <button onClick={onClose} style={{width:'100%',marginTop:8,padding:'12px',borderRadius:12,border:'1px solid var(--border)',background:'var(--surface2)',color:'var(--muted)',fontFamily:'Nunito',fontWeight:700,fontSize:14,cursor:'pointer'}}>
-            Đóng
           </button>
         </div>
       </div>
@@ -1119,33 +926,51 @@ const LoginScreen = ({ onLogin }) => {
     const { ok, data } = await api.auth(clean, mode);
     setLoading(false);
     if (!ok) { setError(data.error || 'Lỗi không xác định'); return; }
+    // Truyền cả userId và username lên App
     onLogin(data.userId, data.username);
   };
 
   return (
-    <div className="login-wrapper" style={{minHeight:'100vh',display:'flex',alignItems:'center',justifyContent:'center',background:'var(--bg)',padding:16}}>
-      <div className="login-card fade-in" style={{background:'var(--surface)',border:'1px solid var(--border)',borderRadius:20,padding:'36px 32px',width:'100%',maxWidth:380}}>
+    <div style={{minHeight:'100vh',display:'flex',alignItems:'center',justifyContent:'center',background:'var(--bg)',padding:16}}>
+      <div style={{background:'var(--surface)',border:'1px solid var(--border)',borderRadius:20,padding:'36px 32px',width:'100%',maxWidth:380}} className="fade-in">
         <div style={{textAlign:'center',marginBottom:28}}>
-          <div style={{fontFamily:'Nunito',fontWeight:800,fontSize:32,color:'var(--orange)',letterSpacing:'-0.02em',marginBottom:6}}>ShipFlow</div>
+          <div style={{fontFamily:'Nunito',fontWeight:800,fontSize:30,color:'var(--orange)',letterSpacing:'-0.02em',marginBottom:6}}>ShipFlow</div>
           <div style={{fontSize:13,color:'var(--muted)'}}>Quản lý dòng tiền Shopee Food</div>
         </div>
+
         <div style={{display:'flex',gap:4,marginBottom:20,background:'var(--bg)',padding:4,borderRadius:10}}>
-          <button className={`tab-btn ${mode==='login'?'active':''}`} style={{flex:1,minHeight:44}} onClick={()=>{setMode('login');setError('');}}>Đăng nhập</button>
-          <button className={`tab-btn ${mode==='register'?'active':''}`} style={{flex:1,minHeight:44}} onClick={()=>{setMode('register');setError('');}}>Đăng ký</button>
+          <button className={`tab-btn ${mode==='login'?'active':''}`} style={{flex:1}} onClick={()=>{setMode('login');setError('');}}>Đăng nhập</button>
+          <button className={`tab-btn ${mode==='register'?'active':''}`} style={{flex:1}} onClick={()=>{setMode('register');setError('');}}>Đăng ký</button>
         </div>
+
         <div style={{marginBottom:16}}>
           <label>Tên đăng nhập</label>
-          <input type="text" placeholder="VD: mahiru, ship_rider_01" value={username}
+          <input
+            type="text"
+            placeholder="VD: mahiru, ship_rider_01"
+            value={username}
             onChange={e=>{ setUsername(e.target.value); setError(''); }}
-            onKeyDown={e=>e.key==='Enter'&&handle()} autoFocus />
+            onKeyDown={e=>e.key==='Enter'&&handle()}
+            autoFocus
+          />
           <div style={{fontSize:11,color:'var(--muted)',marginTop:5}}>3-20 ký tự, chữ thường không dấu, số, dấu _</div>
         </div>
+
         {error && (
-          <div style={{padding:'8px 12px',borderRadius:8,marginBottom:14,background:'var(--red-dim)',border:'1px solid #FF4D6A44',fontSize:13,color:'var(--red)'}}>{error}</div>
+          <div style={{padding:'8px 12px',borderRadius:8,marginBottom:14,background:'var(--red-dim)',border:'1px solid #FF4D6A44',fontSize:13,color:'var(--red)'}}>
+            {error}
+          </div>
         )}
-        <button className="btn btn-primary" style={{width:'100%',padding:14,fontSize:15,minHeight:52}} onClick={handle} disabled={loading || !username.trim()}>
+
+        <button
+          className="btn btn-primary"
+          style={{width:'100%',padding:13,fontSize:15}}
+          onClick={handle}
+          disabled={loading || !username.trim()}
+        >
           {loading ? '⏳ Đang xử lý...' : mode==='login' ? '🚀 Đăng nhập' : '✨ Đăng ký'}
         </button>
+
         <div style={{marginTop:14,fontSize:12,color:'var(--muted)',textAlign:'center'}}>
           {mode==='login' ? 'Chưa có tài khoản? Bấm Đăng ký.' : 'Đã có tài khoản? Bấm Đăng nhập.'}
         </div>
@@ -1157,6 +982,7 @@ const LoginScreen = ({ onLogin }) => {
 // ── Dashboard ─────────────────────────────────────────────────────────────────
 const Dashboard = ({ data }) => {
   const { wallets, orders, transfers, tipApp } = data;
+
   const totalTipPhysical = orders.reduce((acc,o) =>
     acc + o.subOrders.reduce((a,s) => a + Math.max(0,(s.collectCustomer||0)-(s.orderAmount||0)-(s.refund||0)), 0), 0);
   const totalTipApp = tipApp.reduce((a,t)=>a+t.amount,0);
@@ -1166,13 +992,13 @@ const Dashboard = ({ data }) => {
 
   return (
     <div className="fade-in">
-      <div className="mb-5 dashboard-header">
-        <h2 style={{fontSize:22,marginBottom:2}}>Tổng quan</h2>
+      <div className="mb-6">
+        <h2 style={{fontSize:24,marginBottom:4}}>Tổng quan</h2>
         <p style={{color:'var(--muted)',fontSize:13}}>Dòng tiền thực tế của bạn</p>
       </div>
 
       <div className="section-title">Số dư các ví</div>
-      <div className="wallet-grid" style={{display:'grid',gridTemplateColumns:'repeat(4,1fr)',gap:12,marginBottom:20}}>
+      <div style={{display:'grid',gridTemplateColumns:'repeat(4,1fr)',gap:12,marginBottom:24}}>
         <WalletCard label="Ví App Shopee" value={wallets.app} color="orange" icon="wallet" warnNegative />
         <WalletCard label="Tiền mặt" value={wallets.cash} color="green" icon="wallet" />
         <WalletCard label="MB Bank" value={wallets.mb} color="blue" icon="wallet" />
@@ -1180,43 +1006,53 @@ const Dashboard = ({ data }) => {
       </div>
 
       {wallets.app < 0 && (
-        <div style={{marginBottom:16,padding:'12px 16px',background:'var(--red-dim)',border:'1px solid #FF4D6A55',borderRadius:12,display:'flex',alignItems:'center',gap:10}}>
+        <div style={{
+          marginBottom:20, padding:'12px 16px',
+          background:'var(--red-dim)',
+          border:'1px solid #FF4D6A55',
+          borderRadius:12,
+          display:'flex', alignItems:'center', gap:10,
+        }}>
           <span style={{fontSize:20}}>⚠️</span>
           <div>
-            <div style={{fontFamily:'Nunito',fontWeight:700,fontSize:13,color:'var(--red)'}}>Ví App đang âm {fmtFull(Math.abs(wallets.app))}!</div>
-            <div style={{fontSize:12,color:'var(--muted)',marginTop:2}}>Cần nạp thêm tiền vào ví Shopee Food để tránh bị khoá tài khoản.</div>
+            <div style={{fontFamily:'Nunito',fontWeight:700,fontSize:13,color:'var(--red)'}}>
+              Ví App đang âm {fmtFull(Math.abs(wallets.app))}!
+            </div>
+            <div style={{fontSize:12,color:'var(--muted)',marginTop:2}}>
+              Cần nạp thêm tiền vào ví Shopee Food để tránh bị khoá tài khoản. Dùng chức năng <strong style={{color:'var(--text)'}}>Chuyển tiền</strong> để ghi nhận.
+            </div>
           </div>
         </div>
       )}
 
       <div className="section-title">Thu nhập</div>
-      <div className="income-grid" style={{display:'grid',gridTemplateColumns:'repeat(4,1fr)',gap:12,marginBottom:20}}>
+      <div style={{display:'grid',gridTemplateColumns:'repeat(4,1fr)',gap:12,marginBottom:24}}>
         <div className="stat-card green">
-          <div className="section-title" style={{marginBottom:4,fontSize:10}}>Tổng thu nhập</div>
+          <div className="section-title" style={{marginBottom:4}}>Tổng thu nhập</div>
           <div className="number-big pos">{fmtFull(totalIncome)}</div>
           <div style={{fontSize:11,color:'var(--muted)',marginTop:4}}>{totalOrders} đơn</div>
         </div>
         <div className="stat-card orange">
-          <div className="section-title" style={{marginBottom:4,fontSize:10}}>Công ship</div>
+          <div className="section-title" style={{marginBottom:4}}>Công ship</div>
           <div className="number-big" style={{color:'var(--orange)'}}>{fmtFull(totalShip)}</div>
         </div>
         <div className="stat-card yellow">
-          <div className="section-title" style={{marginBottom:4,fontSize:10}}>Tip vật lý</div>
+          <div className="section-title" style={{marginBottom:4}}>Tip vật lý</div>
           <div className="number-big" style={{color:'var(--yellow)'}}>{fmtFull(totalTipPhysical)}</div>
         </div>
         <div className="stat-card purple">
-          <div className="section-title" style={{marginBottom:4,fontSize:10}}>Tip App</div>
+          <div className="section-title" style={{marginBottom:4}}>Tip App</div>
           <div className="number-big" style={{color:'var(--purple)'}}>{fmtFull(totalTipApp)}</div>
         </div>
       </div>
 
       <div className="section-title">Đơn gần đây</div>
-
-      {/* Desktop table */}
-      <div className="desktop-table card">
+      <div className="card">
         <table>
           <thead>
-            <tr><th>Ngày</th><th>Loại</th><th>Ship</th><th>Tip vật lý</th><th>Ví App</th><th>Ghi chú</th></tr>
+            <tr>
+              <th>Ngày</th><th>Loại</th><th>Ship</th><th>Tip vật lý</th><th>Ví App</th><th>Ghi chú</th>
+            </tr>
           </thead>
           <tbody>
             {orders.length === 0 && (
@@ -1243,42 +1079,6 @@ const Dashboard = ({ data }) => {
             })}
           </tbody>
         </table>
-      </div>
-
-      {/* Mobile list */}
-      <div className="mobile-list">
-        {orders.length === 0 && (
-          <div style={{textAlign:'center',color:'var(--muted)',padding:32,background:'var(--surface)',borderRadius:14,border:'1px solid var(--border)'}}>
-            Chưa có đơn nào. Nhấn nút + để bắt đầu!
-          </div>
-        )}
-        {[...orders].reverse().slice(0,15).map(o => {
-          const tipPhy = o.subOrders.reduce((a,s)=>a+Math.max(0,(s.collectCustomer||0)-(s.orderAmount||0)-(s.refund||0)),0);
-          const chenhLech = o.subOrders.reduce((a,s)=>{
-            if(s.type==='2') return a+(s.orderAmount||0);
-            if(s.type==='3') return a+(s.orderAmount||0)-(s.payShop||0);
-            return a;
-          },0);
-          const appDelta = o.shipTotal - chenhLech + (o.tipApp||0);
-          return (
-            <div key={o._id} className="mobile-order-card">
-              <div className="flex justify-between items-center mb-2">
-                <div className="flex items-center gap-2">
-                  <span className={`badge ${o.isBundle?'badge-blue':'badge-orange'}`}>{o.isBundle?'Ghép':'Lẻ'}</span>
-                  <span style={{fontSize:12,color:'var(--muted)'}}>{o.date}</span>
-                </div>
-                <span className="mono pos" style={{fontWeight:700}}>+{fmtFull(o.shipTotal)}</span>
-              </div>
-              <div className="flex justify-between" style={{fontSize:12}}>
-                <div style={{display:'flex',gap:12}}>
-                  {tipPhy > 0 && <span style={{color:'var(--yellow)'}}>Tip: +{fmtFull(tipPhy)}</span>}
-                  <span style={{color:appDelta>=0?'var(--green)':'var(--red)'}}>App: {appDelta>=0?'+':''}{fmtFull(appDelta)}</span>
-                </div>
-                {o.note && <span style={{color:'var(--muted)',fontSize:11}}>{o.note}</span>}
-              </div>
-            </div>
-          );
-        })}
       </div>
     </div>
   );
@@ -1314,12 +1114,12 @@ const ChartPage = ({ data }) => {
 
   return (
     <div className="fade-in">
-      <div className="mb-5 chart-header" style={{display:'flex',justifyContent:'space-between',alignItems:'center'}}>
+      <div className="mb-6 flex justify-between items-center">
         <div>
-          <h2 style={{fontSize:22,marginBottom:2}}>Biểu đồ thu nhập</h2>
+          <h2 style={{fontSize:24,marginBottom:4}}>Biểu đồ thu nhập</h2>
           <p style={{color:'var(--muted)',fontSize:13}}>Theo thời gian</p>
         </div>
-        <div className="chart-tabs" style={{display:'flex',gap:4}}>
+        <div className="flex gap-1">
           {[['day','Ngày'],['week','Tuần'],['month','Tháng'],['year','Năm']].map(([v,l])=>(
             <button key={v} className={`tab-btn ${period===v?'active':''}`} onClick={()=>setPeriod(v)}>{l}</button>
           ))}
@@ -1327,17 +1127,21 @@ const ChartPage = ({ data }) => {
       </div>
 
       {chartData.length === 0 ? (
-        <div className="card" style={{padding:48,textAlign:'center',color:'var(--muted)'}}>Chưa có dữ liệu</div>
+        <div className="card" style={{padding:48,textAlign:'center',color:'var(--muted)'}}>Chưa có dữ liệu để hiển thị biểu đồ</div>
       ) : (
         <>
           <div className="card p-5 mb-4">
             <div className="section-title mb-4">Công ship + Tip</div>
-            <ResponsiveContainer width="100%" height={220}>
+            <ResponsiveContainer width="100%" height={260}>
               <BarChart data={chartData} barGap={4}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#2A3040" />
-                <XAxis dataKey="key" tick={{fill:'#6B7A99',fontSize:10}} axisLine={false} tickLine={false} />
-                <YAxis tick={{fill:'#6B7A99',fontSize:10}} axisLine={false} tickLine={false} tickFormatter={v=>fmt(v)} />
-                <Tooltip contentStyle={{background:'#1E2330',border:'1px solid #2A3040',borderRadius:10,fontFamily:'Nunito'}} labelStyle={{color:'#E8ECF4',marginBottom:4}} formatter={(v,n)=>[fmtFull(v), n==='ship'?'Công ship':'Tip']} />
+                <XAxis dataKey="key" tick={{fill:'#6B7A99',fontSize:11}} axisLine={false} tickLine={false} />
+                <YAxis tick={{fill:'#6B7A99',fontSize:11}} axisLine={false} tickLine={false} tickFormatter={v=>fmt(v)} />
+                <Tooltip
+                  contentStyle={{background:'#1E2330',border:'1px solid #2A3040',borderRadius:10,fontFamily:'Nunito'}}
+                  labelStyle={{color:'#E8ECF4',marginBottom:4}}
+                  formatter={(v,n)=>[fmtFull(v), n==='ship'?'Công ship':'Tip']}
+                />
                 <Bar dataKey="ship" fill="#FF6B2B" radius={[4,4,0,0]} />
                 <Bar dataKey="tip" fill="#FFD166" radius={[4,4,0,0]} />
               </BarChart>
@@ -1345,12 +1149,15 @@ const ChartPage = ({ data }) => {
           </div>
           <div className="card p-5">
             <div className="section-title mb-4">Tổng thu nhập</div>
-            <ResponsiveContainer width="100%" height={200}>
+            <ResponsiveContainer width="100%" height={220}>
               <LineChart data={chartData}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#2A3040" />
-                <XAxis dataKey="key" tick={{fill:'#6B7A99',fontSize:10}} axisLine={false} tickLine={false} />
-                <YAxis tick={{fill:'#6B7A99',fontSize:10}} axisLine={false} tickLine={false} tickFormatter={v=>fmt(v)} />
-                <Tooltip contentStyle={{background:'#1E2330',border:'1px solid #2A3040',borderRadius:10,fontFamily:'Nunito'}} formatter={(v)=>[fmtFull(v),'Thu nhập']} />
+                <XAxis dataKey="key" tick={{fill:'#6B7A99',fontSize:11}} axisLine={false} tickLine={false} />
+                <YAxis tick={{fill:'#6B7A99',fontSize:11}} axisLine={false} tickLine={false} tickFormatter={v=>fmt(v)} />
+                <Tooltip
+                  contentStyle={{background:'#1E2330',border:'1px solid #2A3040',borderRadius:10,fontFamily:'Nunito'}}
+                  formatter={(v)=>[fmtFull(v),'Thu nhập']}
+                />
                 <Line type="monotone" dataKey="total" stroke="#00E5A0" strokeWidth={2.5} dot={{fill:'#00E5A0',r:4}} />
               </LineChart>
             </ResponsiveContainer>
@@ -1366,69 +1173,11 @@ const HistoryPage = ({ data, onDeleteOrder, onDeleteTransfer, onEditOrder, onDel
   const [tab, setTab] = useState('orders');
   const { orders, transfers, tipApp, cashTx = [] } = data;
 
-  // Mobile order card
-  const MobileOrderCard = ({ o }) => {
-    const tipPhy = o.subOrders.reduce((a,s)=>a+Math.max(0,(s.collectCustomer||0)-(s.orderAmount||0)-(s.refund||0)),0);
-    const chenhLech = o.subOrders.reduce((a,s)=>{
-      if(s.type==='2') return a+(s.orderAmount||0);
-      if(s.type==='3') return a+(s.orderAmount||0)-(s.payShop||0);
-      return a;
-    },0);
-    const appDelta = o.shipTotal - chenhLech + (o.tipApp||0);
-    const cashDelta = o.subOrders.reduce((a,s)=>{
-      let d=0;
-      if(s.collectMethod==='cash') d+=(s.collectCustomer||0);
-      if(s.payShopMethod==='cash') d-=(s.payShop||0);
-      if(s.refundMethod==='cash') d-=(s.refund||0);
-      return a+d;
-    },0);
-
-    return (
-      <div className="mobile-order-card">
-        <div className="flex justify-between items-start mb-2">
-          <div>
-            <div className="flex items-center gap-2 mb-1">
-              <span className={`badge ${o.isBundle?'badge-blue':'badge-orange'}`}>{o.isBundle?`Ghép(${o.subOrders.length})`:'Lẻ'}</span>
-              <span style={{fontSize:12,color:'var(--muted)'}}>{o.date}</span>
-            </div>
-            {o.note && <div style={{fontSize:11,color:'var(--muted)'}}>{o.note}</div>}
-          </div>
-          <div className="flex gap-2">
-            <button className="btn btn-sm btn-ghost" onClick={()=>onEditOrder(o)} style={{color:'var(--blue)',borderColor:'var(--blue-dim)',padding:'6px 10px'}}>✏️</button>
-            <button className="btn btn-sm btn-danger" onClick={()=>onDeleteOrder(o._id)} style={{padding:'6px 10px'}}><Icon name="trash" size={12}/></button>
-          </div>
-        </div>
-        <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:6}}>
-          <div style={{background:'var(--bg)',borderRadius:8,padding:'8px 10px'}}>
-            <div style={{fontSize:10,color:'var(--muted)',fontWeight:700,textTransform:'uppercase',marginBottom:2}}>Ship</div>
-            <div className="mono pos" style={{fontWeight:700}}>+{fmtFull(o.shipTotal)}</div>
-          </div>
-          <div style={{background:'var(--bg)',borderRadius:8,padding:'8px 10px'}}>
-            <div style={{fontSize:10,color:'var(--muted)',fontWeight:700,textTransform:'uppercase',marginBottom:2}}>Ví App Δ</div>
-            <div className="mono" style={{fontWeight:700,color:appDelta>=0?'var(--green)':'var(--red)'}}>{appDelta>=0?'+':''}{fmtFull(appDelta)}</div>
-          </div>
-          {tipPhy > 0 && (
-            <div style={{background:'var(--bg)',borderRadius:8,padding:'8px 10px'}}>
-              <div style={{fontSize:10,color:'var(--muted)',fontWeight:700,textTransform:'uppercase',marginBottom:2}}>Tip vật lý</div>
-              <div className="mono" style={{color:'var(--yellow)',fontWeight:700}}>+{fmtFull(tipPhy)}</div>
-            </div>
-          )}
-          {cashDelta !== 0 && (
-            <div style={{background:'var(--bg)',borderRadius:8,padding:'8px 10px'}}>
-              <div style={{fontSize:10,color:'var(--muted)',fontWeight:700,textTransform:'uppercase',marginBottom:2}}>Cash Δ</div>
-              <div className="mono" style={{fontWeight:700,color:cashDelta>=0?'var(--green)':'var(--red)'}}>{cashDelta>=0?'+':''}{fmtFull(cashDelta)}</div>
-            </div>
-          )}
-        </div>
-      </div>
-    );
-  };
-
   return (
     <div className="fade-in">
-      <div className="mb-5">
-        <h2 style={{fontSize:22,marginBottom:12}}>Lịch sử</h2>
-        <div className="history-tabs" style={{display:'flex',gap:4,overflowX:'auto'}}>
+      <div className="mb-6">
+        <h2 style={{fontSize:24,marginBottom:12}}>Lịch sử</h2>
+        <div className="flex gap-1">
           <button className={`tab-btn ${tab==='orders'?'active':''}`} onClick={()=>setTab('orders')}>🥡 Đơn hàng</button>
           <button className={`tab-btn ${tab==='transfers'?'active':''}`} onClick={()=>setTab('transfers')}>💸 Chuyển tiền</button>
           <button className={`tab-btn ${tab==='tipapp'?'active':''}`} onClick={()=>setTab('tipapp')}>💳 Tip App</button>
@@ -1437,195 +1186,134 @@ const HistoryPage = ({ data, onDeleteOrder, onDeleteTransfer, onEditOrder, onDel
       </div>
 
       {tab==='orders' && (
-        <>
-          {/* Desktop table */}
-          <div className="desktop-table card">
-            <table>
-              <thead>
-                <tr><th>Ngày</th><th>Loại</th><th>Ship</th><th>Tip vật lý</th><th>Ví App Δ</th><th>Cash Δ</th><th>MB Δ</th><th>Ghi chú</th><th></th></tr>
-              </thead>
-              <tbody>
-                {orders.length===0 && <tr><td colSpan={9} style={{textAlign:'center',color:'var(--muted)',padding:32}}>Chưa có đơn nào</td></tr>}
-                {[...orders].reverse().map(o=>{
-                  const tipPhy = o.subOrders.reduce((a,s)=>a+Math.max(0,(s.collectCustomer||0)-(s.orderAmount||0)-(s.refund||0)),0);
-                  const chenhLech = o.subOrders.reduce((a,s)=>{
-                    if(s.type==='2') return a+(s.orderAmount||0);
-                    if(s.type==='3') return a+(s.orderAmount||0)-(s.payShop||0);
-                    return a;
-                  },0);
-                  const appDelta = o.shipTotal - chenhLech + (o.tipApp||0);
-                  const cashDelta = o.subOrders.reduce((a,s)=>{
-                    let d=0;
-                    if(s.collectMethod==='cash') d+=(s.collectCustomer||0);
-                    if(s.payShopMethod==='cash') d-=(s.payShop||0);
-                    if(s.refundMethod==='cash') d-=(s.refund||0);
-                    return a+d;
-                  },0);
-                  const mbDelta = o.subOrders.reduce((a,s)=>a+(s.collectMethod==='mb'?(s.collectCustomer||0):0),0);
-                  return (
-                    <tr key={o._id}>
-                      <td className="mono" style={{fontSize:12}}>{o.date}</td>
-                      <td><span className={`badge ${o.isBundle?'badge-blue':'badge-orange'}`}>{o.isBundle?`Ghép(${o.subOrders.length})`:'Lẻ'}</span></td>
-                      <td className="mono pos">+{fmt(o.shipTotal)}</td>
-                      <td className="mono" style={{color:'var(--yellow)'}}>{tipPhy>0?'+'+fmt(tipPhy):'-'}</td>
-                      <td className="mono" style={{color:appDelta>=0?'var(--green)':'var(--red)'}}>{appDelta>=0?'+':''}{fmt(appDelta)}</td>
-                      <td className="mono" style={{color:cashDelta>=0?'var(--green)':'var(--red)'}}>{cashDelta!==0?(cashDelta>0?'+':'')+fmt(cashDelta):'-'}</td>
-                      <td className="mono" style={{color:'var(--blue)'}}>{mbDelta>0?'+'+fmt(mbDelta):'-'}</td>
-                      <td style={{color:'var(--muted)',fontSize:12}}>{o.note||'-'}</td>
-                      <td style={{display:'flex',gap:4}}>
-                        <button className="btn btn-sm btn-ghost" onClick={()=>onEditOrder(o)} style={{color:'var(--blue)',borderColor:'var(--blue-dim)'}}>✏️</button>
-                        <button className="btn btn-sm btn-danger" onClick={()=>onDeleteOrder(o._id)}><Icon name="trash" size={12}/></button>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-          {/* Mobile list */}
-          <div className="mobile-list">
-            {orders.length===0 && (
-              <div style={{textAlign:'center',color:'var(--muted)',padding:32,background:'var(--surface)',borderRadius:14,border:'1px solid var(--border)'}}>Chưa có đơn nào</div>
-            )}
-            {[...orders].reverse().map(o=><MobileOrderCard key={o._id} o={o} />)}
-          </div>
-        </>
+        <div className="card">
+          <table>
+            <thead>
+              <tr>
+                <th>Ngày</th><th>Loại</th><th>Ship</th><th>Tip vật lý</th><th>Ví App Δ</th><th>Cash Δ</th><th>MB Δ</th><th>Ghi chú</th><th></th>
+              </tr>
+            </thead>
+            <tbody>
+              {orders.length===0 && <tr><td colSpan={9} style={{textAlign:'center',color:'var(--muted)',padding:32}}>Chưa có đơn nào</td></tr>}
+              {[...orders].reverse().map(o=>{
+                const tipPhy = o.subOrders.reduce((a,s)=>a+Math.max(0,(s.collectCustomer||0)-(s.orderAmount||0)-(s.refund||0)),0);
+                const chenhLech = o.subOrders.reduce((a,s)=>{
+                  if(s.type==='2') return a+(s.orderAmount||0);
+                  if(s.type==='3') return a+(s.orderAmount||0)-(s.payShop||0);
+                  return a;
+                },0);
+                const appDelta = o.shipTotal - chenhLech + (o.tipApp||0);
+                const cashDelta = o.subOrders.reduce((a,s)=>{
+                  let d=0;
+                  if(s.collectMethod==='cash') d+=(s.collectCustomer||0);
+                  if(s.payShopMethod==='cash') d-=(s.payShop||0);
+                  if(s.refundMethod==='cash') d-=(s.refund||0);
+                  return a+d;
+                },0);
+                const mbDelta = o.subOrders.reduce((a,s)=>a+(s.collectMethod==='mb'?(s.collectCustomer||0):0),0);
+                return (
+                  <tr key={o._id}>
+                    <td className="mono" style={{fontSize:12}}>{o.date}</td>
+                    <td><span className={`badge ${o.isBundle?'badge-blue':'badge-orange'}`}>{o.isBundle?`Ghép(${o.subOrders.length})`:'Lẻ'}</span></td>
+                    <td className="mono pos">+{fmt(o.shipTotal)}</td>
+                    <td className="mono" style={{color:'var(--yellow)'}}>{tipPhy>0?'+'+fmt(tipPhy):'-'}</td>
+                    <td className="mono" style={{color:appDelta>=0?'var(--green)':'var(--red)'}}>{appDelta>=0?'+':''}{fmt(appDelta)}</td>
+                    <td className="mono" style={{color:cashDelta>=0?'var(--green)':'var(--red)'}}>{cashDelta!==0?(cashDelta>0?'+':'')+fmt(cashDelta):'-'}</td>
+                    <td className="mono" style={{color:'var(--blue)'}}>{mbDelta>0?'+'+fmt(mbDelta):'-'}</td>
+                    <td style={{color:'var(--muted)',fontSize:12}}>{o.note||'-'}</td>
+                    <td style={{display:'flex',gap:4}}>
+                      <button className="btn btn-sm btn-ghost" onClick={()=>onEditOrder(o)} style={{color:'var(--blue)',borderColor:'var(--blue-dim)'}}>✏️</button>
+                      <button className="btn btn-sm btn-danger" onClick={()=>onDeleteOrder(o._id)}><Icon name="trash" size={12}/></button>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
       )}
 
       {tab==='transfers' && (
-        <>
-          <div className="desktop-table card">
-            <table>
-              <thead><tr><th>Ngày</th><th>Từ</th><th>Đến</th><th>Số tiền</th><th>Ghi chú</th><th></th></tr></thead>
-              <tbody>
-                {transfers.length===0 && <tr><td colSpan={6} style={{textAlign:'center',color:'var(--muted)',padding:32}}>Chưa có giao dịch chuyển tiền</td></tr>}
-                {[...transfers].reverse().map(t=>{
-                  const names={app:'Ví App',momo:'Momo',mb:'MB Bank',cash:'Tiền mặt'};
-                  return (
-                    <tr key={t._id}>
-                      <td className="mono" style={{fontSize:12}}>{t.date}</td>
-                      <td><span className="badge badge-red">{names[t.from]}</span></td>
-                      <td><span className="badge badge-green">{names[t.to]}</span></td>
-                      <td className="mono">{fmtFull(t.amount)}</td>
-                      <td style={{color:'var(--muted)',fontSize:12}}>{t.note||'-'}</td>
-                      <td><button className="btn btn-sm btn-danger" onClick={()=>onDeleteTransfer(t._id)}><Icon name="trash" size={12}/></button></td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-          <div className="mobile-list">
-            {transfers.length===0 && (
-              <div style={{textAlign:'center',color:'var(--muted)',padding:32,background:'var(--surface)',borderRadius:14,border:'1px solid var(--border)'}}>Chưa có giao dịch</div>
-            )}
-            {[...transfers].reverse().map(t=>{
-              const names={app:'Ví App',momo:'Momo',mb:'MB Bank',cash:'Tiền mặt'};
-              return (
-                <div key={t._id} className="mobile-order-card">
-                  <div className="flex justify-between items-center">
-                    <div>
-                      <div className="flex items-center gap-2 mb-1">
-                        <span className="badge badge-red">{names[t.from]}</span>
-                        <span style={{color:'var(--muted)',fontSize:12}}>→</span>
-                        <span className="badge badge-green">{names[t.to]}</span>
-                      </div>
-                      <div style={{fontSize:12,color:'var(--muted)'}}>{t.date}{t.note ? ` · ${t.note}` : ''}</div>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <span className="mono" style={{fontWeight:700}}>{fmtFull(t.amount)}</span>
-                      <button className="btn btn-sm btn-danger" onClick={()=>onDeleteTransfer(t._id)}><Icon name="trash" size={12}/></button>
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </>
+        <div className="card">
+          <table>
+            <thead><tr><th>Ngày</th><th>Từ</th><th>Đến</th><th>Số tiền</th><th>Ghi chú</th><th></th></tr></thead>
+            <tbody>
+              {transfers.length===0 && <tr><td colSpan={6} style={{textAlign:'center',color:'var(--muted)',padding:32}}>Chưa có giao dịch chuyển tiền</td></tr>}
+              {[...transfers].reverse().map(t=>{
+                const names={app:'Ví App',momo:'Momo',mb:'MB Bank',cash:'Tiền mặt'};
+                return (
+                  <tr key={t._id}>
+                    <td className="mono" style={{fontSize:12}}>{t.date}</td>
+                    <td><span className="badge badge-red">{names[t.from]}</span></td>
+                    <td><span className="badge badge-green">{names[t.to]}</span></td>
+                    <td className="mono">{fmtFull(t.amount)}</td>
+                    <td style={{color:'var(--muted)',fontSize:12}}>{t.note||'-'}</td>
+                    <td><button className="btn btn-sm btn-danger" onClick={()=>onDeleteTransfer(t._id)}><Icon name="trash" size={12}/></button></td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
       )}
 
       {tab==='tipapp' && (
-        <>
-          <div className="desktop-table card">
-            <table>
-              <thead><tr><th>Ngày</th><th>Tip App</th><th></th></tr></thead>
-              <tbody>
-                {tipApp.length===0 && <tr><td colSpan={3} style={{textAlign:'center',color:'var(--muted)',padding:32}}>Chưa có tip app</td></tr>}
-                {[...tipApp].reverse().map(t=>(
-                  <tr key={t._id}>
-                    <td className="mono" style={{fontSize:12}}>{t.date}</td>
-                    <td className="mono" style={{color:'var(--green)'}}>+{fmtFull(t.amount)}</td>
-                    <td></td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-          <div className="mobile-list">
-            {tipApp.length===0 && (
-              <div style={{textAlign:'center',color:'var(--muted)',padding:32,background:'var(--surface)',borderRadius:14,border:'1px solid var(--border)'}}>Chưa có tip app</div>
-            )}
-            {[...tipApp].reverse().map(t=>(
-              <div key={t._id} className="mobile-order-card flex justify-between items-center">
-                <span style={{fontSize:12,color:'var(--muted)'}}>{t.date}</span>
-                <span className="mono pos" style={{fontWeight:700}}>+{fmtFull(t.amount)}</span>
-              </div>
-            ))}
-          </div>
-        </>
+        <div className="card">
+          <table>
+            <thead><tr><th>Ngày</th><th>Tip App</th><th></th></tr></thead>
+            <tbody>
+              {tipApp.length===0 && <tr><td colSpan={3} style={{textAlign:'center',color:'var(--muted)',padding:32}}>Chưa có tip app</td></tr>}
+              {[...tipApp].reverse().map(t=>(
+                <tr key={t._id}>
+                  <td className="mono" style={{fontSize:12}}>{t.date}</td>
+                  <td className="mono" style={{color:'var(--green)'}}>+{fmtFull(t.amount)}</td>
+                  <td></td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       )}
 
       {tab==='cashtx' && (
-        <>
-          <div className="desktop-table card">
-            <table>
-              <thead><tr><th>Ngày</th><th>Loại</th><th>Ví</th><th>Số tiền</th><th>Ghi chú</th><th></th></tr></thead>
-              <tbody>
-                {cashTx.length===0 && <tr><td colSpan={6} style={{textAlign:'center',color:'var(--muted)',padding:32}}>Chưa có giao dịch nạp/rút</td></tr>}
-                {[...cashTx].reverse().map(t => {
-                  const walletLabel = {cash:'Tiền mặt',momo:'Momo',mb:'MB Bank'}[t.wallet] || t.wallet;
-                  const isDeposit = t.txType === 'deposit';
-                  return (
-                    <tr key={t._id}>
-                      <td className="mono" style={{fontSize:12}}>{t.date}</td>
-                      <td><span className={`badge ${isDeposit?'badge-green':'badge-red'}`}>{isDeposit ? '⬆️ Nạp' : '⬇️ Rút'}</span></td>
-                      <td style={{color:'var(--muted)',fontSize:13}}>{walletLabel}</td>
-                      <td className="mono" style={{color:isDeposit?'var(--green)':'var(--red)',fontWeight:600}}>{isDeposit?'+':'-'}{fmtFull(t.amount)}</td>
-                      <td style={{color:'var(--muted)',fontSize:12}}>{t.note||'-'}</td>
-                      <td><button className="btn btn-sm btn-danger" onClick={()=>onDeleteCash(t._id)}><Icon name="trash" size={12}/></button></td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-          <div className="mobile-list">
-            {cashTx.length===0 && (
-              <div style={{textAlign:'center',color:'var(--muted)',padding:32,background:'var(--surface)',borderRadius:14,border:'1px solid var(--border)'}}>Chưa có giao dịch</div>
-            )}
-            {[...cashTx].reverse().map(t => {
-              const walletLabel = {cash:'Tiền mặt',momo:'Momo',mb:'MB Bank'}[t.wallet] || t.wallet;
-              const isDeposit = t.txType === 'deposit';
-              return (
-                <div key={t._id} className="mobile-order-card">
-                  <div className="flex justify-between items-center">
-                    <div>
-                      <div className="flex items-center gap-2 mb-1">
-                        <span className={`badge ${isDeposit?'badge-green':'badge-red'}`}>{isDeposit ? '⬆️ Nạp' : '⬇️ Rút'}</span>
-                        <span style={{fontSize:12,color:'var(--muted)'}}>{walletLabel}</span>
-                      </div>
-                      <div style={{fontSize:12,color:'var(--muted)'}}>{t.date}{t.note ? ` · ${t.note}` : ''}</div>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <span className="mono" style={{fontWeight:700,color:isDeposit?'var(--green)':'var(--red)'}}>{isDeposit?'+':'-'}{fmtFull(t.amount)}</span>
-                      <button className="btn btn-sm btn-danger" onClick={()=>onDeleteCash(t._id)}><Icon name="trash" size={12}/></button>
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </>
+        <div className="card">
+          <table>
+            <thead>
+              <tr>
+                <th>Ngày</th><th>Loại</th><th>Ví</th><th>Số tiền</th><th>Ghi chú</th><th></th>
+              </tr>
+            </thead>
+            <tbody>
+              {cashTx.length===0 && (
+                <tr><td colSpan={6} style={{textAlign:'center',color:'var(--muted)',padding:32}}>Chưa có giao dịch nạp/rút</td></tr>
+              )}
+              {[...cashTx].reverse().map(t => {
+                const walletLabel = {cash:'Tiền mặt',momo:'Momo',mb:'MB Bank'}[t.wallet] || t.wallet;
+                const isDeposit = t.txType === 'deposit';
+                return (
+                  <tr key={t._id}>
+                    <td className="mono" style={{fontSize:12}}>{t.date}</td>
+                    <td>
+                      <span className={`badge ${isDeposit?'badge-green':'badge-red'}`}>
+                        {isDeposit ? '⬆️ Nạp' : '⬇️ Rút'}
+                      </span>
+                    </td>
+                    <td style={{color:'var(--muted)',fontSize:13}}>{walletLabel}</td>
+                    <td className="mono" style={{color:isDeposit?'var(--green)':'var(--red)',fontWeight:600}}>
+                      {isDeposit?'+':'-'}{fmtFull(t.amount)}
+                    </td>
+                    <td style={{color:'var(--muted)',fontSize:12}}>{t.note||'-'}</td>
+                    <td>
+                      <button className="btn btn-sm btn-danger" onClick={()=>onDeleteCash(t._id)}>
+                        <Icon name="trash" size={12}/>
+                      </button>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
       )}
     </div>
   );
@@ -1636,7 +1324,7 @@ const WalletSetupModal = ({ wallets, onSave, onClose }) => {
   const [vals, setVals] = useState({...wallets});
   return (
     <div className="modal-overlay">
-      <div className="modal wallet-setup-modal fade-in" style={{maxWidth:380}}>
+      <div className="modal fade-in" style={{maxWidth:380}}>
         <div className="flex justify-between items-center mb-6">
           <h2 style={{fontSize:18}}>⚙️ Cài số dư ban đầu</h2>
           <button className="btn btn-ghost btn-sm" onClick={onClose}><Icon name="close" size={16}/></button>
@@ -1649,14 +1337,14 @@ const WalletSetupModal = ({ wallets, onSave, onClose }) => {
         ))}
         <div className="flex gap-3 mt-4">
           <button className="btn btn-ghost" style={{flex:1}} onClick={onClose}>Huỷ</button>
-          <button className="btn btn-primary" style={{flex:2,minHeight:48}} onClick={()=>{onSave(vals);onClose();}}>Lưu</button>
+          <button className="btn btn-primary" style={{flex:2}} onClick={()=>{onSave(vals);onClose();}}>Lưu</button>
         </div>
       </div>
     </div>
   );
 };
 
-// ── Backup Modal ──────────────────────────────────────────────────────────────
+// ── Backup / Restore Modal ────────────────────────────────────────────────────
 const BackupModal = ({ data, onClose, onRestore }) => {
   const [tab, setTab] = useState('export');
   const [importText, setImportText] = useState('');
@@ -1676,21 +1364,34 @@ const BackupModal = ({ data, onClose, onRestore }) => {
   };
 
   const exportCSV = () => {
-    const rows = [['TYPE','id','date','isBundle','shipTotal','tipApp','note','sub_index','sub_type','sub_payShop','sub_payShopMethod','sub_collectCustomer','sub_collectMethod','sub_refund','sub_refundMethod']];
+    const rows = [
+      ['TYPE','id','date','isBundle','shipTotal','tipApp','note',
+       'sub_index','sub_type','sub_payShop','sub_payShopMethod',
+       'sub_collectCustomer','sub_collectMethod','sub_refund','sub_refundMethod']
+    ];
     data.orders.forEach(o => {
       o.subOrders.forEach((s, i) => {
-        rows.push(['ORDER', o._id, o.date, o.isBundle?1:0, o.shipTotal, o.tipApp||0, o.note||'', i, s.type, s.payShop||0, s.payShopMethod||'cash', s.collectCustomer||0, s.collectMethod||'cash', s.refund||0, s.refundMethod||'cash']);
+        rows.push([
+          'ORDER', o._id, o.date, o.isBundle?1:0, o.shipTotal, o.tipApp||0, o.note||'',
+          i, s.type, s.payShop||0, s.payShopMethod||'cash',
+          s.collectCustomer||0, s.collectMethod||'cash', s.refund||0, s.refundMethod||'cash'
+        ]);
       });
     });
     rows.push(['---']);
     rows.push(['TYPE','id','date','from','to','amount','note']);
-    data.transfers.forEach(t => { rows.push(['TRANSFER', t._id, t.date, t.from, t.to, t.amount, t.note||'']); });
+    data.transfers.forEach(t => {
+      rows.push(['TRANSFER', t._id, t.date, t.from, t.to, t.amount, t.note||'']);
+    });
     rows.push(['---']);
     rows.push(['TYPE','id','date','amount']);
-    data.tipApp.forEach(t => { rows.push(['TIPAPP', t._id, t.date, t.amount]); });
+    data.tipApp.forEach(t => {
+      rows.push(['TIPAPP', t._id, t.date, t.amount]);
+    });
     rows.push(['---']);
     rows.push(['TYPE','app','cash','mb','momo']);
     rows.push(['WALLETS', data.wallets.app, data.wallets.cash, data.wallets.mb, data.wallets.momo]);
+
     const csv = rows.map(r => r.join(',')).join('\n');
     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
     const url = URL.createObjectURL(blob);
@@ -1711,15 +1412,22 @@ const BackupModal = ({ data, onClose, onRestore }) => {
         if (!parsed.wallets || !parsed.orders) throw new Error('File JSON không đúng định dạng ShipFlow');
       } else {
         const lines = trimmed.split('\n').map(l => l.trim()).filter(Boolean);
-        const orders = [], transfers = [], tipApp = [];
-        let wallets = null, orderMap = {};
+        const orders = [];
+        const transfers = [];
+        const tipApp = [];
+        let wallets = null;
+        let orderMap = {};
+
         lines.forEach(line => {
           if (line.startsWith('---') || line.startsWith('TYPE')) return;
           const cols = line.split(',');
           const type = cols[0];
           if (type === 'ORDER') {
             const [,id,date,isBundle,shipTotal,tipAppAmt,note,subIdx,subType,payShop,payShopMethod,collectCustomer,collectMethod,refund,refundMethod] = cols;
-            if (!orderMap[id]) { orderMap[id] = { date, isBundle:isBundle==='1', shipTotal:+shipTotal, tipApp:+tipAppAmt, note, subOrders:[] }; orders.push(orderMap[id]); }
+            if (!orderMap[id]) {
+              orderMap[id] = { date, isBundle:isBundle==='1', shipTotal:+shipTotal, tipApp:+tipAppAmt, note, subOrders:[] };
+              orders.push(orderMap[id]);
+            }
             orderMap[id].subOrders.push({ type:subType, payShop:+payShop, payShopMethod, collectCustomer:+collectCustomer, collectMethod, refund:+refund, refundMethod });
           } else if (type === 'TRANSFER') {
             const [,id,date,from,to,amount,note] = cols;
@@ -1733,19 +1441,26 @@ const BackupModal = ({ data, onClose, onRestore }) => {
         });
         parsed = { orders, transfers, tipApp, wallets: wallets || { app:0, cash:0, mb:0, momo:0 } };
       }
+
       if (importMode === 'overwrite') {
         onRestore(parsed);
-        setImportResult({ ok:true, msg:`✅ Ghi đè thành công! ${parsed.orders.length} đơn.` });
+        setImportResult({ ok:true, msg:`✅ Ghi đè thành công! ${parsed.orders.length} đơn, ${parsed.transfers.length} chuyển tiền, ${parsed.tipApp.length} tip app.` });
       } else {
+        // Merge: dùng _id nếu có, không thì bỏ qua dedup (record mới sẽ được thêm)
         const existOrderIds = new Set(data.orders.map(o=>o._id).filter(Boolean));
         const existTransIds = new Set(data.transfers.map(t=>t._id).filter(Boolean));
         const existTipIds   = new Set(data.tipApp.map(t=>t._id).filter(Boolean));
         const newOrders = parsed.orders.filter(o=>!o._id || !existOrderIds.has(o._id));
         const newTrans  = parsed.transfers.filter(t=>!t._id || !existTransIds.has(t._id));
         const newTip    = parsed.tipApp.filter(t=>!t._id || !existTipIds.has(t._id));
+
         const w = {...data.wallets};
         newOrders.forEach(order => {
-          const cl = order.subOrders.reduce((a,s)=>{ if(s.type==='2') return a+(s.orderAmount||0); if(s.type==='3') return a+(s.orderAmount||0)-(s.payShop||0); return a; },0);
+          const cl = order.subOrders.reduce((a,s)=>{
+            if(s.type==='2') return a+(s.orderAmount||0);
+            if(s.type==='3') return a+(s.orderAmount||0)-(s.payShop||0);
+            return a;
+          },0);
           w.app += order.shipTotal - cl + (order.tipApp||0);
           order.subOrders.forEach(s=>{
             if(s.collectMethod==='cash') w.cash += (s.collectCustomer||0);
@@ -1758,8 +1473,14 @@ const BackupModal = ({ data, onClose, onRestore }) => {
         });
         newTrans.forEach(t=>{ w[t.from]-=t.amount; w[t.to]+=t.amount; });
         newTip.forEach(t=>{ w.app+=t.amount; });
-        const merged = { wallets: w, orders:[...data.orders,...newOrders], transfers:[...data.transfers,...newTrans], tipApp:[...data.tipApp,...newTip] };
-        setImportResult({ ok:true, msg:`✅ Gộp thành công! Thêm ${newOrders.length} đơn mới.` });
+
+        const merged = {
+          wallets: w,
+          orders:    [...data.orders,    ...newOrders],
+          transfers: [...data.transfers, ...newTrans],
+          tipApp:    [...data.tipApp,    ...newTip],
+        };
+        setImportResult({ ok:true, msg:`✅ Gộp thành công! Thêm ${newOrders.length} đơn mới, ${newTrans.length} chuyển tiền mới, ${newTip.length} tip mới.` });
         onRestore(merged);
       }
     } catch(e) {
@@ -1773,17 +1494,25 @@ const BackupModal = ({ data, onClose, onRestore }) => {
     reader.readAsText(file, 'utf-8');
   };
 
+  const handleDrop = (e) => {
+    e.preventDefault(); setDragOver(false);
+    const file = e.dataTransfer.files[0];
+    if (file) handleFile(file);
+  };
+
   return (
     <div className="modal-overlay">
-      <div className="modal backup-modal fade-in" style={{maxWidth:560}}>
+      <div className="modal fade-in" style={{maxWidth:560}}>
         <div className="flex justify-between items-center mb-5">
-          <h2 style={{fontSize:18}}>💾 Backup & Restore</h2>
+          <h2 style={{fontSize:20}}>💾 Backup & Restore</h2>
           <button className="btn btn-ghost btn-sm" onClick={onClose}><Icon name="close" size={16}/></button>
         </div>
+
         <div className="flex gap-1 mb-5">
           <button className={`tab-btn ${tab==='export'?'active':''}`} onClick={()=>setTab('export')}>📤 Xuất dữ liệu</button>
           <button className={`tab-btn ${tab==='import'?'active':''}`} onClick={()=>setTab('import')}>📥 Nhập dữ liệu</button>
         </div>
+
         {tab==='export' && (
           <div>
             <p style={{fontSize:13,color:'var(--muted)',marginBottom:20,lineHeight:1.6}}>
@@ -1792,47 +1521,93 @@ const BackupModal = ({ data, onClose, onRestore }) => {
               <strong style={{color:'var(--text)'}}>CSV</strong> — mở được bằng Excel để xem/phân tích.
             </p>
             <div className="grid gap-3" style={{gridTemplateColumns:'1fr 1fr'}}>
-              <button className="btn btn-primary" style={{padding:'14px',fontSize:15,minHeight:52}} onClick={exportJSON}>📄 Xuất JSON</button>
-              <button className="btn btn-ghost" style={{padding:'14px',fontSize:15,minHeight:52}} onClick={exportCSV}>📊 Xuất CSV</button>
+              <button className="btn btn-primary" style={{padding:'14px',fontSize:15}} onClick={exportJSON}>
+                📄 Xuất file JSON
+              </button>
+              <button className="btn btn-ghost" style={{padding:'14px',fontSize:15}} onClick={exportCSV}>
+                📊 Xuất file CSV
+              </button>
             </div>
             <div className="mt-4 p-3 rounded-xl" style={{background:'var(--bg)',border:'1px solid var(--border)',fontSize:12,color:'var(--muted)'}}>
-              📦 {data.orders.length} đơn · {data.transfers.length} chuyển tiền · {data.tipApp.length} tip app
+              📦 Dữ liệu hiện tại: <strong style={{color:'var(--text)'}}>{data.orders.length}</strong> đơn · <strong style={{color:'var(--text)'}}>{data.transfers.length}</strong> chuyển tiền · <strong style={{color:'var(--text)'}}>{data.tipApp.length}</strong> tip app
             </div>
           </div>
         )}
+
         {tab==='import' && (
           <div>
             <div className="mb-4">
               <div className="section-title mb-2">Chế độ nhập</div>
               <div className="flex gap-2">
-                <button className={`chip ${importMode==='merge'?'active':''}`} style={{flex:1,height:44}} onClick={()=>setImportMode('merge')}>🔀 Gộp</button>
-                <button className={`chip ${importMode==='overwrite'?'active':''}`} style={{flex:1,height:44,...(importMode==='overwrite'?{borderColor:'var(--red)',color:'var(--red)',background:'var(--red-dim)'}:{})}} onClick={()=>setImportMode('overwrite')}>⚠️ Ghi đè</button>
+                <button className={`chip ${importMode==='merge'?'active':''}`} onClick={()=>setImportMode('merge')}>
+                  🔀 Gộp dữ liệu
+                </button>
+                <button className={`chip ${importMode==='overwrite'?'active':''}`} style={importMode==='overwrite'?{borderColor:'var(--red)',color:'var(--red)',background:'var(--red-dim)'}:{}} onClick={()=>setImportMode('overwrite')}>
+                  ⚠️ Ghi đè tất cả
+                </button>
               </div>
+              <p style={{fontSize:11,color:'var(--muted)',marginTop:6,lineHeight:1.5}}>
+                {importMode==='merge'
+                  ? '🔀 Giữ dữ liệu cũ, chỉ thêm dữ liệu mới (bỏ qua trùng lặp theo ID). Ví sẽ được cộng thêm effect của đơn mới.'
+                  : '⚠️ XÓA TOÀN BỘ dữ liệu hiện tại và thay bằng file import. Không thể hoàn tác!'}
+              </p>
             </div>
+
             <div
               onDragOver={e=>{e.preventDefault();setDragOver(true)}}
               onDragLeave={()=>setDragOver(false)}
-              onDrop={e=>{e.preventDefault();setDragOver(false);const f=e.dataTransfer.files[0];if(f)handleFile(f);}}
-              style={{border:`2px dashed ${dragOver?'var(--orange)':'var(--border)'}`,borderRadius:12,padding:'20px 16px',textAlign:'center',background:dragOver?'var(--orange-dim)':'var(--bg)',cursor:'pointer',marginBottom:12,transition:'all 0.2s'}}
+              onDrop={handleDrop}
+              style={{
+                border: `2px dashed ${dragOver?'var(--orange)':'var(--border)'}`,
+                borderRadius:12, padding:'20px 16px', textAlign:'center',
+                background: dragOver?'var(--orange-dim)':'var(--bg)',
+                cursor:'pointer', marginBottom:12, transition:'all 0.2s'
+              }}
               onClick={()=>document.getElementById('file-input').click()}
             >
               <div style={{fontSize:28,marginBottom:6}}>📂</div>
-              <div style={{fontSize:13,color:'var(--muted)'}}>Chọn file hoặc kéo thả</div>
-              <input id="file-input" type="file" accept=".json,.csv,.txt" style={{display:'none'}} onChange={e=>{ if(e.target.files[0]) handleFile(e.target.files[0]); }} />
+              <div style={{fontSize:13,color:'var(--muted)'}}>Kéo thả file vào đây hoặc <span style={{color:'var(--orange)'}}>click để chọn file</span></div>
+              <div style={{fontSize:11,color:'var(--muted)',marginTop:4}}>Hỗ trợ .json và .csv</div>
+              <input id="file-input" type="file" accept=".json,.csv,.txt" style={{display:'none'}}
+                onChange={e=>{ if(e.target.files[0]) handleFile(e.target.files[0]); }} />
             </div>
+
             <div className="mb-3">
-              <label>Hoặc dán nội dung file</label>
-              <textarea rows={4} placeholder='Dán nội dung file JSON hoặc CSV...' value={importText} onChange={e=>setImportText(e.target.value)} style={{resize:'vertical',fontFamily:'Nunito',fontSize:11}} />
+              <label>Hoặc dán nội dung file vào đây</label>
+              <textarea
+                rows={5}
+                placeholder='Dán nội dung file JSON hoặc CSV...'
+                value={importText}
+                onChange={e=>setImportText(e.target.value)}
+                style={{resize:'vertical',fontFamily:'Nunito',fontSize:11}}
+              />
             </div>
+
             {importResult && (
-              <div className="mb-3 p-3 rounded-xl" style={{background:importResult.ok?'var(--green-dim)':'var(--red-dim)',border:`1px solid ${importResult.ok?'var(--green)':'var(--red)'}44`,fontSize:12,color:importResult.ok?'var(--green)':'var(--red)'}}>
+              <div className="mb-3 p-3 rounded-xl" style={{
+                background: importResult.ok ? 'var(--green-dim)' : 'var(--red-dim)',
+                border: `1px solid ${importResult.ok ? 'var(--green)' : 'var(--red)'}44`,
+                fontSize:12, color: importResult.ok ? 'var(--green)' : 'var(--red)',
+                lineHeight:1.5
+              }}>
                 {importResult.msg}
               </div>
             )}
+
+            {importMode==='overwrite' && (
+              <div className="mb-3 p-3 rounded-xl" style={{background:'var(--red-dim)',border:'1px solid var(--red)44',fontSize:12,color:'var(--red)'}}>
+                ⚠️ Ghi đè sẽ XÓA {data.orders.length} đơn và {data.transfers.length} chuyển tiền hiện tại. Hãy xuất backup trước!
+              </div>
+            )}
+
             <div className="flex gap-3">
               <button className="btn btn-ghost" style={{flex:1}} onClick={onClose}>Đóng</button>
-              <button className="btn btn-primary" style={{flex:2,minHeight:48,background:importMode==='overwrite'?'var(--red)':undefined}} onClick={()=>parseAndImport(importText)} disabled={!importText.trim()}>
-                {importMode==='merge' ? '🔀 Gộp' : '⚠️ Ghi đè'}
+              <button
+                className="btn btn-primary" style={{flex:2, background: importMode==='overwrite'?'var(--red)':undefined}}
+                onClick={()=>parseAndImport(importText)}
+                disabled={!importText.trim()}
+              >
+                {importMode==='merge' ? '🔀 Gộp dữ liệu' : '⚠️ Ghi đè tất cả'}
               </button>
             </div>
           </div>
@@ -1869,17 +1644,18 @@ const applySubWallet = (w, s, sign=1) => {
 
 // ── App ───────────────────────────────────────────────────────────────────────
 const App = () => {
+  // Lưu cả userId (dùng cho API) và username (chỉ để hiển thị)
   const [userId,   setUserId]   = useState(() => localStorage.getItem('spf_userId') || null);
   const [username, setUsername] = useState(() => localStorage.getItem('spf_user')   || null);
   const [page, setPage] = useState('dashboard');
   const [modal, setModal] = useState(null);
   const [editingOrder, setEditingOrder] = useState(null);
   const [showBackup, setShowBackup] = useState(false);
-  const [showMobileMenu, setShowMobileMenu] = useState(false);
   const [data, setData] = useState(INITIAL);
   const [saving, setSaving] = useState(false);
   const [loadingData, setLoadingData] = useState(false);
 
+  // Load data khi login
   useEffect(() => {
     if (!userId) return;
     setLoadingData(true);
@@ -1905,6 +1681,7 @@ const App = () => {
     setPage('dashboard');
   };
 
+  // applyOrder: thêm mới hoặc edit
   const applyOrder = useCallback(async (order) => {
     const isEdit = !!order._id;
     setData(prev => {
@@ -1924,32 +1701,59 @@ const App = () => {
       order.subOrders.forEach(s => applySubWallet(w, s, 1));
       return { ...prev, wallets: w, orders };
     });
+
+    // Sync lên DB
     setSaving(true);
     try {
       if (isEdit) {
         await api.updateOrder(userId, order);
       } else {
         const newId = await api.addOrder(userId, order);
-        setData(prev => ({ ...prev, orders: prev.orders.map(o => o === order || (!o._id && o.date === order.date && o.shipTotal === order.shipTotal) ? { ...o, _id: newId } : o) }));
+        // Gán _id trả về từ MongoDB vào order trong state
+        setData(prev => ({
+          ...prev,
+          orders: prev.orders.map(o =>
+            o === order || (!o._id && o.date === order.date && o.shipTotal === order.shipTotal)
+              ? { ...o, _id: newId }
+              : o
+          ),
+        }));
       }
-      setData(prev => { api.saveWallets(userId, prev.wallets).catch(console.error); return prev; });
-    } catch(e) { console.error('Save order error:', e); }
-    finally { setSaving(false); }
+      // Sync ví sau khi order xong
+      setData(prev => {
+        api.saveWallets(userId, prev.wallets).catch(console.error);
+        return prev;
+      });
+    } catch(e) {
+      console.error('Save order error:', e);
+    } finally {
+      setSaving(false);
+    }
   }, [userId]);
 
   const applyTransfer = useCallback(async (t) => {
     setData(prev => {
       const w = {...prev.wallets};
-      w[t.from] -= t.amount; w[t.to] += t.amount;
+      w[t.from] -= t.amount;
+      w[t.to] += t.amount;
       return { ...prev, wallets: w, transfers: [...prev.transfers, t] };
     });
+
     setSaving(true);
     try {
       const newId = await api.addTransfer(userId, t);
-      setData(prev => ({ ...prev, transfers: prev.transfers.map(x => !x._id && x.date === t.date && x.amount === t.amount ? { ...x, _id: newId } : x) }));
+      setData(prev => ({
+        ...prev,
+        transfers: prev.transfers.map(x =>
+          !x._id && x.date === t.date && x.amount === t.amount ? { ...x, _id: newId } : x
+        ),
+      }));
       setData(prev => { api.saveWallets(userId, prev.wallets).catch(console.error); return prev; });
-    } catch(e) { console.error('Save transfer error:', e); }
-    finally { setSaving(false); }
+    } catch(e) {
+      console.error('Save transfer error:', e);
+    } finally {
+      setSaving(false);
+    }
   }, [userId]);
 
   const applyTipApp = useCallback(async (t) => {
@@ -1958,13 +1762,22 @@ const App = () => {
       w.app += t.amount;
       return { ...prev, wallets: w, tipApp: [...prev.tipApp, t] };
     });
+
     setSaving(true);
     try {
       const newId = await api.addTip(userId, t);
-      setData(prev => ({ ...prev, tipApp: prev.tipApp.map(x => !x._id && x.date === t.date && x.amount === t.amount ? { ...x, _id: newId } : x) }));
+      setData(prev => ({
+        ...prev,
+        tipApp: prev.tipApp.map(x =>
+          !x._id && x.date === t.date && x.amount === t.amount ? { ...x, _id: newId } : x
+        ),
+      }));
       setData(prev => { api.saveWallets(userId, prev.wallets).catch(console.error); return prev; });
-    } catch(e) { console.error('Save tip error:', e); }
-    finally { setSaving(false); }
+    } catch(e) {
+      console.error('Save tip error:', e);
+    } finally {
+      setSaving(false);
+    }
   }, [userId]);
 
   const deleteOrder = useCallback(async (id) => {
@@ -1977,12 +1790,16 @@ const App = () => {
       order.subOrders.forEach(s => applySubWallet(w, s, -1));
       return { ...prev, wallets: w, orders: prev.orders.filter(o=>o._id!==id) };
     });
+
     setSaving(true);
     try {
       await api.deleteOrder(userId, id);
       setData(prev => { api.saveWallets(userId, prev.wallets).catch(console.error); return prev; });
-    } catch(e) { console.error('Delete order error:', e); }
-    finally { setSaving(false); }
+    } catch(e) {
+      console.error('Delete order error:', e);
+    } finally {
+      setSaving(false);
+    }
   }, [userId]);
 
   const deleteTransfer = useCallback(async (id) => {
@@ -1991,15 +1808,20 @@ const App = () => {
       const t = prev.transfers.find(x=>x._id===id);
       if(!t) return prev;
       const w = {...prev.wallets};
-      w[t.from] += t.amount; w[t.to] -= t.amount;
+      w[t.from] += t.amount;
+      w[t.to] -= t.amount;
       return { ...prev, wallets: w, transfers: prev.transfers.filter(x=>x._id!==id) };
     });
+
     setSaving(true);
     try {
       await api.deleteTransfer(userId, id);
       setData(prev => { api.saveWallets(userId, prev.wallets).catch(console.error); return prev; });
-    } catch(e) { console.error('Delete transfer error:', e); }
-    finally { setSaving(false); }
+    } catch(e) {
+      console.error('Delete transfer error:', e);
+    } finally {
+      setSaving(false);
+    }
   }, [userId]);
 
   const applyCash = useCallback(async (tx) => {
@@ -2012,7 +1834,12 @@ const App = () => {
     setSaving(true);
     try {
       const newId = await api.addCash(userId, tx);
-      setData(prev => ({ ...prev, cashTx: (prev.cashTx||[]).map(x => !x._id && x.date===tx.date && x.amount===tx.amount && x.wallet===tx.wallet ? {...x,_id:newId} : x) }));
+      setData(prev => ({
+        ...prev,
+        cashTx: (prev.cashTx||[]).map(x =>
+          !x._id && x.date===tx.date && x.amount===tx.amount && x.wallet===tx.wallet ? {...x,_id:newId} : x
+        ),
+      }));
       setData(prev => { api.saveWallets(userId, prev.wallets).catch(console.error); return prev; });
     } catch(e) { console.error('Save cash error:', e); }
     finally { setSaving(false); }
@@ -2041,12 +1868,6 @@ const App = () => {
     setModal('order');
   }, []);
 
-  const handleMobileAction = (action) => {
-    if (action === 'backup') { setShowBackup(true); return; }
-    if (action === 'logout') { handleLogout(); return; }
-    setModal(action);
-  };
-
   if (!userId) return <LoginScreen onLogin={handleLogin} />;
 
   if (loadingData) return (
@@ -2056,81 +1877,67 @@ const App = () => {
     </div>
   );
 
-  const navPages = [
-    { id:'dashboard', label:'Tổng quan', icon:'dashboard', emoji:'🏠' },
-    { id:'chart', label:'Biểu đồ', icon:'chart', emoji:'📊' },
-    { id:'history', label:'Lịch sử', icon:'order', emoji:'📋' },
+  const pages = [
+    { id:'dashboard', label:'Dashboard', icon:'dashboard' },
+    { id:'chart', label:'Biểu đồ', icon:'chart' },
+    { id:'history', label:'Lịch sử', icon:'order' },
   ];
 
   return (
     <div style={{display:'flex',minHeight:'100vh'}}>
-      {/* Desktop Sidebar */}
-      <aside className="desktop-sidebar" style={{width:220,background:'var(--surface)',borderRight:'1px solid var(--border)',padding:'24px 16px',display:'flex',flexDirection:'column',position:'sticky',top:0,height:'100vh'}}>
+      {/* Sidebar */}
+      <aside style={{width:220,background:'var(--surface)',borderRight:'1px solid var(--border)',padding:'24px 16px',display:'flex',flexDirection:'column',position:'sticky',top:0,height:'100vh'}}>
         <div style={{marginBottom:28}}>
           <div style={{fontFamily:'Nunito',fontWeight:800,fontSize:20,color:'var(--orange)',letterSpacing:'-0.02em'}}>ShipFlow</div>
           <div style={{fontSize:11,color:'var(--muted)',marginTop:2}}>Shopee Food Tracker</div>
           <div style={{marginTop:8,display:'flex',alignItems:'center',justifyContent:'space-between'}}>
             <span style={{fontSize:11,color:'var(--blue)',fontWeight:600}}>👤 {username}</span>
-            <span style={{fontSize:10,color:saving?'var(--yellow)':'var(--green)'}}>{saving ? '⏳ Đang lưu...' : '✅ Đã lưu'}</span>
+            <span style={{fontSize:10,color:saving?'var(--yellow)':'var(--green)'}}>
+              {saving ? '⏳ Đang lưu...' : '✅ Đã lưu'}
+            </span>
           </div>
         </div>
+
         <nav style={{flex:1}}>
-          {navPages.map(p=>(
+          {pages.map(p=>(
             <button key={p.id} className={`nav-item ${page===p.id?'active':''}`} onClick={()=>setPage(p.id)}>
               <Icon name={p.icon} size={16}/> {p.label}
             </button>
           ))}
         </nav>
+
         <div style={{borderTop:'1px solid var(--border)',paddingTop:16,display:'flex',flexDirection:'column',gap:8}}>
           <div className="section-title">Thao tác nhanh</div>
-          <button className="btn btn-primary btn-sm" onClick={()=>setModal('order')} style={{width:'100%'}}><Icon name="plus" size={13}/> Nhập đơn</button>
-          <button className="btn btn-ghost btn-sm" onClick={()=>setModal('transfer')} style={{width:'100%'}}><Icon name="transfer" size={13}/> Chuyển tiền</button>
-          <button className="btn btn-ghost btn-sm" onClick={()=>setModal('tipapp')} style={{width:'100%'}}><Icon name="tip" size={13}/> Tip App</button>
-          <button className="btn btn-ghost btn-sm" onClick={()=>setModal('cash')} style={{width:'100%',color:'var(--green)',borderColor:'#00E5A033'}}>💰 Nạp / Rút tiền</button>
-          <button className="btn btn-ghost btn-sm" onClick={()=>setModal('wallet')} style={{width:'100%'}}>⚙️ Số dư ban đầu</button>
-          <button className="btn btn-ghost btn-sm" onClick={()=>setShowBackup(true)} style={{width:'100%'}}>💾 Backup / Restore</button>
-          <button className="btn btn-ghost btn-sm" onClick={handleLogout} style={{width:'100%',color:'var(--red)',borderColor:'var(--red-dim)'}}>🚪 Đăng xuất</button>
+          <button className="btn btn-primary btn-sm" onClick={()=>setModal('order')} style={{width:'100%'}}>
+            <Icon name="plus" size={13}/> Nhập đơn
+          </button>
+          <button className="btn btn-ghost btn-sm" onClick={()=>setModal('transfer')} style={{width:'100%'}}>
+            <Icon name="transfer" size={13}/> Chuyển tiền
+          </button>
+          <button className="btn btn-ghost btn-sm" onClick={()=>setModal('tipapp')} style={{width:'100%'}}>
+            <Icon name="tip" size={13}/> Tip App
+          </button>
+          <button className="btn btn-ghost btn-sm" onClick={()=>setModal('cash')} style={{width:'100%',color:'var(--green)',borderColor:'#00E5A033'}}>
+            💰 Nạp / Rút tiền
+          </button>
+          <button className="btn btn-ghost btn-sm" onClick={()=>setModal('wallet')} style={{width:'100%'}}>
+            ⚙️ Số dư ban đầu
+          </button>
+          <button className="btn btn-ghost btn-sm" onClick={()=>setShowBackup(true)} style={{width:'100%'}}>
+            💾 Backup / Restore
+          </button>
+          <button className="btn btn-ghost btn-sm" onClick={handleLogout} style={{width:'100%',color:'var(--red)',borderColor:'var(--red-dim)'}}>
+            🚪 Đăng xuất
+          </button>
         </div>
       </aside>
 
-      {/* Mobile Top Bar */}
-      <div className="mobile-topbar">
-        <div style={{fontFamily:'Nunito',fontWeight:800,fontSize:18,color:'var(--orange)'}}>ShipFlow</div>
-        <div style={{display:'flex',alignItems:'center',gap:10}}>
-          <span style={{fontSize:11,color:saving?'var(--yellow)':'var(--green)'}}>{saving ? '⏳' : '✅'}</span>
-          <span style={{fontSize:11,color:'var(--blue)',fontWeight:600}}>👤 {username}</span>
-          <button className="btn btn-ghost btn-sm" onClick={handleLogout} style={{color:'var(--red)',borderColor:'transparent',padding:'6px 10px',fontSize:12}}>🚪</button>
-        </div>
-      </div>
-
-      {/* Main content */}
-      <main className="main-content" style={{flex:1,padding:'32px 36px',maxWidth:1100,margin:'0 auto',width:'100%'}}>
+      {/* Main */}
+      <main style={{flex:1,padding:'32px 36px',maxWidth:1100,margin:'0 auto',width:'100%'}}>
         {page==='dashboard' && <Dashboard data={data} />}
         {page==='chart' && <ChartPage data={data} />}
         {page==='history' && <HistoryPage data={data} onDeleteOrder={deleteOrder} onDeleteTransfer={deleteTransfer} onEditOrder={editOrder} onDeleteCash={deleteCash} />}
       </main>
-
-      {/* Mobile Bottom Nav */}
-      <div className="mobile-bottomnav">
-        {navPages.map(p=>(
-          <button key={p.id} onClick={()=>setPage(p.id)}
-            style={{flex:1,display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',gap:3,border:'none',background:'transparent',cursor:'pointer',padding:'6px 0',color:page===p.id?'var(--orange)':'var(--muted)',transition:'color 0.15s',fontFamily:'Nunito',fontWeight:600,fontSize:10}}>
-            <span style={{fontSize:20}}>{p.emoji}</span>
-            <span>{p.label}</span>
-          </button>
-        ))}
-        {/* Plus FAB button */}
-        <button onClick={()=>setShowMobileMenu(true)}
-          style={{flex:1,display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',gap:3,border:'none',background:'transparent',cursor:'pointer',padding:'6px 0',color:'var(--orange)',fontFamily:'Nunito',fontWeight:700,fontSize:10}}>
-          <span style={{width:36,height:36,borderRadius:'50%',background:'var(--orange)',display:'flex',alignItems:'center',justifyContent:'center',marginBottom:-2,boxShadow:'0 2px 12px #FF6B2B55'}}>
-            <Icon name="plus" size={18} style={{color:'white'}}/>
-          </span>
-          <span style={{color:'var(--orange)'}}>Thêm</span>
-        </button>
-      </div>
-
-      {/* Mobile Actions Sheet */}
-      {showMobileMenu && <MobileActionsSheet onClose={()=>setShowMobileMenu(false)} onAction={handleMobileAction} />}
 
       {/* Modals */}
       {modal==='order' && <OrderModal onClose={()=>{setModal(null);setEditingOrder(null);}} onSave={applyOrder} initialData={editingOrder} />}
