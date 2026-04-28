@@ -1609,14 +1609,15 @@ const ChartPage = ({ data }) => {
     const groups = {};
     orders.forEach(o => {
       let key = o.date;
-      if(period==='week'){
-        const d=new Date(Date.UTC(...o.date.split('-').map(Number)));
-        const dow=d.getUTCDay()||7;
-        const mon=new Date(d); mon.setUTCDate(d.getUTCDate()-dow+1);
-        const sun=new Date(mon); sun.setUTCDate(mon.getUTCDate()+6);
-        const p=(n)=>String(n).padStart(2,'0');
-        key=`${p(mon.getUTCDate())}/${p(mon.getUTCMonth()+1)}/${mon.getUTCFullYear()} -> ${p(sun.getUTCDate())}/${p(sun.getUTCMonth()+1)}/${sun.getUTCFullYear()}`;
-      }
+if(period==='week'){
+  const [y,m,dd]=o.date.split('-').map(Number);
+  const d=new Date(Date.UTC(y,m-1,dd));
+  const dow=d.getUTCDay()||7;
+  const mon=new Date(d); mon.setUTCDate(d.getUTCDate()-dow+1);
+  const sun=new Date(mon); sun.setUTCDate(mon.getUTCDate()+6);
+  const p=(n)=>String(n).padStart(2,'0');
+  key=`${p(mon.getUTCDate())}/${p(mon.getUTCMonth()+1)}/${mon.getUTCFullYear()} -> ${p(sun.getUTCDate())}/${p(sun.getUTCMonth()+1)}/${sun.getUTCFullYear()}`;
+}
       else if(period==='month'){key=o.date.slice(0,7);}
       else if(period==='year'){key=o.date.slice(0,4);}
       if(!groups[key]) groups[key]={key,ship:0,tip:0,total:0,orders:0};
