@@ -1304,7 +1304,8 @@ const BackupModal = ({ data, onClose, onRestore }) => {
         const w={...data.wallets};
         newOrders.forEach(order=>{const cl=order.subOrders.reduce((a,s)=>{if(s.type==='2')return a+(s.orderAmount||0);if(s.type==='3')return a+(s.orderAmount||0)-(s.payShop||0);return a;},0);w.app+=order.shipTotal-cl+(order.tipApp||0);order.subOrders.forEach(s=>{if(s.collectMethod==='cash')w.cash+=(s.collectCustomer||0);if(s.collectMethod==='mb')w.mb+=(s.collectCustomer||0);if(s.payShopMethod==='cash')w.cash-=(s.payShop||0);if(s.payShopMethod==='momo')w.momo-=(s.payShop||0);if(s.refundMethod==='cash')w.cash-=(s.refund||0);if(s.refundMethod==='momo')w.momo-=(s.refund||0);});});
         newTrans.forEach(t=>{w[t.from]-=t.amount;w[t.to]+=t.amount;});
-        // xangXang không ảnh hưởng trực tiếp đến ví
+        // xangXang trừ tiền mặt
+        newTip.forEach(t=>{w.cash-=t.amount;});
         const merged={wallets:w,orders:[...data.orders,...newOrders],transfers:[...data.transfers,...newTrans],xangXang:[...(data.xangXang||[]),...newTip]};
         setImportResult({ok:true,msg:`✅ Gộp thành công! Thêm ${newOrders.length} đơn mới, ${newTrans.length} chuyển tiền mới, ${newTip.length} tiền xăng mới.`});
         onRestore(merged);
@@ -1608,7 +1609,14 @@ const ChartPage = ({ data }) => {
     const groups = {};
     orders.forEach(o => {
       let key = o.date;
-      if(period==='week'){const d=new Date(o.date);const wk=Math.ceil(d.getDate()/7);key=`${o.date.slice(0,7)}-W${wk}`;}
+      if(period==='week'){
+        const d=new Date(Date.UTC(...o.date.split('-').map(Number)));
+        const dow=d.getUTCDay()||7;
+        const mon=new Date(d); mon.setUTCDate(d.getUTCDate()-dow+1);
+        const sun=new Date(mon); sun.setUTCDate(mon.getUTCDate()+6);
+        const p=(n)=>String(n).padStart(2,'0');
+        key=`${p(mon.getUTCDate())}/${p(mon.getUTCMonth()+1)}/${mon.getUTCFullYear()} -> ${p(sun.getUTCDate())}/${p(sun.getUTCMonth()+1)}/${sun.getUTCFullYear()}`;
+      }
       else if(period==='month'){key=o.date.slice(0,7);}
       else if(period==='year'){key=o.date.slice(0,4);}
       if(!groups[key]) groups[key]={key,ship:0,tip:0,total:0,orders:0};
@@ -1953,9 +1961,13 @@ const App = () => {
   }, [userId]);
 
   const applyXangXang = useCallback(async (t) => {
-    setData(prev=>({...prev,xangXang:[...(prev.xangXang||[]),t]}));
+    setData(prev=>{const w={...prev.wallets};w.cash-=t.amount;return{...prev,wallets:w,xangXang:[...(prev.xangXang||[]),t]};});
     setSaving(true);
-    try{const newId=await api.addXang(userId,t);setData(prev=>({...prev,xangXang:(prev.xangXang||[]).map(x=>!x._id&&x.date===t.date&&x.amount===t.amount?{...x,_id:newId}:x)}));}
+    try{
+      const newId=await api.addXang(userId,t);
+      setData(prev=>({...prev,xangXang:(prev.xangXang||[]).map(x=>!x._id&&x.date===t.date&&x.amount===t.amount?{...x,_id:newId}:x)}));
+      setData(prev=>{api.saveWallets(userId,prev.wallets).catch(console.error);return prev;});
+    }
     catch(e){console.error('Save xang error:',e);}finally{setSaving(false);}
   }, [userId]);
 
@@ -2010,18 +2022,28 @@ const App = () => {
   }, [userId]);
 
   const deleteXang = useCallback(async (id) => {
-    if (!confirm('Xoá tiền xăng này?')) return;
-    setData(prev => ({...prev, xangXang: (prev.xangXang||[]).filter(t => t._id !== id)}));
+    if (!confirm('Xoá tiền xăng này? Tiền mặt sẽ được hoàn lại.')) return;
+    setData(prev => {
+      const item = (prev.xangXang||[]).find(t => t._id === id); if (!item) return prev;
+      const w = {...prev.wallets}; w.cash += item.amount;
+      return {...prev, wallets: w, xangXang: (prev.xangXang||[]).filter(t => t._id !== id)};
+    });
     setSaving(true);
-    try { await api.deleteXang(userId, id); }
+    try { await api.deleteXang(userId, id); setData(prev=>{api.saveWallets(userId,prev.wallets).catch(console.error);return prev;}); }
     catch(e) { console.error('Delete xang error:', e); } finally { setSaving(false); }
   }, [userId]);
 
   const editXang = useCallback((tip) => { setEditingXang(tip); setShowEditXang(true); }, []);
   const updateXang = useCallback(async (updated) => {
-    setData(prev => ({...prev, xangXang: (prev.xangXang||[]).map(t => t._id === updated._id ? updated : t)}));
+    setData(prev => {
+      const old = (prev.xangXang||[]).find(t => t._id === updated._id); if (!old) return prev;
+      const w = {...prev.wallets};
+      w.cash += old.amount;      // hoàn lại số cũ
+      w.cash -= updated.amount;  // trừ số mới
+      return {...prev, wallets: w, xangXang: (prev.xangXang||[]).map(t => t._id === updated._id ? updated : t)};
+    });
     setSaving(true);
-    try { await api.updateXang(userId, updated); }
+    try { await api.updateXang(userId, updated); setData(prev=>{api.saveWallets(userId,prev.wallets).catch(console.error);return prev;}); }
     catch(e) { console.error('Update xang error:', e); } finally { setSaving(false); }
   }, [userId]);
 
