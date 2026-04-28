@@ -31,7 +31,7 @@ export const api = {
       body: JSON.stringify({ userId, action: 'addOrder', data: order }),
     });
     if (!r.ok) throw new Error('Không thêm được order');
-    return (await r.json())._id; // string ObjectId
+    return (await r.json())._id;
   },
 
   // Cập nhật 1 order (cần có _id)
@@ -65,6 +65,16 @@ export const api = {
     return (await r.json())._id;
   },
 
+  // Cập nhật transfer
+  async updateTransfer(userId, transfer) {
+    const r = await fetch('/api/data', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userId, action: 'updateTransfer', data: transfer }),
+    });
+    if (!r.ok) throw new Error('Không cập nhật được transfer');
+  },
+
   // Xóa transfer
   async deleteTransfer(userId, transferId) {
     const r = await fetch('/api/data', {
@@ -75,25 +85,66 @@ export const api = {
     if (!r.ok) throw new Error('Không xóa được transfer');
   },
 
-  // Thêm tip
-  async addTip(userId, tip) {
+  // Thêm tiền xăng
+  async addXang(userId, xang) {
     const r = await fetch('/api/data', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ userId, action: 'addTip', data: tip }),
+      body: JSON.stringify({ userId, action: 'addXang', data: xang }),
     });
-    if (!r.ok) throw new Error('Không thêm được tip');
+    if (!r.ok) throw new Error('Không thêm được tiền xăng');
     return (await r.json())._id;
   },
 
-  // Xóa tip
-  async deleteTip(userId, tipId) {
+  // Cập nhật tiền xăng
+  async updateXang(userId, xang) {
     const r = await fetch('/api/data', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ userId, action: 'deleteTip', data: { _id: tipId } }),
+      body: JSON.stringify({ userId, action: 'updateXang', data: xang }),
     });
-    if (!r.ok) throw new Error('Không xóa được tip');
+    if (!r.ok) throw new Error('Không cập nhật được tiền xăng');
+  },
+
+  // Xóa tiền xăng
+  async deleteXang(userId, xangId) {
+    const r = await fetch('/api/data', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userId, action: 'deleteXang', data: { _id: xangId } }),
+    });
+    if (!r.ok) throw new Error('Không xóa được tiền xăng');
+  },
+
+  // Thêm giao dịch nạp/rút tiền mặt
+  async addCash(userId, tx) {
+    const r = await fetch('/api/data', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userId, action: 'addCash', data: tx }),
+    });
+    if (!r.ok) throw new Error('Không thêm được giao dịch');
+    return (await r.json())._id;
+  },
+
+  // Cập nhật giao dịch nạp/rút
+  async updateCash(userId, tx) {
+    const r = await fetch('/api/data', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userId, action: 'updateCash', data: tx }),
+    });
+    if (!r.ok) throw new Error('Không cập nhật được giao dịch');
+  },
+
+  // Xóa giao dịch nạp/rút
+  async deleteCash(userId, txId) {
+    const r = await fetch('/api/data', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userId, action: 'deleteCash', data: { _id: txId } }),
+    });
+    if (!r.ok) throw new Error('Không xóa được giao dịch');
   },
 
   // Import toàn bộ từ backup JSON (dùng sau migrate hoặc restore)

@@ -390,8 +390,8 @@
         margin-bottom: 10px;
       }
 
-      /* ── Tip App history cards ── */
-      .m-tip-card {
+      /* ── Tiền Xăng history cards ── */
+      .m-xang-card {
         background: var(--surface);
         border: 1px solid var(--border);
         border-radius: 12px;
@@ -580,7 +580,7 @@ const INITIAL = {
   wallets: { app: 0, momo: 0, mb: 0, cash: 0 },
   orders: [],
   transfers: [],
-  tipApp: [],
+  xangXang: [],
   cashTx: [],
 };
 
@@ -616,16 +616,16 @@ const api = {
   async deleteTransfer(userId, transferId) {
     await fetch('/api/data', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({userId,action:'deleteTransfer',data:{_id:transferId}}) });
   },
-  async addTip(userId, tip) {
-    const r = await fetch('/api/data', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({userId,action:'addTip',data:tip}) });
+  async addXang(userId, tip) {
+    const r = await fetch('/api/data', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({userId,action:'addXang',data:tip}) });
     if(!r.ok) throw new Error('Không thêm được tip');
     return (await r.json())._id;
   },
-  async updateTip(userId, tip) {
-    await fetch('/api/data', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({userId,action:'updateTip',data:tip}) });
+  async updateXang(userId, tip) {
+    await fetch('/api/data', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({userId,action:'updateXang',data:tip}) });
   },
-  async deleteTip(userId, tipId) {
-    await fetch('/api/data', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({userId,action:'deleteTip',data:{_id:tipId}}) });
+  async deleteXang(userId, tipId) {
+    await fetch('/api/data', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({userId,action:'deleteXang',data:{_id:tipId}}) });
   },
   async addCash(userId, tx) {
     const r = await fetch('/api/data', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({userId,action:'addCash',data:tx}) });
@@ -998,8 +998,8 @@ const TransferModal = ({ onClose, onSave }) => {
   );
 };
 
-// ── TipApp Modal ──────────────────────────────────────────────────────────────
-const TipAppModal = ({ onClose, onSave }) => {
+// ── XangXang Modal ──────────────────────────────────────────────────────────────
+const XangXangModal = ({ onClose, onSave }) => {
   const [date, setDate] = useState(today());
   const [amount, setAmount] = useState('');
   const handleSave = () => { if(!amount) return; onSave({ date, amount:+amount }); onClose(); };
@@ -1007,12 +1007,12 @@ const TipAppModal = ({ onClose, onSave }) => {
     <div className="modal-overlay">
       <div className="modal fade-in" style={{maxWidth:360}}>
         <div className="flex justify-between items-center mb-6">
-          <h2 style={{fontSize:20}}><Icon name="tip" size={18}/>&nbsp; Tip App</h2>
+          <h2 style={{fontSize:20}}>⛽&nbsp; Tiền Xăng</h2>
           <button className="btn btn-ghost btn-sm" onClick={onClose}><Icon name="close" size={16}/></button>
         </div>
         <div className="grid gap-3 mb-4">
           <div><label>Ngày</label><input type="date" value={date} onChange={e=>setDate(e.target.value)} /></div>
-          <div><label>Số tiền tip app (đ)</label><MoneyInput value={+amount||0} onChange={v=>setAmount(v)} placeholder="VD: 15.000" /></div>
+          <div><label>Số tiền xăng (đ)</label><MoneyInput value={+amount||0} onChange={v=>setAmount(v)} placeholder="VD: 50.000" /></div>
         </div>
         <div className="flex gap-3">
           <button className="btn btn-ghost" style={{flex:1}} onClick={onClose}>Huỷ</button>
@@ -1136,8 +1136,8 @@ const TransferEditModal = ({ onClose, onSave, initialData }) => {
   );
 };
 
-// ── TipApp Edit Modal ─────────────────────────────────────────────────────────
-const TipAppEditModal = ({ onClose, onSave, initialData }) => {
+// ── XangXang Edit Modal ─────────────────────────────────────────────────────────
+const XangXangEditModal = ({ onClose, onSave, initialData }) => {
   const [date, setDate] = useState(initialData?.date || today());
   const [amount, setAmount] = useState(initialData?.amount || '');
   const handleSave = () => { if(!amount) return; onSave({ ...initialData, date, amount:+amount }); onClose(); };
@@ -1145,12 +1145,12 @@ const TipAppEditModal = ({ onClose, onSave, initialData }) => {
     <div className="modal-overlay">
       <div className="modal fade-in" style={{maxWidth:360}}>
         <div className="flex justify-between items-center mb-6">
-          <h2 style={{fontSize:20}}><Icon name="tip" size={18}/>&nbsp; Sửa Tip App</h2>
+          <h2 style={{fontSize:20}}>⛽&nbsp; Sửa Tiền Xăng</h2>
           <button className="btn btn-ghost btn-sm" onClick={onClose}><Icon name="close" size={16}/></button>
         </div>
         <div className="grid gap-3 mb-4">
           <div><label>Ngày</label><input type="date" value={date} onChange={e=>setDate(e.target.value)} /></div>
-          <div><label>Số tiền tip app (đ)</label><MoneyInput value={+amount||0} onChange={v=>setAmount(v)} placeholder="VD: 15.000" /></div>
+          <div><label>Số tiền xăng (đ)</label><MoneyInput value={+amount||0} onChange={v=>setAmount(v)} placeholder="VD: 50.000" /></div>
         </div>
         <div className="flex gap-3">
           <button className="btn btn-ghost" style={{flex:1}} onClick={onClose}>Huỷ</button>
@@ -1262,7 +1262,7 @@ const BackupModal = ({ data, onClose, onRestore }) => {
     rows.push(['---']);rows.push(['TYPE','id','date','from','to','amount','note']);
     data.transfers.forEach(t => rows.push(['TRANSFER',t._id,t.date,t.from,t.to,t.amount,t.note||'']));
     rows.push(['---']);rows.push(['TYPE','id','date','amount']);
-    data.tipApp.forEach(t => rows.push(['TIPAPP',t._id,t.date,t.amount]));
+    (data.xangXang||[]).forEach(t => rows.push(['XANGXANG',t._id,t.date,t.amount]));
     rows.push(['---']);rows.push(['TYPE','app','cash','mb','momo']);
     rows.push(['WALLETS',data.wallets.app,data.wallets.cash,data.wallets.mb,data.wallets.momo]);
     const csv = rows.map(r=>r.join(',')).join('\n');
@@ -1288,25 +1288,25 @@ const BackupModal = ({ data, onClose, onRestore }) => {
           const cols=line.split(',');const type=cols[0];
           if(type==='ORDER'){const[,id,date,isBundle,shipTotal,tipAppAmt,note,subIdx,subType,payShop,payShopMethod,collectCustomer,collectMethod,refund,refundMethod]=cols;if(!orderMap[id]){orderMap[id]={date,isBundle:isBundle==='1',shipTotal:+shipTotal,tipApp:+tipAppAmt,note,subOrders:[]};orders.push(orderMap[id]);}orderMap[id].subOrders.push({type:subType,payShop:+payShop,payShopMethod,collectCustomer:+collectCustomer,collectMethod,refund:+refund,refundMethod});}
           else if(type==='TRANSFER'){const[,id,date,from,to,amount,note]=cols;transfers.push({date,from,to,amount:+amount,note});}
-          else if(type==='TIPAPP'){const[,id,date,amount]=cols;tipApp.push({date,amount:+amount});}
+          else if(type==='XANGXANG'){const[,id,date,amount]=cols;tipApp.push({date,amount:+amount});}
           else if(type==='WALLETS'){wallets={app:+cols[1],cash:+cols[2],mb:+cols[3],momo:+cols[4]};}
         });
-        parsed={orders,transfers,tipApp,wallets:wallets||{app:0,cash:0,mb:0,momo:0}};
+        parsed={orders,transfers,xangXang:tipApp,wallets:wallets||{app:0,cash:0,mb:0,momo:0}};
       }
-      if(importMode==='overwrite'){onRestore(parsed);setImportResult({ok:true,msg:`✅ Ghi đè thành công! ${parsed.orders.length} đơn, ${parsed.transfers.length} chuyển tiền, ${parsed.tipApp.length} tip app.`});}
+      if(importMode==='overwrite'){onRestore(parsed);setImportResult({ok:true,msg:`✅ Ghi đè thành công! ${parsed.orders.length} đơn, ${parsed.transfers.length} chuyển tiền, ${(parsed.xangXang||[]).length} tiền xăng.`});}
       else{
         const existOrderIds=new Set(data.orders.map(o=>o._id).filter(Boolean));
         const existTransIds=new Set(data.transfers.map(t=>t._id).filter(Boolean));
-        const existTipIds=new Set(data.tipApp.map(t=>t._id).filter(Boolean));
+        const existTipIds=new Set((data.xangXang||[]).map(t=>t._id).filter(Boolean));
         const newOrders=parsed.orders.filter(o=>!o._id||!existOrderIds.has(o._id));
         const newTrans=parsed.transfers.filter(t=>!t._id||!existTransIds.has(t._id));
-        const newTip=parsed.tipApp.filter(t=>!t._id||!existTipIds.has(t._id));
+        const newTip=(parsed.xangXang||[]).filter(t=>!t._id||!existTipIds.has(t._id));
         const w={...data.wallets};
         newOrders.forEach(order=>{const cl=order.subOrders.reduce((a,s)=>{if(s.type==='2')return a+(s.orderAmount||0);if(s.type==='3')return a+(s.orderAmount||0)-(s.payShop||0);return a;},0);w.app+=order.shipTotal-cl+(order.tipApp||0);order.subOrders.forEach(s=>{if(s.collectMethod==='cash')w.cash+=(s.collectCustomer||0);if(s.collectMethod==='mb')w.mb+=(s.collectCustomer||0);if(s.payShopMethod==='cash')w.cash-=(s.payShop||0);if(s.payShopMethod==='momo')w.momo-=(s.payShop||0);if(s.refundMethod==='cash')w.cash-=(s.refund||0);if(s.refundMethod==='momo')w.momo-=(s.refund||0);});});
         newTrans.forEach(t=>{w[t.from]-=t.amount;w[t.to]+=t.amount;});
-        newTip.forEach(t=>{w.app+=t.amount;});
-        const merged={wallets:w,orders:[...data.orders,...newOrders],transfers:[...data.transfers,...newTrans],tipApp:[...data.tipApp,...newTip]};
-        setImportResult({ok:true,msg:`✅ Gộp thành công! Thêm ${newOrders.length} đơn mới, ${newTrans.length} chuyển tiền mới, ${newTip.length} tip mới.`});
+        // xangXang không ảnh hưởng trực tiếp đến ví
+        const merged={wallets:w,orders:[...data.orders,...newOrders],transfers:[...data.transfers,...newTrans],xangXang:[...(data.xangXang||[]),...newTip]};
+        setImportResult({ok:true,msg:`✅ Gộp thành công! Thêm ${newOrders.length} đơn mới, ${newTrans.length} chuyển tiền mới, ${newTip.length} tiền xăng mới.`});
         onRestore(merged);
       }
     } catch(e){setImportResult({ok:false,msg:'❌ Lỗi: '+e.message});}
@@ -1334,7 +1334,7 @@ const BackupModal = ({ data, onClose, onRestore }) => {
               <button className="btn btn-ghost" style={{padding:'14px',fontSize:15}} onClick={exportCSV}>📊 Xuất file CSV</button>
             </div>
             <div className="mt-4 p-3 rounded-xl" style={{background:'var(--bg)',border:'1px solid var(--border)',fontSize:12,color:'var(--muted)'}}>
-              📦 Dữ liệu hiện tại: <strong style={{color:'var(--text)'}}>{data.orders.length}</strong> đơn · <strong style={{color:'var(--text)'}}>{data.transfers.length}</strong> chuyển tiền · <strong style={{color:'var(--text)'}}>{data.tipApp.length}</strong> tip app
+              📦 Dữ liệu hiện tại: <strong style={{color:'var(--text)'}}>{data.orders.length}</strong> đơn · <strong style={{color:'var(--text)'}}>{data.transfers.length}</strong> chuyển tiền · <strong style={{color:'var(--text)'}}>{(data.xangXang||[]).length}</strong> tiền xăng
             </div>
           </div>
         )}
@@ -1419,7 +1419,7 @@ const MobileActionSheet = ({ onClose, onAction }) => {
   const actions = [
     { id:'order',    icon:'🥡', label:'Nhập đơn',       desc:'Thêm đơn giao hàng mới',    bg:'#FF6B2B22', color:'var(--orange)' },
     { id:'transfer', icon:'💸', label:'Chuyển tiền',    desc:'Chuyển tiền giữa các ví',    bg:'var(--blue-dim)', color:'var(--blue)' },
-    { id:'tipapp',   icon:'💳', label:'Tip App',        desc:'Ghi nhận tip từ ứng dụng',   bg:'var(--purple-dim)', color:'var(--purple)' },
+    { id:'xangxang', icon:'⛽', label:'Tiền Xăng',      desc:'Ghi nhận tiền xăng hôm nay', bg:'var(--red-dim)', color:'var(--red)' },
     { id:'cash',     icon:'💰', label:'Nạp / Rút tiền', desc:'Nạp hoặc rút tiền mặt',     bg:'var(--green-dim)', color:'var(--green)' },
   ];
   const settings = [
@@ -1500,11 +1500,11 @@ const Pagination = ({ total, page, perPage, onPage }) => {
 
 // ── Dashboard ─────────────────────────────────────────────────────────────────
 const Dashboard = ({ data }) => {
-  const { wallets, orders, transfers, tipApp } = data;
+  const { wallets, orders, transfers, xangXang } = data;
   const totalTipPhysical = orders.reduce((acc,o) => acc + o.subOrders.reduce((a,s) => a + Math.max(0,(s.collectCustomer||0)-(s.orderAmount||0)-(s.refund||0)), 0), 0);
-  const totalTipApp = tipApp.reduce((a,t)=>a+t.amount,0);
+  const totalXangXang = xangXang.reduce((a,t)=>a+t.amount,0);
   const totalShip = orders.reduce((a,o)=>a+o.shipTotal,0);
-  const totalIncome = totalShip + totalTipPhysical + totalTipApp;
+  const totalIncome = totalShip + totalTipPhysical - totalXangXang;
   const totalOrders = orders.length;
 
   return (
@@ -1534,10 +1534,10 @@ const Dashboard = ({ data }) => {
 
       <div className="section-title">Thu nhập</div>
       <div className="income-grid" style={{display:'grid',gridTemplateColumns:'repeat(4,1fr)',gap:12,marginBottom:24}}>
-        <div className="stat-card green"><div className="section-title" style={{marginBottom:4}}>Tổng thu nhập</div><div className="number-big pos">{fmtFull(totalIncome)}</div><div style={{fontSize:11,color:'var(--muted)',marginTop:4}}>{totalOrders} đơn</div></div>
+        <div className="stat-card green"><div className="section-title" style={{marginBottom:4}}>Tổng thu nhập</div><div className="number-big pos">{fmtFull(totalIncome)}</div><div style={{fontSize:11,color:'var(--muted)',marginTop:4}}>{totalOrders} đơn · Ship + Tip - Xăng</div></div>
         <div className="stat-card orange"><div className="section-title" style={{marginBottom:4}}>Công ship</div><div className="number-big" style={{color:'var(--orange)'}}>{fmtFull(totalShip)}</div></div>
         <div className="stat-card yellow"><div className="section-title" style={{marginBottom:4}}>Tip vật lý</div><div className="number-big" style={{color:'var(--yellow)'}}>{fmtFull(totalTipPhysical)}</div></div>
-        <div className="stat-card purple"><div className="section-title" style={{marginBottom:4}}>Tip App</div><div className="number-big" style={{color:'var(--purple)'}}>{fmtFull(totalTipApp)}</div></div>
+        <div className="stat-card red"><div className="section-title" style={{marginBottom:4}}>Tiền Xăng</div><div className="number-big" style={{color:'var(--red)'}}>{fmtFull(totalXangXang)}</div></div>
       </div>
 
       <div className="section-title">Đơn gần đây</div>
@@ -1669,14 +1669,14 @@ const ChartPage = ({ data }) => {
 };
 
 // ── History Page ──────────────────────────────────────────────────────────────
-const HistoryPage = ({ data, onDeleteOrder, onDeleteTransfer, onEditOrder, onDeleteCash, onEditTransfer, onEditTip, onDeleteTip, onEditCash }) => {
+const HistoryPage = ({ data, onDeleteOrder, onDeleteTransfer, onEditOrder, onDeleteCash, onEditTransfer, onEditXang, onDeleteXang, onEditCash }) => {
   const [tab, setTab] = useState('orders');
   const [pgOrders, setPgOrders] = useState(1);
   const [pgTransfers, setPgTransfers] = useState(1);
   const [pgTip, setPgTip] = useState(1);
   const [pgCash, setPgCash] = useState(1);
   const PER = 12;
-  const { orders, transfers, tipApp, cashTx = [] } = data;
+  const { orders, transfers, xangXang = [], cashTx = [] } = data;
 
   return (
     <div className="fade-in">
@@ -1686,7 +1686,7 @@ const HistoryPage = ({ data, onDeleteOrder, onDeleteTransfer, onEditOrder, onDel
         <div className="history-tabs flex gap-1" style={{flexWrap:'nowrap'}}>
           <button className={`tab-btn ${tab==='orders'?'active':''}`} onClick={()=>setTab('orders')} style={{whiteSpace:'nowrap'}}>🥡 Đơn hàng</button>
           <button className={`tab-btn ${tab==='transfers'?'active':''}`} onClick={()=>setTab('transfers')} style={{whiteSpace:'nowrap'}}>💸 Chuyển tiền</button>
-          <button className={`tab-btn ${tab==='tipapp'?'active':''}`} onClick={()=>setTab('tipapp')} style={{whiteSpace:'nowrap'}}>💳 Tip App</button>
+          <button className={`tab-btn ${tab==='xangxang'?'active':''}`} onClick={()=>setTab('xangxang')} style={{whiteSpace:'nowrap'}}>⛽ Tiền Xăng</button>
           <button className={`tab-btn ${tab==='cashtx'?'active':''}`} onClick={()=>setTab('cashtx')} style={{whiteSpace:'nowrap'}}>💰 Nạp/Rút</button>
         </div>
       </div>
@@ -1787,32 +1787,32 @@ const HistoryPage = ({ data, onDeleteOrder, onDeleteTransfer, onEditOrder, onDel
         </>
       )}
 
-      {tab==='tipapp' && (
+      {tab==='xangxang' && (
         <>
           <div className="card history-table-wrap">
-            <table><thead><tr><th>Ngày</th><th>Tip App</th><th>Hành động</th></tr></thead>
+            <table><thead><tr><th>Ngày</th><th>Tiền Xăng</th><th>Hành động</th></tr></thead>
               <tbody>
-                {tipApp.length===0 && <tr><td colSpan={3} style={{textAlign:'center',color:'var(--muted)',padding:32}}>Chưa có tip app</td></tr>}
-                {[...tipApp].sort((a,b)=>b.date.localeCompare(a.date)).slice((pgTip-1)*PER,pgTip*PER).map(t=>(<tr key={t._id}><td className="mono" style={{fontSize:12}}>{t.date}</td><td className="mono" style={{color:'var(--green)'}}>+{fmtFull(t.amount)}</td><td style={{display:'flex',gap:4}}><button className="btn btn-sm btn-ghost" onClick={()=>onEditTip(t)} style={{color:'var(--blue)',borderColor:'var(--blue-dim)'}}>✏️</button><button className="btn btn-sm btn-danger" onClick={()=>onDeleteTip(t._id)}><Icon name="trash" size={12}/></button></td></tr>))}
+                {xangXang.length===0 && <tr><td colSpan={3} style={{textAlign:'center',color:'var(--muted)',padding:32}}>Chưa có tiền xăng</td></tr>}
+                {[...xangXang].sort((a,b)=>b.date.localeCompare(a.date)).slice((pgTip-1)*PER,pgTip*PER).map(t=>(<tr key={t._id}><td className="mono" style={{fontSize:12}}>{t.date}</td><td className="mono" style={{color:'var(--red)'}}>-{fmtFull(t.amount)}</td><td style={{display:'flex',gap:4}}><button className="btn btn-sm btn-ghost" onClick={()=>onEditXang(t)} style={{color:'var(--blue)',borderColor:'var(--blue-dim)'}}>✏️</button><button className="btn btn-sm btn-danger" onClick={()=>onDeleteXang(t._id)}><Icon name="trash" size={12}/></button></td></tr>))}
               </tbody>
             </table>
-            <Pagination total={tipApp.length} page={pgTip} perPage={PER} onPage={setPgTip} />
+            <Pagination total={xangXang.length} page={pgTip} perPage={PER} onPage={setPgTip} />
           </div>
           <div className="history-cards-wrap">
-            {tipApp.length===0 && (<div style={{textAlign:'center',color:'var(--muted)',padding:'24px 0',fontSize:13}}>Chưa có tip app</div>)}
-            {[...tipApp].sort((a,b)=>b.date.localeCompare(a.date)).slice((pgTip-1)*PER,pgTip*PER).map(t=>(
-              <div key={t._id} className="m-tip-card">
+            {xangXang.length===0 && (<div style={{textAlign:'center',color:'var(--muted)',padding:'24px 0',fontSize:13}}>Chưa có tiền xăng</div>)}
+            {[...xangXang].sort((a,b)=>b.date.localeCompare(a.date)).slice((pgTip-1)*PER,pgTip*PER).map(t=>(
+              <div key={t._id} className="m-xang-card">
                 <div style={{display:'flex',flexDirection:'column',gap:2}}>
                   <span style={{fontSize:12,color:'var(--muted)',fontWeight:600}}>{t.date}</span>
-                  <span className="mono" style={{color:'var(--green)',fontWeight:700}}>+{fmtFull(t.amount)}</span>
+                  <span className="mono" style={{color:'var(--red)',fontWeight:700}}>-{fmtFull(t.amount)}</span>
                 </div>
                 <div style={{display:'flex',gap:6}}>
-                  <button className="btn btn-sm btn-ghost" onClick={()=>onEditTip(t)} style={{color:'var(--blue)',borderColor:'var(--blue-dim)',padding:'4px 8px'}}>✏️</button>
-                  <button className="btn btn-sm btn-danger" onClick={()=>onDeleteTip(t._id)} style={{padding:'4px 8px'}}><Icon name="trash" size={12}/></button>
+                  <button className="btn btn-sm btn-ghost" onClick={()=>onEditXang(t)} style={{color:'var(--blue)',borderColor:'var(--blue-dim)',padding:'4px 8px'}}>✏️</button>
+                  <button className="btn btn-sm btn-danger" onClick={()=>onDeleteXang(t._id)} style={{padding:'4px 8px'}}><Icon name="trash" size={12}/></button>
                 </div>
               </div>
             ))}
-            <Pagination total={tipApp.length} page={pgTip} perPage={PER} onPage={setPgTip} />
+            <Pagination total={xangXang.length} page={pgTip} perPage={PER} onPage={setPgTip} />
           </div>
         </>
       )}
@@ -1891,11 +1891,11 @@ const App = () => {
   const [modal, setModal] = useState(null);
   const [editingOrder, setEditingOrder] = useState(null);
   const [editingTransfer, setEditingTransfer] = useState(null);
-  const [editingTip, setEditingTip] = useState(null);
+  const [editingXang, setEditingXang] = useState(null);
   const [editingCash, setEditingCash] = useState(null);
   const [showBackup, setShowBackup] = useState(false);
   const [showEditTransfer, setShowEditTransfer] = useState(false);
-  const [showEditTip, setShowEditTip] = useState(false);
+  const [showEditXang, setShowEditXang] = useState(false);
   const [showEditCash, setShowEditCash] = useState(false);
   const [showActionSheet, setShowActionSheet] = useState(false);
   const [data, setData] = useState(INITIAL);
@@ -1952,11 +1952,11 @@ const App = () => {
     catch(e){console.error('Save transfer error:',e);}finally{setSaving(false);}
   }, [userId]);
 
-  const applyTipApp = useCallback(async (t) => {
-    setData(prev=>{const w={...prev.wallets};w.app+=t.amount;return{...prev,wallets:w,tipApp:[...prev.tipApp,t]};});
+  const applyXangXang = useCallback(async (t) => {
+    setData(prev=>({...prev,xangXang:[...(prev.xangXang||[]),t]}));
     setSaving(true);
-    try{const newId=await api.addTip(userId,t);setData(prev=>({...prev,tipApp:prev.tipApp.map(x=>!x._id&&x.date===t.date&&x.amount===t.amount?{...x,_id:newId}:x)}));setData(prev=>{api.saveWallets(userId,prev.wallets).catch(console.error);return prev;});}
-    catch(e){console.error('Save tip error:',e);}finally{setSaving(false);}
+    try{const newId=await api.addXang(userId,t);setData(prev=>({...prev,xangXang:(prev.xangXang||[]).map(x=>!x._id&&x.date===t.date&&x.amount===t.amount?{...x,_id:newId}:x)}));}
+    catch(e){console.error('Save xang error:',e);}finally{setSaving(false);}
   }, [userId]);
 
   const deleteOrder = useCallback(async (id) => {
@@ -2009,30 +2009,20 @@ const App = () => {
     catch(e) { console.error('Update transfer error:', e); } finally { setSaving(false); }
   }, [userId]);
 
-  const deleteTip = useCallback(async (id) => {
-    if (!confirm('Xoá tip app này? Số dư ví sẽ được hoàn lại.')) return;
-    setData(prev => {
-      const tip = prev.tipApp.find(t => t._id === id); if (!tip) return prev;
-      const w = { ...prev.wallets }; w.app -= tip.amount;
-      return { ...prev, wallets: w, tipApp: prev.tipApp.filter(t => t._id !== id) };
-    });
+  const deleteXang = useCallback(async (id) => {
+    if (!confirm('Xoá tiền xăng này?')) return;
+    setData(prev => ({...prev, xangXang: (prev.xangXang||[]).filter(t => t._id !== id)}));
     setSaving(true);
-    try { await api.deleteTip(userId, id); setData(prev => { api.saveWallets(userId, prev.wallets).catch(console.error); return prev; }); }
-    catch(e) { console.error('Delete tip error:', e); } finally { setSaving(false); }
+    try { await api.deleteXang(userId, id); }
+    catch(e) { console.error('Delete xang error:', e); } finally { setSaving(false); }
   }, [userId]);
 
-  const editTip = useCallback((tip) => { setEditingTip(tip); setShowEditTip(true); }, []);
-  const updateTip = useCallback(async (updated) => {
-    setData(prev => {
-      const old = prev.tipApp.find(t => t._id === updated._id);
-      if (!old) return prev;
-      const w = { ...prev.wallets };
-      w.app -= old.amount; w.app += updated.amount;
-      return { ...prev, wallets: w, tipApp: prev.tipApp.map(t => t._id === updated._id ? updated : t) };
-    });
+  const editXang = useCallback((tip) => { setEditingXang(tip); setShowEditXang(true); }, []);
+  const updateXang = useCallback(async (updated) => {
+    setData(prev => ({...prev, xangXang: (prev.xangXang||[]).map(t => t._id === updated._id ? updated : t)}));
     setSaving(true);
-    try { await api.updateTip(userId, updated); setData(prev => { api.saveWallets(userId, prev.wallets).catch(console.error); return prev; }); }
-    catch(e) { console.error('Update tip error:', e); } finally { setSaving(false); }
+    try { await api.updateXang(userId, updated); }
+    catch(e) { console.error('Update xang error:', e); } finally { setSaving(false); }
   }, [userId]);
 
   const editCash = useCallback((tx) => { setEditingCash(tx); setShowEditCash(true); }, []);
@@ -2090,7 +2080,7 @@ const App = () => {
           <div className="section-title">Thao tác nhanh</div>
           <button className="btn btn-primary btn-sm" onClick={()=>setModal('order')} style={{width:'100%'}}><Icon name="plus" size={13}/> Nhập đơn</button>
           <button className="btn btn-ghost btn-sm" onClick={()=>setModal('transfer')} style={{width:'100%'}}><Icon name="transfer" size={13}/> Chuyển tiền</button>
-          <button className="btn btn-ghost btn-sm" onClick={()=>setModal('tipapp')} style={{width:'100%'}}><Icon name="tip" size={13}/> Tip App</button>
+          <button className="btn btn-ghost btn-sm" onClick={()=>setModal('xangxang')} style={{width:'100%',color:'var(--red)',borderColor:'var(--red-dim)'}}>⛽ Tiền Xăng</button>
           <button className="btn btn-ghost btn-sm" onClick={()=>setModal('cash')} style={{width:'100%',color:'var(--green)',borderColor:'#00E5A033'}}>💰 Nạp / Rút tiền</button>
           <button className="btn btn-ghost btn-sm" onClick={()=>setModal('wallet')} style={{width:'100%'}}>⚙️ Số dư ban đầu</button>
           <button className="btn btn-ghost btn-sm" onClick={()=>setShowBackup(true)} style={{width:'100%'}}>💾 Backup / Restore</button>
@@ -2114,7 +2104,7 @@ const App = () => {
       <main className="pc-main" style={{flex:1,padding:'32px 36px',maxWidth:1100,margin:'0 auto',width:'100%'}}>
         {page==='dashboard' && <Dashboard data={data} />}
         {page==='chart' && <ChartPage data={data} />}
-        {page==='history' && <HistoryPage data={data} onDeleteOrder={deleteOrder} onDeleteTransfer={deleteTransfer} onEditOrder={editOrder} onDeleteCash={deleteCash} onEditTransfer={editTransfer} onEditTip={editTip} onDeleteTip={deleteTip} onEditCash={editCash} />}
+        {page==='history' && <HistoryPage data={data} onDeleteOrder={deleteOrder} onDeleteTransfer={deleteTransfer} onEditOrder={editOrder} onDeleteCash={deleteCash} onEditTransfer={editTransfer} onEditXang={editXang} onDeleteXang={deleteXang} onEditCash={editCash} />}
       </main>
 
       {/* ── Mobile Bottom Nav ── */}
@@ -2159,12 +2149,12 @@ const App = () => {
       {/* ── Modals ── */}
       {modal==='order' && <OrderModal onClose={()=>{setModal(null);setEditingOrder(null);}} onSave={applyOrder} initialData={editingOrder} isMobile={isMobile} />}
       {modal==='transfer' && <TransferModal onClose={()=>setModal(null)} onSave={applyTransfer} />}
-      {modal==='tipapp' && <TipAppModal onClose={()=>setModal(null)} onSave={applyTipApp} />}
+      {modal==='xangxang' && <XangXangModal onClose={()=>setModal(null)} onSave={applyXangXang} />}
       {modal==='cash' && <CashModal onClose={()=>setModal(null)} onSave={applyCash} />}
       {modal==='wallet' && <WalletSetupModal wallets={data.wallets} onSave={w=>{setData(p=>({...p,wallets:w}));api.saveWallets(userId,w).catch(console.error);}} onClose={()=>setModal(null)} />}
       {showBackup && <BackupModal data={data} onClose={()=>setShowBackup(false)} onRestore={async (newData)=>{setData(newData);setShowBackup(false);setSaving(true);try{await api.saveAll(userId,newData);}catch(e){console.error(e);}finally{setSaving(false);}}} />}
       {showEditTransfer && editingTransfer && <TransferEditModal onClose={()=>{setShowEditTransfer(false);setEditingTransfer(null);}} onSave={updateTransfer} initialData={editingTransfer} />}
-      {showEditTip && editingTip && <TipAppEditModal onClose={()=>{setShowEditTip(false);setEditingTip(null);}} onSave={updateTip} initialData={editingTip} />}
+      {showEditXang && editingXang && <XangXangEditModal onClose={()=>{setShowEditXang(false);setEditingXang(null);}} onSave={updateXang} initialData={editingXang} />}
       {showEditCash && editingCash && <CashEditModal onClose={()=>{setShowEditCash(false);setEditingCash(null);}} onSave={updateCash} initialData={editingCash} />}
     </div>
   );

@@ -40,15 +40,15 @@ export default async function handler(req, res) {
     const walletsCol   = db.collection('shipflow_wallets');
     const ordersCol    = db.collection('shipflow_orders');
     const transfersCol = db.collection('shipflow_transfers');
-    const tipAppCol    = db.collection('shipflow_tipapp');
+    const xangXangCol  = db.collection('shipflow_xangxang');
 
     if (req.method === 'GET') {
       const cashTxCol = db.collection('shipflow_cashtx');
-      const [walletDoc, orders, transfers, tipApp, cashTx] = await Promise.all([
+      const [walletDoc, orders, transfers, xangXang, cashTx] = await Promise.all([
         walletsCol.findOne({ userId }),
         ordersCol.find({ userId }).sort({ date: -1 }).toArray(),
         transfersCol.find({ userId }).sort({ date: -1 }).toArray(),
-        tipAppCol.find({ userId }).sort({ date: -1 }).toArray(),
+        xangXangCol.find({ userId }).sort({ date: -1 }).toArray(),
         cashTxCol.find({ userId }).sort({ date: -1 }).toArray(),
       ]);
 
@@ -63,7 +63,7 @@ export default async function handler(req, res) {
           : { app: 0, cash: 0, mb: 0, momo: 0 },
         orders:    orders.map(stripUserId),
         transfers: transfers.map(stripUserId),
-        tipApp:    tipApp.map(stripUserId),
+        xangXang:  xangXang.map(stripUserId),
         cashTx:    cashTx.map(stripUserId),
       });
     }
@@ -120,23 +120,23 @@ export default async function handler(req, res) {
         return res.status(200).json({ success: true });
       }
 
-      if (action === 'addTip') {
-        const { _id, ...tipData } = data;
-        const result = await tipAppCol.insertOne({ userId, ...tipData });
+      if (action === 'addXang') {
+        const { _id, ...xangData } = data;
+        const result = await xangXangCol.insertOne({ userId, ...xangData });
         return res.status(200).json({ success: true, _id: result.insertedId.toString() });
       }
 
-      if (action === 'updateTip') {
-        const { _id, ...tipData } = data;
-        await tipAppCol.updateOne(
+      if (action === 'updateXang') {
+        const { _id, ...xangData } = data;
+        await xangXangCol.updateOne(
           { _id: new ObjectId(_id), userId },
-          { $set: tipData }
+          { $set: xangData }
         );
         return res.status(200).json({ success: true });
       }
 
-      if (action === 'deleteTip') {
-        await tipAppCol.deleteOne({ _id: new ObjectId(data._id), userId });
+      if (action === 'deleteXang') {
+        await xangXangCol.deleteOne({ _id: new ObjectId(data._id), userId });
         return res.status(200).json({ success: true });
       }
 
@@ -165,7 +165,7 @@ export default async function handler(req, res) {
 
       if (action === 'saveAll') {
         const cashTxCol = db.collection('shipflow_cashtx');
-        const { wallets, orders = [], transfers = [], tipApp = [], cashTx = [] } = data;
+        const { wallets, orders = [], transfers = [], xangXang = [], cashTx = [] } = data;
 
         const stripAndTag = (arr) =>
           arr.map(({ _id, id, userId: _u, ...rest }) => ({ userId, ...rest }));
@@ -176,10 +176,10 @@ export default async function handler(req, res) {
             { $set: { userId, ...wallets, updatedAt: new Date() } },
             { upsert: true }
           ),
-          orders.length > 0 ? ordersCol.insertMany(stripAndTag(orders)) : Promise.resolve(),
+          orders.length > 0    ? ordersCol.insertMany(stripAndTag(orders))       : Promise.resolve(),
           transfers.length > 0 ? transfersCol.insertMany(stripAndTag(transfers)) : Promise.resolve(),
-          tipApp.length > 0 ? tipAppCol.insertMany(stripAndTag(tipApp)) : Promise.resolve(),
-          cashTx.length > 0 ? cashTxCol.insertMany(stripAndTag(cashTx)) : Promise.resolve(),
+          xangXang.length > 0  ? xangXangCol.insertMany(stripAndTag(xangXang))  : Promise.resolve(),
+          cashTx.length > 0    ? cashTxCol.insertMany(stripAndTag(cashTx))       : Promise.resolve(),
         ]);
 
         return res.status(200).json({ success: true });
